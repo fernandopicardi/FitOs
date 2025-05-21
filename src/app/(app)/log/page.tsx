@@ -23,6 +23,7 @@ export default function LogWorkoutPage() {
   const [activeWorkoutLog, setActiveWorkoutLog] = useState<ActiveWorkoutLog | null>(null);
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
   const [allAvailableExercises, setAllAvailableExercises] = useState<Exercise[]>([]);
+  const [isSavingWorkout, setIsSavingWorkout] = useState(false); // New state
   const { toast } = useToast();
 
   useEffect(() => {
@@ -204,10 +205,15 @@ export default function LogWorkoutPage() {
   };
   
   const handleSaveWorkout = () => {
-    if (!activeWorkoutLog || activeWorkoutLog.exercises.length === 0) {
-      toast({ title: "Cannot Save Empty Workout", description: "Add some exercises and log your sets before saving.", variant: "destructive" });
+    if (isSavingWorkout || !activeWorkoutLog || activeWorkoutLog.exercises.length === 0) {
+      if (!activeWorkoutLog || activeWorkoutLog.exercises.length === 0) {
+        toast({ title: "Cannot Save Empty Workout", description: "Add some exercises and log your sets before saving.", variant: "destructive" });
+      }
       return;
     }
+
+    setIsSavingWorkout(true); // Set saving state
+
     const logToSave: ActiveWorkoutLog = { ...activeWorkoutLog, endTime: Date.now() };
     
     try {
@@ -220,17 +226,18 @@ export default function LogWorkoutPage() {
         toast({ 
           title: "Workout Saved! 🎉", 
           description: `${logToSave.workoutName} has been logged successfully.`,
-          className: "border-accent animate-subtle-pulse-bg-accent", // Fancy toast
+          className: "border-accent animate-subtle-pulse-bg-accent", 
           duration: 6000,
         });
       }
     } catch (error) {
       console.error("Failed to save workout to localStorage", error);
       toast({ title: "Save Failed", description: "Could not save workout. Check console for details.", variant: "destructive" });
+    } finally {
+      setActiveWorkoutLog(null);
+      setSelectedPlanId(undefined);
+      setIsSavingWorkout(false); // Reset saving state
     }
-    
-    setActiveWorkoutLog(null);
-    setSelectedPlanId(undefined);
   };
 
   const handleCancelWorkout = () => {
@@ -338,9 +345,10 @@ export default function LogWorkoutPage() {
               <Button 
                 onClick={handleSaveWorkout} 
                 className="bg-primary hover:bg-primary/90 w-full sm:w-auto" 
-                disabled={activeWorkoutLog.exercises.length === 0}
+                disabled={activeWorkoutLog.exercises.length === 0 || isSavingWorkout}
               >
-                <Save className="mr-2 h-5 w-5" /> Save Workout
+                <Save className="mr-2 h-5 w-5" /> 
+                {isSavingWorkout ? "Saving..." : "Save Workout"}
               </Button>
             </div>
           </div>
