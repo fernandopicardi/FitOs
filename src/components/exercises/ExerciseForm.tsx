@@ -5,8 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import type { Exercise, MuscleGroup, WorkoutType } from "@/types";
-import { useEffect }
-from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,16 +28,18 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { PlusCircle } from "lucide-react";
 
 const MUSCLE_GROUPS: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders', 'Biceps', 'Triceps', 'Abs', 'Full Body', 'Cardio', 'Glutes', 'Hamstrings', 'Hips', 'Other'];
-const WORKOUT_TYPES: WorkoutType[] = ['Strength', 'Cardio', 'Flexibility', 'Hypertrophy', 'Powerlifting', 'Bodybuilding', 'CrossFit', 'Yoga', 'Warm-up', 'Cooldown', 'Mobilidade', 'Plyometrics', 'Corrective', 'Calisthenics', 'HIIT', 'Endurance', 'Core', 'Advanced', 'Other'];
+const PREDEFINED_WORKOUT_TYPES: WorkoutType[] = ['Strength', 'Cardio', 'Flexibility', 'Hypertrophy', 'Powerlifting', 'Bodybuilding', 'CrossFit', 'Yoga', 'Warm-up', 'Cooldown', 'Mobilidade', 'Plyometrics', 'Corrective', 'Calisthenics', 'HIIT', 'Endurance', 'Core', 'Advanced', 'Isometric', 'Other'];
+
 
 const exerciseFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters.").max(100),
   emoji: z.string().min(1).max(5, "Emoji should be a single character or short sequence."),
   muscleGroup: z.enum(MUSCLE_GROUPS as [MuscleGroup, ...MuscleGroup[]]),
   customMuscleGroup: z.string().max(50, "Custom muscle group must be 50 characters or less.").optional(),
-  workoutType: z.array(z.enum(WORKOUT_TYPES as [WorkoutType, ...WorkoutType[]])).min(1, "Select at least one workout type."),
+  workoutType: z.array(z.string()).min(1, "Select at least one workout type."),
   description: z.string().min(10, "Description must be at least 10 characters.").max(500),
   instructions: z.string().optional(),
   tips: z.string().optional(),
@@ -52,14 +53,14 @@ const exerciseFormSchema = z.object({
   },
   {
     message: "Custom muscle group name must be at least 2 characters.",
-    path: ['customMuscleGroup'], // Path of the error
+    path: ['customMuscleGroup'],
   }
 );
 
 export type ExerciseFormValues = z.infer<typeof exerciseFormSchema>;
 
 interface ExerciseFormProps {
-  exercise?: Exercise; // For editing existing exercises
+  exercise?: Exercise;
   onSubmit: (data: ExerciseFormValues) => void;
   onCancel: () => void;
 }
@@ -81,6 +82,8 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
     return ex.muscleGroup;
   };
 
+  const [displayableWorkoutTypes, setDisplayableWorkoutTypes] = useState<string[]>([...PREDEFINED_WORKOUT_TYPES]);
+  const [newWorkoutTypeInput, setNewWorkoutTypeInput] = useState("");
 
   const form = useForm<ExerciseFormValues>({
     resolver: zodResolver(exerciseFormSchema),
@@ -90,6 +93,7 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
       customMuscleGroup: getInitialCustomMuscleGroup(exercise),
       instructions: exercise.instructions?.join('\\n'),
       tips: exercise.tips?.join('\\n'),
+      workoutType: exercise.workoutType || [],
     } : {
       name: "",
       emoji: "💪",
@@ -104,29 +108,48 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
   });
 
   const watchedMuscleGroup = form.watch("muscleGroup");
+  const watchedWorkoutTypes = form.watch("workoutType");
 
   useEffect(() => {
     if (watchedMuscleGroup !== 'Other') {
-      form.setValue('customMuscleGroup', ''); // Clear custom input if a predefined group is selected
-      // Manually clear errors for customMuscleGroup if it's no longer relevant
+      form.setValue('customMuscleGroup', '');
       if (form.formState.errors.customMuscleGroup) {
         form.clearErrors('customMuscleGroup');
       }
     }
   }, [watchedMuscleGroup, form]);
 
+  useEffect(() => {
+    // Initialize displayableWorkoutTypes with predefined types + any custom types from the exercise being edited
+    if (exercise && exercise.workoutType) {
+      const allTypes = new Set([...PREDEFINED_WORKOUT_TYPES, ...exercise.workoutType]);
+      setDisplayableWorkoutTypes(Array.from(allTypes));
+    }
+  }, [exercise]);
 
   function handleSubmit(data: ExerciseFormValues) {
-    // Prepare data for submission
     const submissionData = { ...data };
-    if (data.muscleGroup === 'Other' && data.customMuscleGroup) {
-      // The actual muscle group becomes the custom one
-      // No need to change submissionData.muscleGroup here, parent will handle it
-    } else if (data.muscleGroup !== 'Other') {
-      submissionData.customMuscleGroup = ''; // Ensure custom is empty if 'Other' not selected
+    if (data.muscleGroup !== 'Other') {
+      submissionData.customMuscleGroup = '';
     }
     onSubmit(submissionData);
   }
+
+  const handleAddCustomWorkoutType = () => {
+    const newType = newWorkoutTypeInput.trim();
+    if (newType && !displayableWorkoutTypes.includes(newType)) {
+      setDisplayableWorkoutTypes(prev => [...prev, newType]);
+    }
+    if (newType) {
+      // Also add to selected workout types if not already there
+      const currentSelected = form.getValues("workoutType") || [];
+      if (!currentSelected.includes(newType)) {
+        form.setValue("workoutType", [...currentSelected, newType]);
+      }
+    }
+    setNewWorkoutTypeInput("");
+  };
+
 
   return (
     <Form {...form}>
@@ -210,10 +233,10 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
           render={() => (
             <FormItem>
               <FormLabel>Workout Types</FormLabel>
-              <FormDescription>Select applicable workout types.</FormDescription>
+              <FormDescription>Select applicable workout types or add new ones.</FormDescription>
               <ScrollArea className="h-40 rounded-md border p-4">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {WORKOUT_TYPES.map((type) => (
+                {displayableWorkoutTypes.map((type) => (
                   <FormField
                     key={type}
                     control={form.control}
@@ -252,6 +275,22 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
             </FormItem>
           )}
         />
+
+        <div className="flex items-end gap-2">
+          <div className="flex-grow">
+            <Label htmlFor="newWorkoutTypeInput">Add New Workout Type</Label>
+            <Input
+              id="newWorkoutTypeInput"
+              placeholder="e.g., Olympic Lifting"
+              value={newWorkoutTypeInput}
+              onChange={(e) => setNewWorkoutTypeInput(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+          <Button type="button" variant="outline" onClick={handleAddCustomWorkoutType} className="shrink-0">
+            <PlusCircle className="mr-2 h-4 w-4" /> Add Type
+          </Button>
+        </div>
         
         <FormField
           control={form.control}

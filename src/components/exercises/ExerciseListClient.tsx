@@ -31,7 +31,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('All');
   const { toast } = useToast();
 
-  // Load custom exercises from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -51,21 +50,17 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     }
   }, [toast]);
 
-  // Merge initial (preloaded) and custom exercises whenever either changes
   useEffect(() => {
     const correctlyMarkedInitial = initialExercises.map(ex => ({ ...ex, isCustom: false }));
     const merged = [...correctlyMarkedInitial, ...customExercises.map(ex => ({ ...ex, isCustom: true }))];
     
     const uniqueExercisesMap = new Map<string, Exercise>();
-    // Add preloaded first
     correctlyMarkedInitial.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
-    // Then add/override with custom
     customExercises.forEach(ex => uniqueExercisesMap.set(ex.id, { ...ex, isCustom: true }));
     
     setAllExercises(Array.from(uniqueExercisesMap.values()));
   }, [initialExercises, customExercises]);
 
-  // Save custom exercises to localStorage whenever they change
   useEffect(() => {
     if (typeof window !== 'undefined') {
       if (customExercises.length > 0 || localStorage.getItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY)) {
@@ -95,17 +90,22 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
 
   const handleFormSubmit = (data: ExerciseFormValues) => {
     const actualMuscleGroup = data.muscleGroup === 'Other' && data.customMuscleGroup && data.customMuscleGroup.trim() !== ''
-      ? data.customMuscleGroup.trim() as MuscleGroup // Cast as MuscleGroup, assuming it's valid for user's intent
+      ? data.customMuscleGroup.trim() as MuscleGroup
       : data.muscleGroup;
+
+    // Workout types will now be directly from the form's `workoutType` array (strings)
+    const workoutTypes = Array.from(new Set(data.workoutType.map(wt => wt.trim()).filter(wt => wt)));
+
 
     const exerciseData = {
       ...data,
       muscleGroup: actualMuscleGroup,
+      workoutType: workoutTypes, // Use the processed workoutTypes
       instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
       tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
       imageUrl: data.imageUrl || undefined,
     };
-    // Remove customMuscleGroup from the final exercise object if it was just a temporary holder
+    
     const { customMuscleGroup, ...finalExerciseData } = exerciseData;
 
 
@@ -123,7 +123,13 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           newCustom[existingIndex] = updatedExercise;
           return newCustom;
         }
-        return [updatedExercise, ...prev.filter(ex => ex.id !== updatedExercise.id)];
+        // If editing a preloaded exercise, it becomes a new custom exercise or overwrites if ID matches
+        const existingPreloadedIndex = initialExercises.findIndex(ex => ex.id === updatedExercise.id);
+        if (existingPreloadedIndex > -1 && !prev.some(ex => ex.id === updatedExercise.id)) {
+          return [updatedExercise, ...prev]; // Add as new custom if it was preloaded and not already custom
+        }
+        return prev.map(ex => ex.id === updatedExercise.id ? updatedExercise : ex);
+
       });
       
       toast({
@@ -178,7 +184,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     const matchesSearchTerm = 
       exercise.name.toLowerCase().includes(searchTermLower) ||
       exercise.description.toLowerCase().includes(searchTermLower) ||
-      (exercise.muscleGroup as string).toLowerCase().includes(searchTermLower) || // Cast to string for safety
+      (exercise.muscleGroup as string).toLowerCase().includes(searchTermLower) || 
       exercise.workoutType.some(wt => wt.toLowerCase().includes(searchTermLower));
       
     const matchesMuscleGroup = selectedMuscleGroup === 'All' || exercise.muscleGroup === selectedMuscleGroup;
@@ -218,7 +224,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
 
       <Dialog open={isFormOpen} onOpenChange={(isOpen) => {
         setIsFormOpen(isOpen);
-        if (!isOpen) setExerciseToEdit(null); // Reset on close
+        if (!isOpen) setExerciseToEdit(null); 
       }}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-0">
             <DialogHeader className="p-6 pb-0">
@@ -229,7 +235,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
                 {exerciseToEdit ? "Modify the details of this exercise." : "Add your own exercise to the library. Fill in the details below."}
             </DialogDescription>
             </DialogHeader>
-            <div className="p-6 pt-4 max-h-[calc(90vh-100px)] overflow-y-auto"> {/* Scrollable content area */}
+            <div className="p-6 pt-4 max-h-[calc(90vh-100px)] overflow-y-auto">
             <ExerciseForm 
                 exercise={exerciseToEdit || undefined} 
                 onSubmit={handleFormSubmit} 
