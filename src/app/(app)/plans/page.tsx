@@ -22,88 +22,137 @@ import { PRELOADED_EXERCISES } from '@/constants/exercises';
 import { useToast } from '@/hooks/use-toast';
 
 const LOCAL_STORAGE_PLANS_KEY = 'workoutWizardPlans';
-const SEEDED_PLAN_ID = 'hybrid-weekly-plan-seed-v1';
 
-const createSeededPlan = (): WorkoutPlan => {
-  const getExerciseByName = (name: string) => PRELOADED_EXERCISES.find(ex => ex.name.toLowerCase() === name.toLowerCase());
-  
-  const rotaçãoOmbros = getExerciseByName("Rotação de Ombros com Superband");
-  const flexaoArgolas = getExerciseByName("Flexão nas Argolas");
-  const kbCleanPress = getExerciseByName("Kettlebell Clean & Press");
-  const liberacaoPeitoral = getExerciseByName("Liberação de Peitoral (Rodinha)");
-  const agachamentoGoblet = getExerciseByName("Agachamento Goblet (KB)");
-  const rolloutAjoelhado = getExerciseByName("Rollout com Rodinha (Ajoelhado)");
-  const ponteGlutea1Perna = getExerciseByName("Ponte Glútea (1 perna)");
-  const alongamentoIsquios = getExerciseByName("Alongamento de Isquiotibiais (Sentado)");
-  const burpees = getExerciseByName("Burpees");
-  const mobilidadeQuadrilRodinha = getExerciseByName("Mobilidade de Quadril (Rodinha)");
-  const pullUpArgolas = getExerciseByName("Pull-Up nas Argolas");
-  const remadaKb = getExerciseByName("Remada Curvada (KB)");
-  const rolloutPe = getExerciseByName("Rollout em Pé (Avançado)");
-  const agachamentoSalto = getExerciseByName("Agachamento com Salto");
-  const pranchaArgolas = getExerciseByName("Prancha nas Argolas");
-  const russianTwistKb = getExerciseByName("Russian Twist (KB)");
+const getExerciseByName = (name: string): Exercise | undefined => {
+  const found = PRELOADED_EXERCISES.find(ex => ex.name.toLowerCase() === name.toLowerCase());
+  if (!found) {
+    console.warn(`Exercise not found in PRELOADED_EXERCISES: ${name}`);
+  }
+  return found;
+};
 
-  const createPlannedExercise = (ex: Exercise | undefined, sets: string, reps: string, notes: string, rest?: string): PlannedExercise | null => {
-    if (!ex) return null;
-    return {
-      id: `plannedex-${Date.now()}-${ex.id}-${Math.random().toString(36).substring(2,7)}`,
-      exerciseId: ex.id,
-      name: ex.name,
-      emoji: ex.emoji,
-      sets,
-      reps,
-      notes,
-      rest,
-    };
-  };
-
-  const mondayExercises: PlannedExercise[] = [
-    createPlannedExercise(rotaçãoOmbros, "2", "20s", "Isso não é só aquecimento... é ativar o modo *tanquinho*."),
-    createPlannedExercise(flexaoArgolas, "4", "12", "Se balançar, finja que é de propósito (mas não é)."),
-    createPlannedExercise(kbCleanPress, "4", "8/cada lado", "Parece que você está arremessando um alienígena para o espaço."),
-    createPlannedExercise(liberacaoPeitoral, "2", "1min", "Parece tortura, mas seu futuro eu agradece."),
-  ].filter(Boolean) as PlannedExercise[];
-
-  const tuesdayExercises: PlannedExercise[] = [
-    createPlannedExercise(agachamentoGoblet, "4", "15", "Seu glúteo vai reclamar, mas é só drama."),
-    createPlannedExercise(rolloutAjoelhado, "4", "8", "Parece fácil até você tentar... boa sorte!"),
-    createPlannedExercise(ponteGlutea1Perna, "3", "12/cada", "Glúteos de aço em 3... 2... 1..."),
-    createPlannedExercise(alongamentoIsquios, "2", "30s/cada", "Alongar é como resetar o músculo."),
-  ].filter(Boolean) as PlannedExercise[];
-  
-  const wednesdayExercises: PlannedExercise[] = [
-    createPlannedExercise(burpees, "8", "30s", "Odeie agora, ame os resultados depois.", "20s"),
-    createPlannedExercise(mobilidadeQuadrilRodinha, "2", "1min", "Parece massagem, mas você é o massagista."),
-  ].filter(Boolean) as PlannedExercise[];
-
-  const thursdayExercises: PlannedExercise[] = [
-    createPlannedExercise(pullUpArgolas, "4", "8", "Se não conseguir, grite 'EU CONSIGO' e tente de novo."),
-    createPlannedExercise(remadaKb, "4", "12/cada lado", "Costas largas em 3 meses? Sim, por favor."),
-    createPlannedExercise(rolloutPe, "3", "5", "Só para quem já domina o rollout ajoelhado. *Você foi avisado.*"),
-  ].filter(Boolean) as PlannedExercise[];
-  
-  const fridayExercises: PlannedExercise[] = [
-    createPlannedExercise(burpees, "3", "12", "Exercício parte do circuito."), // Note: Burpee com Salto, using Burpees ID
-    createPlannedExercise(agachamentoGoblet, "3", "15", "Exercício parte do circuito."), // Note: Agachamento com KB
-    createPlannedExercise(rolloutAjoelhado, "3", "10", "Exercício parte do circuito."),
-    createPlannedExercise(pranchaArgolas, "3", "40s", "Exercício parte do circuito."),
-    createPlannedExercise(russianTwistKb, "3", "20/cada lado", "Exercício parte do circuito."),
-  ].filter(Boolean) as PlannedExercise[];
-
+const createPlannedExercise = (
+  ex: Exercise | undefined, 
+  sets: string, 
+  reps: string, 
+  notes: string, // "Dica Motivacional" from user's plan
+  rest?: string
+): PlannedExercise | null => {
+  if (!ex) return null;
   return {
-    id: SEEDED_PLAN_ID,
-    name: "Treino Híbrido Semanal Completo",
-    description: "Um plano de treino híbrido de 5 dias focado em força e condicionamento, utilizando argolas, kettlebell, superbands e rodinha abdominal.",
-    sessions: [
-      { id: `session-mon-${Date.now()}`, name: "Segunda-feira: Upper Body Push", dayOfWeek: 'Monday', exercises: mondayExercises, notes: "Foco: Peito, Ombros, Tríceps." },
-      { id: `session-tue-${Date.now()}`, name: "Terça-feira: Lower Body + Core", dayOfWeek: 'Tuesday', exercises: tuesdayExercises, notes: "Foco: Pernas, Glúteos, Abdômen. Dia da Rodinha!" },
-      { id: `session-wed-${Date.now()}`, name: "Quarta-feira: HIIT + Mobilidade", dayOfWeek: 'Wednesday', exercises: wednesdayExercises, notes: "Cardio Intenso e Mobilidade." },
-      { id: `session-thu-${Date.now()}`, name: "Quinta-feira: Upper Body Pull + Core", dayOfWeek: 'Thursday', exercises: thursdayExercises, notes: "Foco: Costas, Bíceps, Posterior de Ombros." },
-      { id: `session-fri-${Date.now()}`, name: "Sexta-feira: Full Body + Core (Circuito)", dayOfWeek: 'Friday', exercises: fridayExercises, notes: "Realize como um circuito por 3 rounds, com 30s de descanso entre exercícios. Dica final: Terminou? Parabéns! Agora vá comer um frango com batata doce e durma como um bebê... que levanta peso." },
-    ],
+    id: `plannedex-${Date.now()}-${ex.id}-${Math.random().toString(36).substring(2,7)}`,
+    exerciseId: ex.id,
+    name: ex.name, // Store name for easier display, populated when added
+    emoji: ex.emoji, // Store emoji for easier display
+    sets,
+    reps,
+    notes, // This is where "Dica Motivacional" goes
+    rest,
   };
 };
+
+const seededPlanDefinitions: Array<{id: string, name: string, description: string, session: Omit<WorkoutSession, 'id' | 'exercises'> & { exercises: Array<{exerciseName: string, sets: string, reps: string, notes: string, rest?:string }>}}> = [
+  {
+    id: 'seed-plan-monday-v1',
+    name: "Segunda: Upper Push + Cardio",
+    description: "Foco: Peito, Ombros, Tríceps. Cardio opcional.",
+    session: {
+      name: "Upper Push + Cardio",
+      dayOfWeek: 'Monday',
+      notes: "Treino principal de empurrar para parte superior do corpo, com aquecimento e cardio opcional.",
+      exercises: [
+        { exerciseName: "Rotação de Ombros com Superband", sets: "2", reps: "20s", notes: "Isso não é só aquecimento... é ativar o modo *tanquinho*." },
+        { exerciseName: "Flexão Inclinada", sets: "1", reps: "10", notes: "Aquecimento para peito." },
+        { exerciseName: "Flexão nas Argolas", sets: "4", reps: "12", notes: "Se tremer, é só o músculo fazendo live!" },
+        { exerciseName: "Kettlebell Press", sets: "4", reps: "8/cada", notes: "Hoje você é um guindaste humano!" },
+        { exerciseName: "Liberação de Peitoral (Rodinha)", sets: "2", reps: "1min", notes: "Parece tortura, mas seu futuro eu agradece." },
+        // Cardio Opcional: Pular corda (10 min) - This can be a note in the session or a general plan description. For now, let's keep it as a general idea.
+      ]
+    }
+  },
+  {
+    id: 'seed-plan-tuesday-v1',
+    name: "Terça: Lower Body + Core",
+    description: "Foco: Pernas, Glúteos, Abdômen. Dia da Rodinha!",
+    session: {
+      name: "Lower Body + Core",
+      dayOfWeek: 'Tuesday',
+      notes: "Foco em pernas, glúteos e abdômen, com destaque para o rollout com rodinha.",
+      exercises: [
+        { exerciseName: "Agachamento Livre", sets: "2", reps: "15", notes: "Aquecimento para pernas." },
+        { exerciseName: "Mobilidade de Quadril (Rodinha)", sets: "1", reps: " ", notes: "Aquecimento e mobilidade para o quadril." },
+        { exerciseName: "Agachamento Goblet (KB)", sets: "4", reps: "15", notes: "Glúteos de aço em construção!" },
+        { exerciseName: "Rollout com Rodinha (Ajoelhado)", sets: "4", reps: "8", notes: "Abdominais hoje = tanquinho no verão!" },
+        { exerciseName: "Ponte Glútea (1 perna)", sets: "3", reps: "12/cada", notes: "Glúteos de aço em 3... 2... 1..." },
+        { exerciseName: "Alongamento de Isquiotibiais (Sentado)", sets: "2", reps: "30s/cada", notes: "Alongar é como resetar o músculo." },
+      ]
+    }
+  },
+  {
+    id: 'seed-plan-wednesday-v1',
+    name: "Quarta: HIIT + Mobilidade",
+    description: "Foco: Condicionamento e mobilidade.",
+    session: {
+      name: "HIIT + Mobilidade",
+      dayOfWeek: 'Wednesday',
+      notes: "Treino intervalado de alta intensidade seguido de mobilidade. Circuito: 4 rounds, 30s esforço / 30s descanso entre exercícios de HIIT. Mobilidade: 10 min total.",
+      exercises: [
+        { exerciseName: "Burpees", sets: "4 rounds", reps: "30s", notes: "Circuito HIIT.", rest: "30s" },
+        { exerciseName: "Saltos com Superband", sets: "4 rounds", reps: "30s", notes: "Circuito HIIT.", rest: "30s" },
+        { exerciseName: "Liberação de Peitoral (Rodinha)", sets: "1", reps: " ", notes: "Parte da mobilidade de 10 min." },
+        { exerciseName: "Alongamento de Isquiotibiais (Sentado)", sets: "1", reps: " ", notes: "Parte da mobilidade de 10 min." },
+      ]
+    }
+  },
+  {
+    id: 'seed-plan-thursday-v1',
+    name: "Quinta: Upper Pull + Core",
+    description: "Foco: Costas, Bíceps, Core.",
+    session: {
+      name: "Upper Pull + Core",
+      dayOfWeek: 'Thursday',
+      notes: "Foco em puxadas para a parte superior do corpo e fortalecimento do core.",
+      exercises: [
+        // Warm-up items like "Remada invertida com Superband (2x15)" and "Alongamento de gato-vaca" can be notes or the first exercises.
+        { exerciseName: "Remada invertida com Superband", sets: "2", reps: "15", notes: "Aquecimento para costas." },
+        { exerciseName: "Alongamento Gato-Vaca", sets: "1", reps: "1min", notes: "Aquecimento e mobilidade para coluna." },
+        { exerciseName: "Pull-Up nas Argolas", sets: "4", reps: "8", notes: "Cada repetição te deixa mais largo!" },
+        { exerciseName: "Remada Curvada (KB)", sets: "4", reps: "12/cada", notes: "Costas largas = postura de vencedor." },
+        { exerciseName: "Rollout em Pé (Avançado)", sets: "3", reps: "5", notes: "Só para quem já domina o rollout ajoelhado. *Você foi avisado.*" },
+      ]
+    }
+  },
+  {
+    id: 'seed-plan-friday-v1',
+    name: "Sexta: Full Body",
+    description: "Foco: Resistência muscular geral. Treino em circuito.",
+    session: {
+      name: "Full Body Circuit",
+      dayOfWeek: 'Friday',
+      notes: "Treino de corpo inteiro em formato de circuito. 3 rounds, com descanso entre exercícios conforme necessário (ex: 30s).",
+      exercises: [
+        { exerciseName: "Agachamento com Salto", sets: "3 rounds", reps: "15", notes: "Pernas explosivas = fuga rápida de zumbis." },
+        { exerciseName: "Flexão Diamante", sets: "3 rounds", reps: "12", notes: "Tríceps de diamante!" },
+        { exerciseName: "Prancha com Rotação", sets: "3 rounds", reps: "40s", notes: "Core forte e estável." },
+      ]
+    }
+  },
+  {
+    id: 'seed-plan-saturday-v1',
+    name: "Sábado: Recuperação Ativa",
+    description: "Foco: Mobilidade e Core leve.",
+    session: {
+      name: "Recuperação Ativa",
+      dayOfWeek: 'Saturday',
+      notes: "Sessão leve para auxiliar na recuperação, focar na mobilidade e manter o core ativo.",
+      exercises: [
+        { exerciseName: "Rollout com Rodinha (Ajoelhado)", sets: "3", reps: "8", notes: "Versão mais leve do Rollout Avançado do plano, foco na forma." }, // Using kneeling as "Rollout Avançado" might be too much for active recovery.
+        { exerciseName: "Ponte Glútea (1 perna)", sets: "3", reps: "15", notes: "Foco na ativação do glúteo e estabilidade." }, // Assuming 15 reps instead of 15s hold for simplicity
+        { exerciseName: "Alongamento Dinâmico", sets: "1", reps: "10min", notes: "Movimentos fluidos para todo o corpo." },
+      ]
+    }
+  }
+];
 
 
 export default function PlansPage() {
@@ -120,33 +169,62 @@ export default function PlansPage() {
       try {
         const savedPlansString = localStorage.getItem(LOCAL_STORAGE_PLANS_KEY);
         let loadedPlans: WorkoutPlan[] = savedPlansString ? JSON.parse(savedPlansString) : [];
+        let plansWereSeeded = false;
+
+        for (const planDef of seededPlanDefinitions) {
+          if (!loadedPlans.some(p => p.id === planDef.id)) {
+            const exercisesForSession: PlannedExercise[] = planDef.session.exercises.map(exDef => 
+              createPlannedExercise(
+                getExerciseByName(exDef.exerciseName),
+                exDef.sets,
+                exDef.reps,
+                exDef.notes,
+                exDef.rest
+              )
+            ).filter(Boolean) as PlannedExercise[];
+
+            const newPlan: WorkoutPlan = {
+              id: planDef.id,
+              name: planDef.name,
+              description: planDef.description,
+              sessions: [{
+                id: `session-${planDef.id}-${Date.now()}`,
+                name: planDef.session.name,
+                dayOfWeek: planDef.session.dayOfWeek,
+                notes: planDef.session.notes,
+                exercises: exercisesForSession,
+              }],
+            };
+            loadedPlans.unshift(newPlan); // Add to the beginning
+            plansWereSeeded = true;
+          }
+        }
         
-        const seededPlanExists = loadedPlans.some(plan => plan.id === SEEDED_PLAN_ID);
-        if (!seededPlanExists) {
-          const seededPlan = createSeededPlan();
-          loadedPlans = [seededPlan, ...loadedPlans]; // Add seeded plan to the beginning
+        if (plansWereSeeded) {
            toast({
-            title: "Plano de Treino Padrão Adicionado!",
-            description: `"${seededPlan.name}" foi adicionado à sua lista de planos.`,
+            title: "Planos de Treino Padrão Adicionados!",
+            description: `Os planos de treino diários foram adicionados à sua lista.`,
           });
         }
         setPlans(loadedPlans);
 
       } catch (error) {
-        console.error("Failed to load plans from localStorage", error);
+        console.error("Failed to load or seed plans from localStorage", error);
         toast({
           title: "Error Loading Plans",
-          description: "Could not retrieve your saved plans. Previous data might be lost.",
+          description: "Could not retrieve or seed your plans. Previous data might be affected.",
           variant: "destructive",
         });
       }
     }
-  }, [toast]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toast]); // Toast is stable, PRELOADED_EXERCISES should be stable.
 
   // Save plans to localStorage whenever the plans state changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
       // Only save if plans array has been initialized (not initial empty array before loading)
+      // and there's something to save or clear.
       if (plans.length > 0 || localStorage.getItem(LOCAL_STORAGE_PLANS_KEY)) {
          try {
           localStorage.setItem(LOCAL_STORAGE_PLANS_KEY, JSON.stringify(plans));
@@ -275,3 +353,4 @@ export default function PlansPage() {
     </div>
   );
 }
+
