@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { format, parseISO, getMonth, getYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend as RechartsLegend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend as RechartsLegend } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 
 const LOCAL_STORAGE_HISTORY_KEY = 'workoutWizardHistory';
@@ -84,12 +84,12 @@ export default function WorkoutHistoryPage() {
     const sortedMonths = Object.keys(dataByMonth).sort((a, b) => {
       const [monthA, yearA] = a.split(' ');
       const [monthB, yearB] = b.split(' ');
-      const dateA = new Date(`${monthA} 1, ${yearA}`);
+      const dateA = new Date(`${monthA} 1, ${yearA}`); // Assuming month names are in English if not using specific locale parsing here
       const dateB = new Date(`${monthB} 1, ${yearB}`);
       return dateA.getTime() - dateB.getTime();
     });
     return sortedMonths.map(monthYear => ({
-      month: monthYear.charAt(0).toUpperCase() + monthYear.slice(1),
+      month: monthYear.charAt(0).toUpperCase() + monthYear.slice(1), // Capitalize first letter
       workouts: dataByMonth[monthYear],
     }));
   }, [workoutHistory]);
@@ -110,7 +110,7 @@ export default function WorkoutHistoryPage() {
       log.exercises.forEach(exercise => {
         exercise.sets.forEach(set => {
           const weight = parseFloat(set.weight);
-          if (!isNaN(weight) && set.reps && set.isCompleted) {
+          if (!isNaN(weight) && set.reps && set.isCompleted) { // Only consider completed sets with valid weight
             const existingPr = prs[exercise.exerciseId];
             if (!existingPr || weight > existingPr.maxWeight || (weight === existingPr.maxWeight && parseInt(set.reps) > parseInt(existingPr.reps))) {
               prs[exercise.exerciseId] = {
@@ -303,20 +303,26 @@ export default function WorkoutHistoryPage() {
                 <CardDescription>Seu melhor desempenho em cada exercício com peso registrado.</CardDescription>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-3">
-                  {personalRecordsData.map(pr => (
-                    <li key={pr.exerciseId} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-card-foreground/5 rounded-md">
-                      <div className="flex items-center gap-2 mb-1 sm:mb-0">
-                        <span className="text-xl">{pr.emoji}</span>
-                        <span className="font-medium text-foreground">{pr.exerciseName}</span>
-                      </div>
-                      <div className="text-sm text-muted-foreground text-right">
-                        <span className="font-semibold text-primary">✨ {pr.maxWeight}kg x {pr.reps} reps</span>
-                        <span className="ml-2 text-xs">({pr.formattedDate})</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                {personalRecordsData.length === 0 && !isLoading ? (
+                    <p className="text-muted-foreground text-center py-4">
+                        Nenhum recorde pessoal encontrado ainda. Registre alguns treinos com peso para ver seus PRs!
+                    </p>
+                ) : (
+                    <ul className="space-y-3">
+                    {personalRecordsData.map(pr => (
+                        <li key={pr.exerciseId} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-card-foreground/5 rounded-md">
+                        <div className="flex items-center gap-2 mb-1 sm:mb-0">
+                            <span className="text-xl">{pr.emoji}</span>
+                            <span className="font-medium text-foreground">{pr.exerciseName}</span>
+                        </div>
+                        <div className="text-sm text-muted-foreground text-right">
+                            <span className="font-semibold text-primary">✨ {pr.maxWeight}kg x {pr.reps} reps</span>
+                            <span className="ml-2 text-xs">({pr.formattedDate})</span>
+                        </div>
+                        </li>
+                    ))}
+                    </ul>
+                )}
               </CardContent>
             </Card>
           )}
