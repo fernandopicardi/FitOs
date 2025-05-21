@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { PageTitle } from '@/components/shared/PageTitle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarClock, Activity, ListChecks, Trash2, AlertTriangle } from 'lucide-react';
+import { CalendarClock, Activity, ListChecks, Trash2, AlertTriangle, BarChart3 } from 'lucide-react';
 import type { ActiveWorkoutLog } from '@/types';
 import { WorkoutHistoryCard } from '@/components/history/WorkoutHistoryCard';
 import { useToast } from '@/hooks/use-toast';
@@ -21,8 +21,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { format, parseISO, getMonth, getYear } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'; // Using shadcn's chart wrapper
 
 const LOCAL_STORAGE_HISTORY_KEY = 'workoutWizardHistory';
+
+interface MonthlyWorkoutData {
+  month: string;
+  workouts: number;
+}
 
 export default function WorkoutHistoryPage() {
   const [workoutHistory, setWorkoutHistory] = useState<ActiveWorkoutLog[]>([]);
@@ -35,6 +44,8 @@ export default function WorkoutHistoryPage() {
         const savedHistoryString = localStorage.getItem(LOCAL_STORAGE_HISTORY_KEY);
         if (savedHistoryString) {
           const history = JSON.parse(savedHistoryString) as ActiveWorkoutLog[];
+          // Sort history by date, most recent first
+          history.sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
           setWorkoutHistory(history);
         }
       } catch (error) {
@@ -48,6 +59,43 @@ export default function WorkoutHistoryPage() {
       setIsLoading(false);
     }
   }, [toast]);
+
+  const monthlyWorkoutData = useMemo(() => {
+    if (!workoutHistory.length) return [];
+
+    const dataByMonth: { [key: string]: number } = {};
+
+    workoutHistory.forEach(log => {
+      const date = parseISO(log.date);
+      const monthYear = format(date, 'MMM yyyy', { locale: ptBR });
+      if (dataByMonth[monthYear]) {
+        dataByMonth[monthYear]++;
+      } else {
+        dataByMonth[monthYear] = 1;
+      }
+    });
+
+    const sortedMonths = Object.keys(dataByMonth).sort((a, b) => {
+      const [monthA, yearA] = a.split(' ');
+      const [monthB, yearB] = b.split(' ');
+      const dateA = new Date(`${monthA} 1, ${yearA}`); // Use a consistent day for sorting
+      const dateB = new Date(`${monthB} 1, ${yearB}`);
+      return dateA.getTime() - dateB.getTime();
+    });
+    
+    return sortedMonths.map(monthYear => ({
+      month: monthYear.charAt(0).toUpperCase() + monthYear.slice(1), // Capitalize month
+      workouts: dataByMonth[monthYear],
+    }));
+  }, [workoutHistory]);
+
+  const chartConfig = {
+    workouts: {
+      label: "Treinos",
+      color: "hsl(var(--chart-1))",
+    },
+  };
+
 
   const handleClearAllHistory = () => {
     try {
@@ -167,11 +215,55 @@ export default function WorkoutHistoryPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {workoutHistory.map(log => (
-            <WorkoutHistoryCard key={log.id} log={log} onDeleteLog={handleDeleteSpecificLog} />
-          ))}
-        </div>
+        <>
+          {monthlyWorkoutData.length > 0 && (
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <BarChart3 className="h-6 w-6 text-primary" />
+                  Monthly Workout Consistency
+                </CardTitle>
+                <CardDescription>Number of workouts logged per month.</CardDescription>
+              </CardHeader>
+              <CardContent className="pl-2 pr-6 pb-6 pt-2">
+                <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={monthlyWorkoutData} margin={{ top: 5, right: 0, left: -20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border)/0.5)" />
+                      <XAxis 
+                        dataKey="month" 
+                        tickLine={false} 
+                        axisLine={false} 
+                        tickMargin={8}
+                        fontSize={12}
+                        className="fill-muted-foreground"
+                      />
+                      <YAxis 
+                        tickLine={false} 
+                        axisLine={false} 
+                        tickMargin={8} 
+                        fontSize={12}
+                        allowDecimals={false}
+                        className="fill-muted-foreground"
+                      />
+                      <Tooltip
+                        cursorStyle={{ fill: 'hsl(var(--muted)/0.3)' }}
+                        content={<ChartTooltipContent indicator="dot" />}
+                      />
+                      <Bar dataKey="workouts" fill="var(--color-workouts)" radius={[4, 4, 0, 0]} barSize={30} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            {workoutHistory.map(log => (
+              <WorkoutHistoryCard key={log.id} log={log} onDeleteLog={handleDeleteSpecificLog} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
