@@ -7,7 +7,7 @@ import { PageTitle } from '@/components/shared/PageTitle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CalendarClock, Activity, ListChecks, Trash2, AlertTriangle, BarChart3, Trophy } from 'lucide-react';
-import type { ActiveWorkoutLog, LoggedExerciseEntry, LoggedSetData } from '@/types';
+import type { ActiveWorkoutLog } from '@/types';
 import { WorkoutHistoryCard } from '@/components/history/WorkoutHistoryCard';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -21,17 +21,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { format, parseISO, getMonth, getYear } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend as RechartsLegend } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 
 const LOCAL_STORAGE_HISTORY_KEY = 'workoutWizardHistory';
-
-interface MonthlyWorkoutData {
-  month: string;
-  workouts: number;
-}
 
 interface PersonalRecord {
   exerciseId: string;
@@ -84,8 +79,10 @@ export default function WorkoutHistoryPage() {
     const sortedMonths = Object.keys(dataByMonth).sort((a, b) => {
       const [monthA, yearA] = a.split(' ');
       const [monthB, yearB] = b.split(' ');
-      const dateA = new Date(`${monthA} 1, ${yearA}`); // Assuming month names are in English if not using specific locale parsing here
-      const dateB = new Date(`${monthB} 1, ${yearB}`);
+      // Ensure month names are correctly parsed by creating a full date string
+      // This assumes month names from format 'MMM' are English for Date constructor
+      const dateA = new Date(Date.parse(monthA + " 1," + yearA));
+      const dateB = new Date(Date.parse(monthB + " 1," + yearB));
       return dateA.getTime() - dateB.getTime();
     });
     return sortedMonths.map(monthYear => ({
@@ -110,9 +107,9 @@ export default function WorkoutHistoryPage() {
       log.exercises.forEach(exercise => {
         exercise.sets.forEach(set => {
           const weight = parseFloat(set.weight);
-          if (!isNaN(weight) && set.reps && set.isCompleted) { // Only consider completed sets with valid weight
+          if (!isNaN(weight) && set.reps && set.isCompleted) { 
             const existingPr = prs[exercise.exerciseId];
-            if (!existingPr || weight > existingPr.maxWeight || (weight === existingPr.maxWeight && parseInt(set.reps) > parseInt(existingPr.reps))) {
+            if (!existingPr || weight > existingPr.maxWeight || (weight === existingPr.maxWeight && parseInt(set.reps) > parseInt(existingPr.reps || '0'))) {
               prs[exercise.exerciseId] = {
                 exerciseId: exercise.exerciseId,
                 exerciseName: exercise.name,
@@ -293,7 +290,8 @@ export default function WorkoutHistoryPage() {
             </Card>
           )}
 
-          {personalRecordsData.length > 0 && (
+          {/* Personal Records Card Section */}
+          {workoutHistory.length > 0 && ( // Only show PR card if there is history to analyze
             <Card className="shadow-lg mt-8">
               <CardHeader>
                 <CardTitle className="text-xl flex items-center gap-2">
@@ -303,7 +301,9 @@ export default function WorkoutHistoryPage() {
                 <CardDescription>Seu melhor desempenho em cada exercício com peso registrado.</CardDescription>
               </CardHeader>
               <CardContent>
-                {personalRecordsData.length === 0 && !isLoading ? (
+                {isLoading ? (
+                   <p className="text-muted-foreground text-center py-4">Carregando recordes...</p>
+                ) : personalRecordsData.length === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
                         Nenhum recorde pessoal encontrado ainda. Registre alguns treinos com peso para ver seus PRs!
                     </p>
@@ -337,4 +337,3 @@ export default function WorkoutHistoryPage() {
     </div>
   );
 }
-
