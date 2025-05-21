@@ -100,8 +100,8 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
       muscleGroup: data.muscleGroup,
       workoutType: data.workoutType,
       description: data.description,
-      instructions: data.instructions?.split('\n').filter(line => line.trim() !== ''),
-      tips: data.tips?.split('\n').filter(line => line.trim() !== ''),
+      instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
+      tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
       imageUrl: data.imageUrl || undefined,
       isCustom: true, // Explicitly mark as custom
     };
@@ -114,8 +114,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
   };
 
   const handleViewDetails = (exercise: Exercise) => {
-    // For now, just log. Later this could open a detailed modal.
-    console.log("View details for:", exercise);
      toast({
       title: `Details for: ${exercise.name} ${exercise.emoji}`,
       description: (
@@ -132,7 +130,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           {exercise.isCustom && <p className="italic text-muted-foreground">This is a custom exercise.</p>}
         </div>
       ),
-      duration: 9000,
+      duration: 7000, // Reduced duration
     });
   };
 
@@ -214,5 +212,3 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     </div>
   );
 }
-
-    

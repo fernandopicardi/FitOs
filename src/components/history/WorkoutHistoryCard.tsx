@@ -84,7 +84,7 @@ export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
           )}
         </div>
       ),
-      duration: 15000, // Increased duration for better readability
+      duration: 8000, // Reduced duration
       className: 'sm:max-w-md w-full', // Custom class for toast width
     });
   };
