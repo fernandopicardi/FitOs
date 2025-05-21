@@ -52,7 +52,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
 
   useEffect(() => {
     const correctlyMarkedInitial = initialExercises.map(ex => ({ ...ex, isCustom: false }));
-    const merged = [...correctlyMarkedInitial, ...customExercises.map(ex => ({ ...ex, isCustom: true }))];
     
     const uniqueExercisesMap = new Map<string, Exercise>();
     correctlyMarkedInitial.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
@@ -93,19 +92,19 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
       ? data.customMuscleGroup.trim() as MuscleGroup
       : data.muscleGroup;
 
-    // Workout types will now be directly from the form's `workoutType` array (strings)
-    const workoutTypes = Array.from(new Set(data.workoutType.map(wt => wt.trim()).filter(wt => wt)));
+    const finalWorkoutTypes = Array.from(new Set(data.workoutType.map(wt => wt.trim()).filter(wt => wt)));
 
 
     const exerciseData = {
       ...data,
       muscleGroup: actualMuscleGroup,
-      workoutType: workoutTypes, // Use the processed workoutTypes
+      workoutType: finalWorkoutTypes,
       instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
       tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
       imageUrl: data.imageUrl || undefined,
     };
     
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { customMuscleGroup, ...finalExerciseData } = exerciseData;
 
 
@@ -123,10 +122,10 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           newCustom[existingIndex] = updatedExercise;
           return newCustom;
         }
-        // If editing a preloaded exercise, it becomes a new custom exercise or overwrites if ID matches
+        
         const existingPreloadedIndex = initialExercises.findIndex(ex => ex.id === updatedExercise.id);
         if (existingPreloadedIndex > -1 && !prev.some(ex => ex.id === updatedExercise.id)) {
-          return [updatedExercise, ...prev]; // Add as new custom if it was preloaded and not already custom
+          return [updatedExercise, ...prev]; 
         }
         return prev.map(ex => ex.id === updatedExercise.id ? updatedExercise : ex);
 
@@ -135,6 +134,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
       toast({
         title: "Exercise Updated!",
         description: `"${updatedExercise.name}" has been updated.`,
+        duration: 3000,
       });
 
     } else {
@@ -147,6 +147,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
       toast({
         title: "Custom Exercise Added!",
         description: `"${newExercise.name}" has been added to your library.`,
+        duration: 3000,
       });
     }
     setIsFormOpen(false);

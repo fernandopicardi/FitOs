@@ -25,9 +25,6 @@ const LOCAL_STORAGE_PLANS_KEY = 'workoutWizardPlans';
 
 const getExerciseByName = (name: string): Exercise | undefined => {
   const found = PRELOADED_EXERCISES.find(ex => ex.name.toLowerCase() === name.toLowerCase());
-  // if (!found) {
-  //   console.warn(`Exercise not found in PRELOADED_EXERCISES: ${name}`);
-  // }
   return found;
 };
 
@@ -35,18 +32,18 @@ const createPlannedExercise = (
   ex: Exercise | undefined, 
   sets: string, 
   reps: string, 
-  notes: string, // "Dica Motivacional" from user's plan
-  rest?: string
+  notes: string, 
+  rest?:string 
 ): PlannedExercise | null => {
   if (!ex) return null;
   return {
     id: `plannedex-${Date.now()}-${ex.id}-${Math.random().toString(36).substring(2,7)}`,
     exerciseId: ex.id,
-    name: ex.name, // Store name for easier display, populated when added
-    emoji: ex.emoji, // Store emoji for easier display
+    name: ex.name, 
+    emoji: ex.emoji, 
     sets,
     reps,
-    notes, // This is where "Dica Motivacional" goes
+    notes, 
     rest,
   };
 };
@@ -162,7 +159,6 @@ export default function PlansPage() {
   
   const allExercises: Exercise[] = PRELOADED_EXERCISES; 
 
-  // Load plans from localStorage on mount and seed if necessary
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -184,7 +180,7 @@ export default function PlansPage() {
             ).filter(ex => ex !== null) as PlannedExercise[];
 
             if (exercisesForSession.length !== planDef.session.exercises.length) {
-              console.warn(`Some exercises for plan ${planDef.name} could not be found and were skipped. Check PRELOADED_EXERCISES for: ${planDef.session.exercises.filter(exDef => !getExerciseByName(exDef.exerciseName)).map(exDef => exDef.exerciseName).join(', ')}`);
+              console.warn(`Some exercises for plan ${planDef.name} could not be found and were skipped.`);
             }
 
             const newPlan: WorkoutPlan = {
@@ -199,7 +195,7 @@ export default function PlansPage() {
                 exercises: exercisesForSession,
               }],
             };
-            loadedPlans.unshift(newPlan); // Add to the beginning
+            loadedPlans.unshift(newPlan); 
             plansWereSeeded = true;
             newPlansCount++;
           }
@@ -208,7 +204,8 @@ export default function PlansPage() {
         if (plansWereSeeded) {
            toast({
             title: "Planos de Treino Padrão Adicionados!",
-            description: `${newPlansCount} plano(s) de treino diário(s) foram adicionados à sua lista.`
+            description: `${newPlansCount} plano(s) de treino diário(s) foram adicionados à sua lista.`,
+            duration: 3000,
           });
         }
         setPlans(loadedPlans);
@@ -223,13 +220,10 @@ export default function PlansPage() {
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast]); // Toast is stable
+  }, [toast]); 
 
-  // Save plans to localStorage whenever the plans state changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Only save if plans array has been initialized (not initial empty array before loading)
-      // and there's something to save or clear.
       if (plans.length > 0 || localStorage.getItem(LOCAL_STORAGE_PLANS_KEY)) {
          try {
           localStorage.setItem(LOCAL_STORAGE_PLANS_KEY, JSON.stringify(plans));
@@ -255,7 +249,7 @@ export default function PlansPage() {
     };
     setPlans(prev => [newPlan, ...prev]);
     setIsPlanFormOpen(false);
-    toast({ title: "Plan Created!", description: `"${data.name}" has been added.` });
+    toast({ title: "Plan Created!", description: `"${data.name}" has been added.`, duration: 3000 });
   };
 
   const handleManagePlan = (plan: WorkoutPlan) => {
@@ -270,7 +264,7 @@ export default function PlansPage() {
     setPlans(prevPlans => 
       prevPlans.map(p => p.id === updatedPlan.id ? updatedPlan : p)
     );
-    toast({ title: "Plan Updated!", description: `Changes to "${updatedPlan.name}" have been saved.`});
+    toast({ title: "Plan Updated!", description: `Changes to "${updatedPlan.name}" have been saved.`, duration: 3000});
   };
 
   const handleDeletePlan = (planId: string) => {

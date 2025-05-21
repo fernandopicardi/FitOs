@@ -23,7 +23,7 @@ export default function LogWorkoutPage() {
   const [activeWorkoutLog, setActiveWorkoutLog] = useState<ActiveWorkoutLog | null>(null);
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
   const [allAvailableExercises, setAllAvailableExercises] = useState<Exercise[]>([]);
-  const [isSavingWorkout, setIsSavingWorkout] = useState(false); // New state
+  const [isSavingWorkout, setIsSavingWorkout] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function LogWorkoutPage() {
     };
     setActiveWorkoutLog(newLog);
     setSelectedPlanId(undefined);
-    toast({ title: "Empty workout started!", description: "Add exercises to begin logging." });
+    toast({ title: "Empty workout started!", description: "Add exercises to begin logging.", duration: 3000 });
   };
 
   const handleStartFromPlan = () => {
@@ -98,6 +98,7 @@ export default function LogWorkoutPage() {
           plannedSets: pe.sets,
           plannedReps: pe.reps,
           sets: [], 
+          notes: pe.notes, // Carry over notes from planned exercise
         };
       })
     );
@@ -112,7 +113,7 @@ export default function LogWorkoutPage() {
       exercises: exercisesFromPlan,
     };
     setActiveWorkoutLog(newLog);
-    toast({ title: `Workout started: ${plan.name}`, description: "Begin logging your exercises." });
+    toast({ title: `Workout started: ${plan.name}`, description: "Begin logging your exercises.", duration: 3000 });
   };
 
   const handleAddExerciseToLog = (exercise: Exercise) => {
@@ -123,12 +124,12 @@ export default function LogWorkoutPage() {
       exerciseId: exercise.id,
       name: exercise.name,
       emoji: exercise.emoji,
-      sets: [], // Initialize with empty sets array
+      sets: [], 
     };
 
     setActiveWorkoutLog(prev => prev ? ({ ...prev, exercises: [...prev.exercises, newLoggedExercise] }) : null);
     setIsExercisePickerOpen(false);
-    toast({ title: `${exercise.name} added to workout.`});
+    toast({ title: `${exercise.name} added to workout.`, duration: 3000});
   };
 
   const handleRemoveExerciseFromLog = (loggedExerciseId: string) => {
@@ -195,7 +196,9 @@ export default function LogWorkoutPage() {
       const updatedExercises = prevLog.exercises.map(ex => {
         if (ex.id === loggedExerciseId) {
           const updatedSets = ex.sets.filter(set => set.id !== setId);
-          return { ...ex, sets: updatedSets };
+          // Re-number sets after removal
+          const renumberedSets = updatedSets.map((set, index) => ({ ...set, setNumber: index + 1 }));
+          return { ...ex, sets: renumberedSets };
         }
         return ex;
       });
@@ -212,7 +215,7 @@ export default function LogWorkoutPage() {
       return;
     }
 
-    setIsSavingWorkout(true); // Set saving state
+    setIsSavingWorkout(true);
 
     const logToSave: ActiveWorkoutLog = { ...activeWorkoutLog, endTime: Date.now() };
     
@@ -227,7 +230,7 @@ export default function LogWorkoutPage() {
           title: "Workout Saved! 🎉", 
           description: `${logToSave.workoutName} has been logged successfully.`,
           className: "border-accent animate-subtle-pulse-bg-accent", 
-          duration: 6000,
+          duration: 3000, 
         });
       }
     } catch (error) {
@@ -236,7 +239,7 @@ export default function LogWorkoutPage() {
     } finally {
       setActiveWorkoutLog(null);
       setSelectedPlanId(undefined);
-      setIsSavingWorkout(false); // Reset saving state
+      setIsSavingWorkout(false);
     }
   };
 
