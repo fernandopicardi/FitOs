@@ -9,7 +9,10 @@ export type MuscleGroup =
   | 'Abs' 
   | 'Full Body'
   | 'Cardio'
-  | 'Other';
+  | 'Other'
+  | 'Glutes' // Added for more specificity
+  | 'Hamstrings' // Added for more specificity
+  | 'Hips'; // Added for mobility exercises
 
 export type WorkoutType = 
   | 'Strength' 
@@ -20,6 +23,16 @@ export type WorkoutType =
   | 'Bodybuilding'
   | 'CrossFit'
   | 'Yoga'
+  | 'Warm-up' // Explicitly add if not already implied
+  | 'Cooldown'
+  | 'Mobilidade'
+  | 'Plyometrics'
+  | 'Corrective'
+  | 'Calisthenics' // Ensure it's present
+  | 'HIIT' // Ensure it's present
+  | 'Endurance' // Ensure it's present
+  | 'Core' // Ensure it's present
+  | 'Advanced' // For exercises like rollout em pé
   | 'Other';
 
 export interface Exercise {
