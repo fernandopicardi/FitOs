@@ -40,10 +40,10 @@ export default function DashboardPage() {
           <div className="md:w-1/2 relative min-h-[250px] md:min-h-full">
             <Image 
               src="https://placehold.co/800x600.png" 
-              alt="Workout motivation" 
+              alt="Modern fitness abstract background" 
               fill
               objectFit="cover"
-              data-ai-hint="fitness workout"
+              data-ai-hint="fitness abstract"
               className="opacity-80"
             />
              <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/30 to-transparent md:bg-gradient-to-r md:from-background/70 md:via-background/30 md:to-transparent"></div>
