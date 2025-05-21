@@ -1,16 +1,18 @@
+
 import type { Exercise } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Tag } from 'lucide-react';
+import { ChevronRight, Tag, Edit3 } from 'lucide-react';
 import Image from 'next/image';
 
 interface ExerciseCardProps {
   exercise: Exercise;
   onViewDetails?: (exercise: Exercise) => void;
+  onEditExercise?: (exercise: Exercise) => void;
 }
 
-export function ExerciseCard({ exercise, onViewDetails }: ExerciseCardProps) {
+export function ExerciseCard({ exercise, onViewDetails, onEditExercise }: ExerciseCardProps) {
   return (
     <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col overflow-hidden h-full">
       {exercise.imageUrl && (
@@ -50,14 +52,18 @@ export function ExerciseCard({ exercise, onViewDetails }: ExerciseCardProps) {
           {exercise.description}
         </CardDescription>
       </CardContent>
-      <CardFooter>
-        {onViewDetails ? (
-          <Button variant="ghost" className="w-full justify-start text-primary hover:text-primary/80 p-0" onClick={() => onViewDetails(exercise)}>
+      <CardFooter className="flex justify-between items-center">
+        {onViewDetails && (
+          <Button variant="ghost" className="text-primary hover:text-primary/80 p-0" onClick={() => onViewDetails(exercise)}>
             View Details <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
-        ) : (
-           <div className="h-10"></div> // Placeholder to maintain height consistency if no button
         )}
+        {onEditExercise && (
+          <Button variant="outline" size="sm" onClick={() => onEditExercise(exercise)} className="text-accent border-accent hover:bg-accent/10 hover:text-accent">
+            <Edit3 className="mr-2 h-4 w-4" /> Edit
+          </Button>
+        )}
+         {(!onViewDetails && !onEditExercise) && <div className="h-10"></div>}
       </CardFooter>
     </Card>
   );

@@ -27,6 +27,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
   const [customExercises, setCustomExercises] = useState<Exercise[]>([]);
   const [allExercises, setAllExercises] = useState<Exercise[]>(initialExercises);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('All');
   const { toast } = useToast();
@@ -53,64 +54,93 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
 
   // Merge initial (preloaded) and custom exercises whenever either changes
   useEffect(() => {
-    // Ensure custom exercises are marked correctly, and preloaded ones are not marked as custom
     const correctlyMarkedInitial = initialExercises.map(ex => ({ ...ex, isCustom: false }));
     const merged = [...correctlyMarkedInitial, ...customExercises.map(ex => ({ ...ex, isCustom: true }))];
     
-    // Remove duplicates by ID, prioritizing custom exercises if IDs clash (though unlikely with current ID generation)
-    const uniqueExercises = merged.reduce((acc, current) => {
-      const x = acc.find(item => item.id === current.id);
-      if (!x) {
-        return acc.concat([current]);
-      } else {
-        // If a preloaded and custom exercise somehow have the same ID, prefer the custom one.
-        // Or, if both are custom/preloaded, prefer the one later in the merge (effectively the custom one).
-        if (current.isCustom) {
-          return acc.map(item => item.id === current.id ? current : item);
-        }
-        return acc;
-      }
-    }, [] as Exercise[]);
-
-    setAllExercises(uniqueExercises);
+    const uniqueExercisesMap = new Map<string, Exercise>();
+    // Add preloaded first
+    correctlyMarkedInitial.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
+    // Then add/override with custom
+    customExercises.forEach(ex => uniqueExercisesMap.set(ex.id, { ...ex, isCustom: true }));
+    
+    setAllExercises(Array.from(uniqueExercisesMap.values()));
   }, [initialExercises, customExercises]);
 
   // Save custom exercises to localStorage whenever they change
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY, JSON.stringify(customExercises));
-      } catch (error) {
-        console.error("Failed to save custom exercises to localStorage", error);
-        toast({
-          title: "Error Saving Custom Exercises",
-          description: "Your custom exercises could not be saved automatically.",
-          variant: "destructive",
-        });
+      // Avoid saving the initial empty array before custom exercises are loaded
+      if (customExercises.length > 0 || localStorage.getItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY)) {
+        try {
+          localStorage.setItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY, JSON.stringify(customExercises));
+        } catch (error) {
+          console.error("Failed to save custom exercises to localStorage", error);
+          toast({
+            title: "Error Saving Custom Exercises",
+            description: "Your custom exercises could not be saved automatically.",
+            variant: "destructive",
+          });
+        }
       }
     }
   }, [customExercises, toast]);
 
+  const handleOpenFormForCreate = () => {
+    setExerciseToEdit(null);
+    setIsFormOpen(true);
+  };
 
-  const handleAddCustomExercise = (data: ExerciseFormValues) => {
-    const newExercise: Exercise = {
-      id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`, // More robust unique ID
-      name: data.name,
-      emoji: data.emoji,
-      muscleGroup: data.muscleGroup,
-      workoutType: data.workoutType,
-      description: data.description,
-      instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
-      tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
-      imageUrl: data.imageUrl || undefined,
-      isCustom: true, // Explicitly mark as custom
-    };
-    setCustomExercises(prev => [newExercise, ...prev]);
-    setIsFormOpen(false); 
-    toast({
-      title: "Custom Exercise Added!",
-      description: `"${newExercise.name}" has been added to your library.`,
-    });
+  const handleOpenFormForEdit = (exercise: Exercise) => {
+    setExerciseToEdit(exercise);
+    setIsFormOpen(true);
+  };
+
+  const handleFormSubmit = (data: ExerciseFormValues) => {
+    if (exerciseToEdit) {
+      // Editing existing exercise
+      const updatedExercise: Exercise = {
+        ...exerciseToEdit, // Retain original ID and other non-form fields
+        ...data,
+        instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
+        tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
+        imageUrl: data.imageUrl || undefined,
+        isCustom: true, // Any edit makes it effectively custom or updates a custom one
+      };
+
+      setCustomExercises(prev => {
+        const existingIndex = prev.findIndex(ex => ex.id === updatedExercise.id);
+        if (existingIndex > -1) {
+          const newCustom = [...prev];
+          newCustom[existingIndex] = updatedExercise;
+          return newCustom;
+        }
+        // If editing a preloaded exercise, it's added to customExercises
+        return [updatedExercise, ...prev.filter(ex => ex.id !== updatedExercise.id)];
+      });
+      
+      toast({
+        title: "Exercise Updated!",
+        description: `"${updatedExercise.name}" has been updated.`,
+      });
+
+    } else {
+      // Creating new custom exercise
+      const newExercise: Exercise = {
+        id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        ...data,
+        instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
+        tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
+        imageUrl: data.imageUrl || undefined,
+        isCustom: true,
+      };
+      setCustomExercises(prev => [newExercise, ...prev]);
+      toast({
+        title: "Custom Exercise Added!",
+        description: `"${newExercise.name}" has been added to your library.`,
+      });
+    }
+    setIsFormOpen(false);
+    setExerciseToEdit(null);
   };
 
   const handleViewDetails = (exercise: Exercise) => {
@@ -130,7 +160,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           {exercise.isCustom && <p className="italic text-muted-foreground">This is a custom exercise.</p>}
         </div>
       ),
-      duration: 7000, // Reduced duration
+      duration: 7000,
     });
   };
 
@@ -174,33 +204,49 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
             ))}
           </SelectContent>
         </Select>
-        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground shadow-md">
-              <PlusCircle className="mr-2 h-5 w-5" /> Add Custom Exercise
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-0">
-             <DialogHeader className="p-6 pb-0">
-              <DialogTitle className="text-2xl text-primary">Create Custom Exercise</DialogTitle>
-              <DialogDescription>
-                Add your own exercise to the library. Fill in the details below.
-              </DialogDescription>
+        <Button 
+            onClick={handleOpenFormForCreate} 
+            className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground shadow-md"
+        >
+            <PlusCircle className="mr-2 h-5 w-5" /> Add Custom Exercise
+        </Button>
+      </div>
+
+      <Dialog open={isFormOpen} onOpenChange={(isOpen) => {
+        setIsFormOpen(isOpen);
+        if (!isOpen) setExerciseToEdit(null); // Reset on close
+      }}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-0">
+            <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="text-2xl text-primary">
+                {exerciseToEdit ? `Edit: ${exerciseToEdit.name}` : "Create Custom Exercise"}
+            </DialogTitle>
+            <DialogDescription>
+                {exerciseToEdit ? "Modify the details of this exercise." : "Add your own exercise to the library. Fill in the details below."}
+            </DialogDescription>
             </DialogHeader>
             <div className="p-6 pt-4 max-h-[calc(90vh-100px)] overflow-y-auto">
-              <ExerciseForm 
-                onSubmit={handleAddCustomExercise} 
-                onCancel={() => setIsFormOpen(false)} 
-              />
+            <ExerciseForm 
+                exercise={exerciseToEdit || undefined} // Pass exercise for editing
+                onSubmit={handleFormSubmit} 
+                onCancel={() => {
+                    setIsFormOpen(false);
+                    setExerciseToEdit(null);
+                }} 
+            />
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+        </DialogContent>
+      </Dialog>
 
       {filteredExercises.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredExercises.map((exercise) => (
-            <ExerciseCard key={exercise.id} exercise={exercise} onViewDetails={handleViewDetails} />
+            <ExerciseCard 
+                key={exercise.id} 
+                exercise={exercise} 
+                onViewDetails={handleViewDetails}
+                onEditExercise={handleOpenFormForEdit}
+            />
           ))}
         </div>
       ) : (
