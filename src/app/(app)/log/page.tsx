@@ -15,16 +15,18 @@ import { useToast } from '@/hooks/use-toast';
 
 const LOCAL_STORAGE_PLANS_KEY = 'workoutWizardPlans';
 const LOCAL_STORAGE_HISTORY_KEY = 'workoutWizardHistory';
+const LOCAL_STORAGE_CUSTOM_EXERCISES_KEY = 'workoutWizardCustomExercises';
 
 export default function LogWorkoutPage() {
   const [availablePlans, setAvailablePlans] = useState<WorkoutPlan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState<string | undefined>(undefined);
   const [activeWorkoutLog, setActiveWorkoutLog] = useState<ActiveWorkoutLog | null>(null);
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
+  const [allAvailableExercises, setAllAvailableExercises] = useState<Exercise[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load available plans from localStorage
+    // Load available plans and all exercises from localStorage
     if (typeof window !== 'undefined') {
       try {
         const savedPlansString = localStorage.getItem(LOCAL_STORAGE_PLANS_KEY);
@@ -32,20 +34,35 @@ export default function LogWorkoutPage() {
           const loadedPlans = JSON.parse(savedPlansString) as WorkoutPlan[];
           setAvailablePlans(loadedPlans);
         }
+
+        const savedCustomExercisesString = localStorage.getItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY);
+        const customExercises = savedCustomExercisesString ? JSON.parse(savedCustomExercisesString) as Exercise[] : [];
+        
+        const preloadedWithFlag = PRELOADED_EXERCISES.map(ex => ({ ...ex, isCustom: false }));
+        const customWithFlag = customExercises.map(ex => ({ ...ex, isCustom: true }));
+
+        // Create a unique list of all exercises, prioritizing custom if IDs clash (though unlikely)
+        const exerciseMap = new Map<string, Exercise>();
+        preloadedWithFlag.forEach(ex => exerciseMap.set(ex.id, ex));
+        customWithFlag.forEach(ex => exerciseMap.set(ex.id, ex)); // Custom overwrites preloaded if same ID
+        
+        setAllAvailableExercises(Array.from(exerciseMap.values()));
+
       } catch (error) {
-        console.error("Failed to load plans from localStorage for logging", error);
+        console.error("Failed to load data from localStorage for logging", error);
         toast({
-          title: "Error Loading Plans",
-          description: "Could not retrieve workout plans for selection.",
+          title: "Error Loading Data",
+          description: "Could not retrieve plans or custom exercises.",
           variant: "destructive",
         });
+        // Fallback for exercises if loading custom fails
+        setAllAvailableExercises(PRELOADED_EXERCISES.map(ex => ({ ...ex, isCustom: false })));
       }
     }
   }, [toast]);
 
   const getExerciseDetails = (exerciseId: string): Exercise | undefined => {
-    // In a real app, this might also check user's custom exercises if they are stored separately
-    return PRELOADED_EXERCISES.find(ex => ex.id === exerciseId);
+    return allAvailableExercises.find(ex => ex.id === exerciseId);
   }
 
   const handleStartEmptyWorkout = () => {
@@ -80,8 +97,8 @@ export default function LogWorkoutPage() {
           exerciseId: pe.exerciseId,
           name: masterExercise?.name || pe.name || 'Unknown Exercise',
           emoji: masterExercise?.emoji || '❓',
-          plannedSets: pe.sets, // Populate from plan
-          plannedReps: pe.reps, // Populate from plan
+          plannedSets: pe.sets,
+          plannedReps: pe.reps,
           sets: [], 
         };
       })
@@ -108,7 +125,7 @@ export default function LogWorkoutPage() {
       exerciseId: exercise.id,
       name: exercise.name,
       emoji: exercise.emoji,
-      sets: [], // Ad-hoc exercises won't have planned sets/reps unless added manually
+      sets: [],
     };
 
     setActiveWorkoutLog(prev => prev ? ({ ...prev, exercises: [...prev.exercises, newLoggedExercise] }) : null);
@@ -178,6 +195,8 @@ export default function LogWorkoutPage() {
       const updatedExercises = prevLog.exercises.map(ex => {
         if (ex.id === loggedExerciseId) {
           const updatedSets = ex.sets.filter(set => set.id !== setId);
+          // Re-number sets after removal for display consistency if desired, or keep original numbers
+          // For simplicity, we'll keep original numbers for now or let UI handle display as "Set N" by index
           return { ...ex, sets: updatedSets };
         }
         return ex;
@@ -287,16 +306,20 @@ export default function LogWorkoutPage() {
                   </p>
                 ) : (
                   <div className="space-y-4">
-                    {activeWorkoutLog.exercises.map(loggedEx => (
-                      <LoggedExerciseItemCard 
-                        key={loggedEx.id} 
-                        loggedExercise={loggedEx} 
-                        onRemove={() => handleRemoveExerciseFromLog(loggedEx.id)}
-                        onAddSet={() => handleAddSetToLoggedExercise(loggedEx.id)}
-                        onUpdateSetData={(setId, field, value) => handleUpdateLoggedSetData(loggedEx.id, setId, field, value)}
-                        onRemoveSet={(setId) => handleRemoveSetFromLoggedExercise(loggedEx.id, setId)}
-                      />
-                    ))}
+                    {activeWorkoutLog.exercises.map(loggedEx => {
+                      const masterExercise = allAvailableExercises.find(ex => ex.id === loggedEx.exerciseId);
+                      return (
+                        <LoggedExerciseItemCard 
+                          key={loggedEx.id} 
+                          loggedExercise={loggedEx}
+                          masterExercise={masterExercise} 
+                          onRemove={() => handleRemoveExerciseFromLog(loggedEx.id)}
+                          onAddSet={() => handleAddSetToLoggedExercise(loggedEx.id)}
+                          onUpdateSetData={(setId, field, value) => handleUpdateLoggedSetData(loggedEx.id, setId, field, value)}
+                          onRemoveSet={(setId) => handleRemoveSetFromLoggedExercise(loggedEx.id, setId)}
+                        />
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
@@ -317,7 +340,7 @@ export default function LogWorkoutPage() {
       <ExercisePickerDialog
         isOpen={isExercisePickerOpen}
         onOpenChange={setIsExercisePickerOpen}
-        allExercises={PRELOADED_EXERCISES} // Consider making this dynamic if custom exercises are added
+        allExercises={allAvailableExercises}
         onSelectExercise={handleAddExerciseToLog}
       />
     </div>
