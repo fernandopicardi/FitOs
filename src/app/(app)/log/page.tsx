@@ -7,10 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PlusCircle, Play, Save, XCircle, Trash2 } from 'lucide-react';
-import { ExercisePickerDialog } from '@/components/plans/ExercisePickerDialog'; // Re-using this
+import { ExercisePickerDialog } from '@/components/plans/ExercisePickerDialog';
 import { LoggedExerciseItemCard } from '@/components/logging/LoggedExerciseItemCard';
-import type { WorkoutPlan, Exercise, ActiveWorkoutLog, LoggedExerciseEntry, WorkoutSession } from '@/types';
-import { PRELOADED_EXERCISES } from '@/constants/exercises'; // For picker and adding exercises
+import type { WorkoutPlan, Exercise, ActiveWorkoutLog, LoggedExerciseEntry, WorkoutSession, LoggedSetData } from '@/types';
+import { PRELOADED_EXERCISES } from '@/constants/exercises';
 import { useToast } from '@/hooks/use-toast';
 
 // Simulate fetching plans for now, as global state/persistence isn't implemented yet
@@ -54,9 +54,6 @@ export default function LogWorkoutPage() {
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
   const { toast } = useToast();
 
-  // In a real app, availablePlans would be fetched or come from global state
-  // useEffect(() => { /* Fetch plans logic */ }, []);
-
   const getExerciseDetails = (exerciseId: string): Exercise | undefined => {
     return PRELOADED_EXERCISES.find(ex => ex.id === exerciseId);
   }
@@ -89,13 +86,13 @@ export default function LogWorkoutPage() {
       session.exercises.map(pe => {
         const masterExercise = getExerciseDetails(pe.exerciseId);
         return {
-          id: `le-${Date.now()}-${pe.exerciseId}`,
+          id: `le-${Date.now()}-${pe.exerciseId}-${Math.random().toString(36).substring(2,7)}`,
           exerciseId: pe.exerciseId,
           name: masterExercise?.name || pe.name || 'Unknown Exercise',
           emoji: masterExercise?.emoji || '❓',
           plannedSets: pe.sets,
           plannedReps: pe.reps,
-          sets: [], // To be filled during logging
+          sets: [], 
         };
       })
     );
@@ -117,11 +114,11 @@ export default function LogWorkoutPage() {
     if (!activeWorkoutLog) return;
 
     const newLoggedExercise: LoggedExerciseEntry = {
-      id: `le-${Date.now()}-${exercise.id}`,
+      id: `le-${Date.now()}-${exercise.id}-${Math.random().toString(36).substring(2,7)}`,
       exerciseId: exercise.id,
       name: exercise.name,
       emoji: exercise.emoji,
-      sets: [], // Will be populated when actually logging sets/reps
+      sets: [],
     };
 
     setActiveWorkoutLog(prev => prev ? ({ ...prev, exercises: [...prev.exercises, newLoggedExercise] }) : null);
@@ -137,13 +134,74 @@ export default function LogWorkoutPage() {
     }) : null);
     toast({ title: "Exercise removed from log." });
   };
+
+  const handleAddSetToLoggedExercise = (loggedExerciseId: string) => {
+    if (!activeWorkoutLog) return;
+    setActiveWorkoutLog(prevLog => {
+      if (!prevLog) return null;
+      const updatedExercises = prevLog.exercises.map(ex => {
+        if (ex.id === loggedExerciseId) {
+          const newSet: LoggedSetData = {
+            id: `set-${Date.now()}-${Math.random().toString(36).substring(2,7)}`,
+            setNumber: ex.sets.length + 1,
+            weight: '',
+            reps: '',
+            isCompleted: false,
+          };
+          return { ...ex, sets: [...ex.sets, newSet] };
+        }
+        return ex;
+      });
+      return { ...prevLog, exercises: updatedExercises };
+    });
+  };
+
+  const handleUpdateLoggedSetData = (
+    loggedExerciseId: string, 
+    setId: string, 
+    field: keyof LoggedSetData, 
+    value: string | boolean
+  ) => {
+    if (!activeWorkoutLog) return;
+    setActiveWorkoutLog(prevLog => {
+      if (!prevLog) return null;
+      const updatedExercises = prevLog.exercises.map(ex => {
+        if (ex.id === loggedExerciseId) {
+          const updatedSets = ex.sets.map(set => {
+            if (set.id === setId) {
+              return { ...set, [field]: value };
+            }
+            return set;
+          });
+          return { ...ex, sets: updatedSets };
+        }
+        return ex;
+      });
+      return { ...prevLog, exercises: updatedExercises };
+    });
+  };
+
+  const handleRemoveSetFromLoggedExercise = (loggedExerciseId: string, setId: string) => {
+    if (!activeWorkoutLog) return;
+    setActiveWorkoutLog(prevLog => {
+      if (!prevLog) return null;
+      const updatedExercises = prevLog.exercises.map(ex => {
+        if (ex.id === loggedExerciseId) {
+          const updatedSets = ex.sets.filter(set => set.id !== setId);
+          // Optional: re-number sets if desired, for now keep original numbers
+          return { ...ex, sets: updatedSets };
+        }
+        return ex;
+      });
+      return { ...prevLog, exercises: updatedExercises };
+    });
+    toast({ title: "Set removed."});
+  };
   
   const handleSaveWorkout = () => {
     if (!activeWorkoutLog) return;
     const logToSave = { ...activeWorkoutLog, endTime: Date.now() };
     console.log("Workout Log to Save:", JSON.stringify(logToSave, null, 2)); 
-    // In a real app, this would be saved to localStorage, Firebase, or an API
-    // For now, we just log it and reset.
     toast({ title: "Workout Saved!", description: `${logToSave.workoutName} has been logged. (Check console for data)` });
     setActiveWorkoutLog(null);
     setSelectedPlanId(undefined);
@@ -229,7 +287,9 @@ export default function LogWorkoutPage() {
                         key={loggedEx.id} 
                         loggedExercise={loggedEx} 
                         onRemove={() => handleRemoveExerciseFromLog(loggedEx.id)}
-                        // onAddSet and onUpdateSet will be added in the next phase
+                        onAddSet={() => handleAddSetToLoggedExercise(loggedEx.id)}
+                        onUpdateSetData={(setId, field, value) => handleUpdateLoggedSetData(loggedEx.id, setId, field, value)}
+                        onRemoveSet={(setId) => handleRemoveSetFromLoggedExercise(loggedEx.id, setId)}
                       />
                     ))}
                   </div>
@@ -252,7 +312,7 @@ export default function LogWorkoutPage() {
       <ExercisePickerDialog
         isOpen={isExercisePickerOpen}
         onOpenChange={setIsExercisePickerOpen}
-        allExercises={PRELOADED_EXERCISES} // Use all available exercises
+        allExercises={PRELOADED_EXERCISES}
         onSelectExercise={handleAddExerciseToLog}
       />
     </div>

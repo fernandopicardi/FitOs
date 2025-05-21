@@ -85,11 +85,10 @@ export interface PlannedExerciseFormValues {
 export interface LoggedSetData {
   id: string;
   setNumber: number;
-  reps?: number | string; // Actual reps performed
-  weight?: number | string; // Weight used
-  duration?: string; // For time-based sets like planks
-  notes?: string;
+  weight: string; // Weight used, e.g., "50", "BW" (Bodyweight)
+  reps: string;   // Actual reps performed, e.g., "10", "AMRAP"
   isCompleted: boolean;
+  notes?: string; // Optional notes for this specific set
 }
 
 export interface LoggedExerciseEntry {
