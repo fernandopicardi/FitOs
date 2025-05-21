@@ -9,10 +9,11 @@ export type MuscleGroup =
   | 'Abs' 
   | 'Full Body'
   | 'Cardio'
-  | 'Other'
-  | 'Glutes' // Added for more specificity
-  | 'Hamstrings' // Added for more specificity
-  | 'Hips'; // Added for mobility exercises
+  | 'Glutes'
+  | 'Hamstrings'
+  | 'Hips'
+  | 'Other' // Standard "Other" option
+  | string; // Allows for custom string values
 
 export type WorkoutType = 
   | 'Strength' 
@@ -23,31 +24,32 @@ export type WorkoutType =
   | 'Bodybuilding'
   | 'CrossFit'
   | 'Yoga'
-  | 'Warm-up' // Explicitly add if not already implied
+  | 'Warm-up'
   | 'Cooldown'
   | 'Mobilidade'
   | 'Plyometrics'
   | 'Corrective'
-  | 'Calisthenics' // Ensure it's present
-  | 'HIIT' // Ensure it's present
-  | 'Endurance' // Ensure it's present
-  | 'Core' // Ensure it's present
-  | 'Advanced' // For exercises like rollout em pé
+  | 'Calisthenics'
+  | 'HIIT'
+  | 'Endurance'
+  | 'Core'
+  | 'Advanced'
+  | 'Isometric' // Added for Plank nas Argolas
   | 'Other';
 
 export interface Exercise {
   id: string;
   name: string;
   emoji: string;
-  muscleGroup: MuscleGroup;
+  muscleGroup: MuscleGroup; // Can now be any string if custom
   secondaryMuscleGroups?: MuscleGroup[];
   workoutType: WorkoutType[];
   description: string;
   instructions?: string[];
   tips?: string[];
   isCustom?: boolean;
-  imageUrl?: string; // Optional image for the exercise
-  dataAiHint?: string; // For placeholder image generation
+  imageUrl?: string; 
+  dataAiHint?: string;
 }
 
 export interface NavigationItem {
@@ -58,13 +60,13 @@ export interface NavigationItem {
 
 // --- Workout Plans ---
 export interface PlannedExercise {
-  id: string; // Unique ID for this specific instance of the exercise in the plan
-  exerciseId: string; // Reference to Exercise.id
-  name?: string; // Store name for easier display, populated when added
-  emoji?: string; // Store emoji for easier display
-  sets?: string; // e.g., 3 or "3-4" or "AMRAP"
-  reps?: string; // e.g., 10 or "8-12" or "To Failure"
-  rest?: string; // e.g., "60s" or "1-2min"
+  id: string; 
+  exerciseId: string; 
+  name?: string; 
+  emoji?: string; 
+  sets?: string; 
+  reps?: string; 
+  rest?: string; 
   notes?: string;
 }
 
@@ -73,7 +75,7 @@ export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Frida
 
 export interface WorkoutSession {
   id: string;
-  name: string; // e.g., "Day 1: Push", "Leg Day"
+  name: string; 
   dayOfWeek?: DayOfWeek;
   exercises: PlannedExercise[];
   notes?: string;
@@ -84,7 +86,7 @@ export interface WorkoutPlan {
   name: string;
   description?: string;
   sessions: WorkoutSession[];
-  isArchived?: boolean; // To hide from active plans without deleting
+  isArchived?: boolean; 
 }
 
 export interface PlannedExerciseFormValues {
@@ -98,31 +100,31 @@ export interface PlannedExerciseFormValues {
 export interface LoggedSetData {
   id: string;
   setNumber: number;
-  weight: string; // Weight used, e.g., "50", "BW" (Bodyweight)
-  reps: string;   // Actual reps performed, e.g., "10", "AMRAP"
+  weight: string; 
+  reps: string;   
   isCompleted: boolean;
-  notes?: string; // Optional notes for this specific set
+  notes?: string; 
 }
 
 export interface LoggedExerciseEntry {
-  id: string; // Unique ID for this logged instance of an exercise
-  exerciseId: string; // Reference to Exercise.id
-  name: string; // From Exercise
-  emoji: string; // From Exercise
-  plannedSets?: string; // From WorkoutPlan if applicable
-  plannedReps?: string; // From WorkoutPlan if applicable
-  sets: LoggedSetData[]; // Actual performance data
-  notes?: string; // Overall notes for this exercise during this log
+  id: string; 
+  exerciseId: string; 
+  name: string; 
+  emoji: string; 
+  plannedSets?: string; 
+  plannedReps?: string; 
+  sets: LoggedSetData[]; 
+  notes?: string; 
 }
 
 export interface ActiveWorkoutLog {
-  id: string; // Unique ID for this workout log
-  planId?: string; // If started from a plan
-  planName?: string; // If started from a plan
-  workoutName: string; // e.g., "Leg Day Log" or "Ad-hoc Workout - Oct 26"
-  date: string; // ISO string
-  startTime: number; // Timestamp
-  endTime?: number; // Timestamp
+  id: string; 
+  planId?: string; 
+  planName?: string; 
+  workoutName: string; 
+  date: string; 
+  startTime: number; 
+  endTime?: number; 
   exercises: LoggedExerciseEntry[];
-  notes?: string; // Overall workout notes
+  notes?: string; 
 }

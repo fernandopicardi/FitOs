@@ -12,7 +12,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { ExerciseForm } from './ExerciseForm';
 import type { ExerciseFormValues } from './ExerciseForm';
@@ -69,7 +68,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
   // Save custom exercises to localStorage whenever they change
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Avoid saving the initial empty array before custom exercises are loaded
       if (customExercises.length > 0 || localStorage.getItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY)) {
         try {
           localStorage.setItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY, JSON.stringify(customExercises));
@@ -96,15 +94,26 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
   };
 
   const handleFormSubmit = (data: ExerciseFormValues) => {
+    const actualMuscleGroup = data.muscleGroup === 'Other' && data.customMuscleGroup && data.customMuscleGroup.trim() !== ''
+      ? data.customMuscleGroup.trim() as MuscleGroup // Cast as MuscleGroup, assuming it's valid for user's intent
+      : data.muscleGroup;
+
+    const exerciseData = {
+      ...data,
+      muscleGroup: actualMuscleGroup,
+      instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
+      tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
+      imageUrl: data.imageUrl || undefined,
+    };
+    // Remove customMuscleGroup from the final exercise object if it was just a temporary holder
+    const { customMuscleGroup, ...finalExerciseData } = exerciseData;
+
+
     if (exerciseToEdit) {
-      // Editing existing exercise
       const updatedExercise: Exercise = {
-        ...exerciseToEdit, // Retain original ID and other non-form fields
-        ...data,
-        instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
-        tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
-        imageUrl: data.imageUrl || undefined,
-        isCustom: true, // Any edit makes it effectively custom or updates a custom one
+        ...exerciseToEdit,
+        ...finalExerciseData,
+        isCustom: true, 
       };
 
       setCustomExercises(prev => {
@@ -114,7 +123,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           newCustom[existingIndex] = updatedExercise;
           return newCustom;
         }
-        // If editing a preloaded exercise, it's added to customExercises
         return [updatedExercise, ...prev.filter(ex => ex.id !== updatedExercise.id)];
       });
       
@@ -124,13 +132,9 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
       });
 
     } else {
-      // Creating new custom exercise
       const newExercise: Exercise = {
         id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-        ...data,
-        instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
-        tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
-        imageUrl: data.imageUrl || undefined,
+        ...finalExerciseData,
         isCustom: true,
       };
       setCustomExercises(prev => [newExercise, ...prev]);
@@ -165,7 +169,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
   };
 
   const availableMuscleGroups = useMemo(() => {
-    const groups = new Set<MuscleGroup>(allExercises.map(ex => ex.muscleGroup));
+    const groups = new Set<MuscleGroup>(allExercises.map(ex => ex.muscleGroup as MuscleGroup));
     return ['All', ...Array.from(groups).sort()];
   }, [allExercises]);
 
@@ -174,7 +178,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     const matchesSearchTerm = 
       exercise.name.toLowerCase().includes(searchTermLower) ||
       exercise.description.toLowerCase().includes(searchTermLower) ||
-      exercise.muscleGroup.toLowerCase().includes(searchTermLower) ||
+      (exercise.muscleGroup as string).toLowerCase().includes(searchTermLower) || // Cast to string for safety
       exercise.workoutType.some(wt => wt.toLowerCase().includes(searchTermLower));
       
     const matchesMuscleGroup = selectedMuscleGroup === 'All' || exercise.muscleGroup === selectedMuscleGroup;
@@ -225,9 +229,9 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
                 {exerciseToEdit ? "Modify the details of this exercise." : "Add your own exercise to the library. Fill in the details below."}
             </DialogDescription>
             </DialogHeader>
-            <div className="p-6 pt-4 max-h-[calc(90vh-100px)] overflow-y-auto">
+            <div className="p-6 pt-4 max-h-[calc(90vh-100px)] overflow-y-auto"> {/* Scrollable content area */}
             <ExerciseForm 
-                exercise={exerciseToEdit || undefined} // Pass exercise for editing
+                exercise={exerciseToEdit || undefined} 
                 onSubmit={handleFormSubmit} 
                 onCancel={() => {
                     setIsFormOpen(false);

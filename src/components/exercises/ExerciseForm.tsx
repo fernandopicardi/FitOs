@@ -1,9 +1,12 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import type { Exercise, MuscleGroup, WorkoutType } from "@/types";
+import { useEffect }
+from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,21 +30,33 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const MUSCLE_GROUPS: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders', 'Biceps', 'Triceps', 'Abs', 'Full Body', 'Cardio', 'Other'];
-const WORKOUT_TYPES: WorkoutType[] = ['Strength', 'Cardio', 'Flexibility', 'Hypertrophy', 'Powerlifting', 'Bodybuilding', 'CrossFit', 'Yoga', 'Other'];
+const MUSCLE_GROUPS: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders', 'Biceps', 'Triceps', 'Abs', 'Full Body', 'Cardio', 'Glutes', 'Hamstrings', 'Hips', 'Other'];
+const WORKOUT_TYPES: WorkoutType[] = ['Strength', 'Cardio', 'Flexibility', 'Hypertrophy', 'Powerlifting', 'Bodybuilding', 'CrossFit', 'Yoga', 'Warm-up', 'Cooldown', 'Mobilidade', 'Plyometrics', 'Corrective', 'Calisthenics', 'HIIT', 'Endurance', 'Core', 'Advanced', 'Other'];
 
 const exerciseFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters.").max(100),
   emoji: z.string().min(1).max(5, "Emoji should be a single character or short sequence."),
-  muscleGroup: z.enum(MUSCLE_GROUPS as [MuscleGroup, ...MuscleGroup[]]), // Cast to satisfy zod's non-empty array requirement
+  muscleGroup: z.enum(MUSCLE_GROUPS as [MuscleGroup, ...MuscleGroup[]]),
+  customMuscleGroup: z.string().max(50, "Custom muscle group must be 50 characters or less.").optional(),
   workoutType: z.array(z.enum(WORKOUT_TYPES as [WorkoutType, ...WorkoutType[]])).min(1, "Select at least one workout type."),
   description: z.string().min(10, "Description must be at least 10 characters.").max(500),
   instructions: z.string().optional(),
   tips: z.string().optional(),
   imageUrl: z.string().url("Must be a valid URL.").optional().or(z.literal('')),
-});
+}).refine(
+  (data) => {
+    if (data.muscleGroup === 'Other') {
+      return data.customMuscleGroup && data.customMuscleGroup.trim().length >= 2;
+    }
+    return true;
+  },
+  {
+    message: "Custom muscle group name must be at least 2 characters.",
+    path: ['customMuscleGroup'], // Path of the error
+  }
+);
 
-type ExerciseFormValues = z.infer<typeof exerciseFormSchema>;
+export type ExerciseFormValues = z.infer<typeof exerciseFormSchema>;
 
 interface ExerciseFormProps {
   exercise?: Exercise; // For editing existing exercises
@@ -50,16 +65,36 @@ interface ExerciseFormProps {
 }
 
 export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps) {
+  const getInitialMuscleGroup = (ex?: Exercise) => {
+    if (!ex) return "Other" as MuscleGroup;
+    if (MUSCLE_GROUPS.includes(ex.muscleGroup as MuscleGroup)) {
+      return ex.muscleGroup as MuscleGroup;
+    }
+    return "Other" as MuscleGroup;
+  };
+
+  const getInitialCustomMuscleGroup = (ex?: Exercise) => {
+    if (!ex) return "";
+    if (MUSCLE_GROUPS.includes(ex.muscleGroup as MuscleGroup)) {
+      return "";
+    }
+    return ex.muscleGroup;
+  };
+
+
   const form = useForm<ExerciseFormValues>({
     resolver: zodResolver(exerciseFormSchema),
     defaultValues: exercise ? {
       ...exercise,
-      instructions: exercise.instructions?.join('\n'),
-      tips: exercise.tips?.join('\n'),
+      muscleGroup: getInitialMuscleGroup(exercise),
+      customMuscleGroup: getInitialCustomMuscleGroup(exercise),
+      instructions: exercise.instructions?.join('\\n'),
+      tips: exercise.tips?.join('\\n'),
     } : {
       name: "",
       emoji: "💪",
-      muscleGroup: "Other",
+      muscleGroup: "Other" as MuscleGroup,
+      customMuscleGroup: "",
       workoutType: [],
       description: "",
       instructions: "",
@@ -68,8 +103,29 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
     },
   });
 
+  const watchedMuscleGroup = form.watch("muscleGroup");
+
+  useEffect(() => {
+    if (watchedMuscleGroup !== 'Other') {
+      form.setValue('customMuscleGroup', ''); // Clear custom input if a predefined group is selected
+      // Manually clear errors for customMuscleGroup if it's no longer relevant
+      if (form.formState.errors.customMuscleGroup) {
+        form.clearErrors('customMuscleGroup');
+      }
+    }
+  }, [watchedMuscleGroup, form]);
+
+
   function handleSubmit(data: ExerciseFormValues) {
-    onSubmit(data);
+    // Prepare data for submission
+    const submissionData = { ...data };
+    if (data.muscleGroup === 'Other' && data.customMuscleGroup) {
+      // The actual muscle group becomes the custom one
+      // No need to change submissionData.muscleGroup here, parent will handle it
+    } else if (data.muscleGroup !== 'Other') {
+      submissionData.customMuscleGroup = ''; // Ensure custom is empty if 'Other' not selected
+    }
+    onSubmit(submissionData);
   }
 
   return (
@@ -128,6 +184,25 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
             </FormItem>
           )}
         />
+
+        {watchedMuscleGroup === 'Other' && (
+          <FormField
+            control={form.control}
+            name="customMuscleGroup"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Custom Muscle Group Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g., Forearms, Calves" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Enter the name for your new muscle group.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
@@ -205,7 +280,7 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
               <FormDescription>Enter each step on a new line.</FormDescription>
               <FormControl>
                 <Textarea
-                  placeholder="1. Step one...\n2. Step two..."
+                  placeholder="1. Step one...\\n2. Step two..."
                   className="resize-y min-h-[100px]"
                   {...field}
                 />
@@ -224,7 +299,7 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
               <FormDescription>Enter each tip on a new line.</FormDescription>
               <FormControl>
                 <Textarea
-                  placeholder="- Keep your core tight.\n- Breathe normally."
+                  placeholder="- Keep your core tight.\\n- Breathe normally."
                   className="resize-y min-h-[80px]"
                   {...field}
                 />
