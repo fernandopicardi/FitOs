@@ -168,7 +168,7 @@ export default function LogWorkoutPage() {
     loggedExerciseId: string, 
     setId: string, 
     field: keyof LoggedSetData, 
-    value: string | boolean
+    value: string | boolean | undefined // Allow undefined for optional fields like RPE/notes
   ) => {
     if (!activeWorkoutLog) return;
     setActiveWorkoutLog(prevLog => {
@@ -229,7 +229,7 @@ export default function LogWorkoutPage() {
         toast({ 
           title: "Workout Saved! 🎉", 
           description: `${logToSave.workoutName} has been logged successfully.`,
-          className: "border-accent animate-subtle-pulse-bg-accent", 
+          // className: "border-accent animate-subtle-pulse-bg-accent", // Removed animation class
           duration: 3000, 
         });
       }
