@@ -19,7 +19,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <div className="container flex h-16 max-w-screen-2xl items-center">
         <Link href="/" className="mr-6 flex items-center">
-          <img src={logoImage.src} alt="FitOS Logo" className="h-8 w-auto" />
+          <img src={logoImage.src} alt="FitOS Logo" className="h-10 w-auto" />
         </Link>
         
         <nav className="hidden md:flex flex-1 items-center space-x-6 text-sm font-medium">
@@ -51,7 +51,7 @@ export function Navbar() {
               </SheetHeader>
               
               <Link href="/" className="flex items-center space-x-2 mb-8" onClick={() => setIsMobileMenuOpen(false)}>
-                <img src={logoImage.src} alt="FitOS Logo" className="h-7 w-auto text-primary" />
+                <img src={logoImage.src} alt="FitOS Logo" className="h-8 w-auto text-primary" />
                 <span className="font-bold text-xl text-primary">
                   FitOS
                 </span>
