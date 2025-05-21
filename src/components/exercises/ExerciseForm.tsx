@@ -29,6 +29,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusCircle } from "lucide-react";
+import { Label } from "@/components/ui/label"; // Added import
 
 const MUSCLE_GROUPS: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders', 'Biceps', 'Triceps', 'Abs', 'Full Body', 'Cardio', 'Glutes', 'Hamstrings', 'Hips', 'Other'];
 const PREDEFINED_WORKOUT_TYPES: WorkoutType[] = ['Strength', 'Cardio', 'Flexibility', 'Hypertrophy', 'Powerlifting', 'Bodybuilding', 'CrossFit', 'Yoga', 'Warm-up', 'Cooldown', 'Mobilidade', 'Plyometrics', 'Corrective', 'Calisthenics', 'HIIT', 'Endurance', 'Core', 'Advanced', 'Isometric', 'Other'];
@@ -108,7 +109,6 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
   });
 
   const watchedMuscleGroup = form.watch("muscleGroup");
-  const watchedWorkoutTypes = form.watch("workoutType");
 
   useEffect(() => {
     if (watchedMuscleGroup !== 'Other') {
@@ -132,6 +132,7 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
     if (data.muscleGroup !== 'Other') {
       submissionData.customMuscleGroup = '';
     }
+    // The actual workout types are already in data.workoutType from the checkboxes
     onSubmit(submissionData);
   }
 
