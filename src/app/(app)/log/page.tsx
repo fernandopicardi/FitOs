@@ -325,11 +325,19 @@ export default function LogWorkoutPage() {
               </CardContent>
             </Card>
 
-            <div className="flex justify-end space-x-3 pt-4">
-              <Button variant="outline" onClick={handleCancelWorkout} className="text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive">
+            <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={handleCancelWorkout} 
+                className="text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive w-full sm:w-auto"
+              >
                 <XCircle className="mr-2 h-5 w-5" /> Cancel Workout
               </Button>
-              <Button onClick={handleSaveWorkout} className="bg-primary hover:bg-primary/90" disabled={activeWorkoutLog.exercises.length === 0}>
+              <Button 
+                onClick={handleSaveWorkout} 
+                className="bg-primary hover:bg-primary/90 w-full sm:w-auto" 
+                disabled={activeWorkoutLog.exercises.length === 0}
+              >
                 <Save className="mr-2 h-5 w-5" /> Save Workout
               </Button>
             </div>
