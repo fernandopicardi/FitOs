@@ -24,7 +24,7 @@ import {
 import { format, parseISO, getMonth, getYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend as RechartsLegend } from 'recharts';
-import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 
 const LOCAL_STORAGE_HISTORY_KEY = 'workoutWizardHistory';
 
