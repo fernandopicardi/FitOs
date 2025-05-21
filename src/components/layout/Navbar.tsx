@@ -19,7 +19,7 @@ export function Navbar() {
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Dumbbell className="h-7 w-7 text-primary" />
           <span className="font-bold text-xl text-primary sm:inline-block">
-            Workout Wizard
+            FitOS
           </span>
         </Link>
         
@@ -51,7 +51,7 @@ export function Navbar() {
                 <Link href="/" className="flex items-center space-x-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
                   <Dumbbell className="h-7 w-7 text-primary" />
                   <span className="font-bold text-xl text-primary">
-                    Workout Wizard
+                    FitOS
                   </span>
                 </Link>
                 <nav className="flex flex-col space-y-3">

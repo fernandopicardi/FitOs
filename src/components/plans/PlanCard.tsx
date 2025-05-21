@@ -27,7 +27,7 @@ export function PlanCard({ plan, onManagePlan, onDeletePlan }: PlanCardProps) {
   const sessionCount = plan.sessions?.length || 0;
 
   return (
-    <Card className="shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl mb-1 text-primary flex items-center gap-2">

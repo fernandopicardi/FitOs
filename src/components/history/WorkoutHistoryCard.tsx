@@ -47,7 +47,7 @@ export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
   };
 
   return (
-    <Card className="shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full bg-card">
+    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg md:text-xl text-primary flex items-center gap-2">
           <Activity className="h-5 w-5 md:h-6 md:w-6 shrink-0" />

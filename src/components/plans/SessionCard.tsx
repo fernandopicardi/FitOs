@@ -29,7 +29,7 @@ export function SessionCard({ session, onEditDetails, onDelete, onManageExercise
   const exerciseCount = session.exercises?.length || 0;
 
   return (
-    <Card className="shadow-md hover:shadow-xl transition-shadow duration-300 border border-border/70">
+    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border/70">
       <CardHeader className="flex flex-row items-start justify-between pb-2 pt-4 px-4 gap-2">
         <div className="flex-grow min-w-0"> {/* Ensure title can shrink and wrap */}
           <CardTitle className="text-lg text-foreground break-words">{session.name}</CardTitle>
