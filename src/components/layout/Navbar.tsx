@@ -6,7 +6,7 @@ import { Dumbbell, Menu } from 'lucide-react';
 import { NAV_ITEMS } from '@/constants/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
 
 export function Navbar() {
@@ -46,33 +46,35 @@ export function Navbar() {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[240px] p-0">
-              <div className="p-4">
-                <Link href="/" className="flex items-center space-x-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Dumbbell className="h-7 w-7 text-primary" />
-                  <span className="font-bold text-xl text-primary">
-                    FitOS
-                  </span>
-                </Link>
-                <nav className="flex flex-col space-y-3">
-                  {NAV_ITEMS.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={cn(
-                        'text-lg transition-colors hover:text-foreground/80 py-2 px-3 rounded-md',
-                        pathname === item.href ? 'bg-muted text-foreground font-semibold' : 'text-foreground/70 hover:bg-muted/50'
-                      )}
-                    >
-                     <div className="flex items-center gap-2">
-                        {item.icon && <item.icon className="h-5 w-5" />}
-                        {item.label}
-                      </div>
-                    </Link>
-                  ))}
-                </nav>
-              </div>
+            <SheetContent side="right" className="w-[240px]">
+              <SheetHeader className="mb-6 text-left">
+                <SheetTitle className="text-xl">Menu</SheetTitle>
+              </SheetHeader>
+              
+              <Link href="/" className="flex items-center space-x-2 mb-8" onClick={() => setIsMobileMenuOpen(false)}>
+                <Dumbbell className="h-7 w-7 text-primary" />
+                <span className="font-bold text-xl text-primary">
+                  FitOS
+                </span>
+              </Link>
+              <nav className="flex flex-col space-y-3">
+                {NAV_ITEMS.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      'text-lg transition-colors hover:text-foreground/80 py-2 px-3 rounded-md',
+                      pathname === item.href ? 'bg-muted text-foreground font-semibold' : 'text-foreground/70 hover:bg-muted/50'
+                    )}
+                  >
+                   <div className="flex items-center gap-2">
+                      {item.icon && <item.icon className="h-5 w-5" />}
+                      {item.label}
+                    </div>
+                  </Link>
+                ))}
+              </nav>
             </SheetContent>
           </Sheet>
         </div>
