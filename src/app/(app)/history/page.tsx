@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { PageTitle } from '@/components/shared/PageTitle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarClock, Activity, ListChecks, Trash2, AlertTriangle, BarChart3 } from 'lucide-react';
-import type { ActiveWorkoutLog } from '@/types';
+import { CalendarClock, Activity, ListChecks, Trash2, AlertTriangle, BarChart3, Trophy } from 'lucide-react';
+import type { ActiveWorkoutLog, LoggedExerciseEntry, LoggedSetData } from '@/types';
 import { WorkoutHistoryCard } from '@/components/history/WorkoutHistoryCard';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { format, parseISO, getMonth, getYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'; // Using shadcn's chart wrapper
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend as RechartsLegend } from 'recharts';
+import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 
 const LOCAL_STORAGE_HISTORY_KEY = 'workoutWizardHistory';
 
@@ -33,19 +33,27 @@ interface MonthlyWorkoutData {
   workouts: number;
 }
 
+interface PersonalRecord {
+  exerciseId: string;
+  exerciseName: string;
+  emoji: string;
+  maxWeight: number;
+  reps: string;
+  date: string; // ISO string
+  formattedDate: string;
+}
+
 export default function WorkoutHistoryPage() {
   const [workoutHistory, setWorkoutHistory] = useState<ActiveWorkoutLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // This effect runs only on the client side
     if (typeof window !== 'undefined') {
       try {
         const savedHistoryString = localStorage.getItem(LOCAL_STORAGE_HISTORY_KEY);
         if (savedHistoryString) {
           const history = JSON.parse(savedHistoryString) as ActiveWorkoutLog[];
-          // Sort history by date, most recent first
           history.sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
           setWorkoutHistory(history);
         }
@@ -63,9 +71,7 @@ export default function WorkoutHistoryPage() {
 
   const monthlyWorkoutData = useMemo(() => {
     if (!workoutHistory.length) return [];
-
     const dataByMonth: { [key: string]: number } = {};
-
     workoutHistory.forEach(log => {
       const date = parseISO(log.date);
       const monthYear = format(date, 'MMM yyyy', { locale: ptBR });
@@ -75,17 +81,15 @@ export default function WorkoutHistoryPage() {
         dataByMonth[monthYear] = 1;
       }
     });
-
     const sortedMonths = Object.keys(dataByMonth).sort((a, b) => {
       const [monthA, yearA] = a.split(' ');
       const [monthB, yearB] = b.split(' ');
-      const dateA = new Date(`${monthA} 1, ${yearA}`); // Use a consistent day for sorting
+      const dateA = new Date(`${monthA} 1, ${yearA}`);
       const dateB = new Date(`${monthB} 1, ${yearB}`);
       return dateA.getTime() - dateB.getTime();
     });
-    
     return sortedMonths.map(monthYear => ({
-      month: monthYear.charAt(0).toUpperCase() + monthYear.slice(1), // Capitalize month
+      month: monthYear.charAt(0).toUpperCase() + monthYear.slice(1),
       workouts: dataByMonth[monthYear],
     }));
   }, [workoutHistory]);
@@ -97,6 +101,35 @@ export default function WorkoutHistoryPage() {
     },
   };
 
+  const personalRecordsData = useMemo(() => {
+    if (!workoutHistory.length) return [];
+
+    const prs: { [exerciseId: string]: PersonalRecord } = {};
+
+    workoutHistory.forEach(log => {
+      log.exercises.forEach(exercise => {
+        exercise.sets.forEach(set => {
+          const weight = parseFloat(set.weight);
+          if (!isNaN(weight) && set.reps && set.isCompleted) {
+            const existingPr = prs[exercise.exerciseId];
+            if (!existingPr || weight > existingPr.maxWeight || (weight === existingPr.maxWeight && parseInt(set.reps) > parseInt(existingPr.reps))) {
+              prs[exercise.exerciseId] = {
+                exerciseId: exercise.exerciseId,
+                exerciseName: exercise.name,
+                emoji: exercise.emoji,
+                maxWeight: weight,
+                reps: set.reps,
+                date: log.date,
+                formattedDate: format(parseISO(log.date), "dd/MM/yy"),
+              };
+            }
+          }
+        });
+      });
+    });
+    return Object.values(prs).sort((a,b) => a.exerciseName.localeCompare(b.exerciseName));
+  }, [workoutHistory]);
+
 
   const handleClearAllHistory = () => {
     try {
@@ -106,7 +139,7 @@ export default function WorkoutHistoryPage() {
         toast({
           title: "Histórico Apagado!",
           description: "Todo o seu histórico de treinos foi removido.",
-          variant: "destructive" 
+          variant: "destructive"
         });
       }
     } catch (error) {
@@ -140,10 +173,10 @@ export default function WorkoutHistoryPage() {
     }
   };
 
-  if (isLoading) { // Changed condition here
+  if (isLoading) {
     return (
       <div className="space-y-8">
-        <PageTitle 
+        <PageTitle
           title="Workout History"
           subtitle="Review your past workouts and track your fitness journey over time."
         />
@@ -157,7 +190,7 @@ export default function WorkoutHistoryPage() {
 
   return (
     <div className="space-y-8">
-      <PageTitle 
+      <PageTitle
         title="Workout History"
         subtitle="Review your past workouts and track your fitness journey over time."
       >
@@ -231,30 +264,59 @@ export default function WorkoutHistoryPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={monthlyWorkoutData} margin={{ top: 5, right: 0, left: -20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border)/0.5)" />
-                      <XAxis 
-                        dataKey="month" 
-                        tickLine={false} 
-                        axisLine={false} 
+                      <XAxis
+                        dataKey="month"
+                        tickLine={false}
+                        axisLine={false}
                         tickMargin={8}
                         fontSize={12}
                         className="fill-muted-foreground"
                       />
-                      <YAxis 
-                        tickLine={false} 
-                        axisLine={false} 
-                        tickMargin={8} 
+                      <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
                         fontSize={12}
                         allowDecimals={false}
                         className="fill-muted-foreground"
                       />
-                      <Tooltip
+                      <ChartTooltip
                         cursorStyle={{ fill: 'hsl(var(--muted)/0.3)' }}
                         content={<ChartTooltipContent indicator="dot" />}
                       />
+                      <RechartsLegend content={<ChartLegendContent />} />
                       <Bar dataKey="workouts" fill="var(--color-workouts)" radius={[4, 4, 0, 0]} barSize={30} />
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
+              </CardContent>
+            </Card>
+          )}
+
+          {personalRecordsData.length > 0 && (
+            <Card className="shadow-lg mt-8">
+              <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Trophy className="h-6 w-6 text-yellow-500" />
+                  Seus Recordes Pessoais (PRs)
+                </CardTitle>
+                <CardDescription>Seu melhor desempenho em cada exercício com peso registrado.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  {personalRecordsData.map(pr => (
+                    <li key={pr.exerciseId} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-card-foreground/5 rounded-md">
+                      <div className="flex items-center gap-2 mb-1 sm:mb-0">
+                        <span className="text-xl">{pr.emoji}</span>
+                        <span className="font-medium text-foreground">{pr.exerciseName}</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground text-right">
+                        <span className="font-semibold text-primary">✨ {pr.maxWeight}kg x {pr.reps} reps</span>
+                        <span className="ml-2 text-xs">({pr.formattedDate})</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
           )}
