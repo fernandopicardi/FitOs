@@ -35,7 +35,8 @@ export type WorkoutType =
   | 'Core'
   | 'Advanced'
   | 'Isometric' // Added for Plank nas Argolas
-  | 'Other';
+  | 'Other'
+  | string; // Allows for custom string values
 
 export interface Exercise {
   id: string;
@@ -102,6 +103,7 @@ export interface LoggedSetData {
   setNumber: number;
   weight: string; 
   reps: string;   
+  rpe?: string; // Rate of Perceived Exertion
   isCompleted: boolean;
   notes?: string; 
 }
@@ -128,3 +130,4 @@ export interface ActiveWorkoutLog {
   exercises: LoggedExerciseEntry[];
   notes?: string; 
 }
+

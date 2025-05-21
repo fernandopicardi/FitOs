@@ -153,6 +153,8 @@ export default function LogWorkoutPage() {
             setNumber: ex.sets.length + 1,
             weight: '',
             reps: '',
+            rpe: '',
+            notes: '',
             isCompleted: false,
           };
           return { ...ex, sets: [...ex.sets, newSet] };
@@ -354,3 +356,4 @@ export default function LogWorkoutPage() {
     </div>
   );
 }
+

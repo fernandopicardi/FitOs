@@ -4,7 +4,7 @@
 import type { LoggedExerciseEntry, LoggedSetData, Exercise } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, PlusSquare, BookOpen, Lightbulb } from 'lucide-react';
+import { Trash2, PlusSquare, BookOpen, Lightbulb, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -17,6 +17,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+
 
 interface LoggedExerciseItemCardProps {
   loggedExercise: LoggedExerciseEntry;
@@ -119,41 +121,60 @@ export function LoggedExerciseItemCard({
         <div className="space-y-3">
           <h4 className="text-sm font-medium text-foreground">Log Your Sets:</h4>
           {loggedExercise.sets.map((set, index) => (
-            <div key={set.id} className="flex items-center gap-3 p-2.5 border rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
-              <span className="font-medium text-sm text-muted-foreground w-10">Set {index + 1}</span>
-              <div className="flex-1 grid grid-cols-2 gap-3 sm:flex sm:gap-3">
-                <Input
-                  type="text" // Changed to text to allow "BW" etc. Can add validation later.
-                  placeholder="Weight"
-                  value={set.weight}
-                  onChange={(e) => onUpdateSetData(set.id, 'weight', e.target.value)}
-                  className="h-9 text-sm bg-background/70"
-                  aria-label={`Weight for set ${index + 1}`}
-                />
-                <Input
-                  type="text" // Changed to text to allow "AMRAP" etc.
-                  placeholder="Reps"
-                  value={set.reps}
-                  onChange={(e) => onUpdateSetData(set.id, 'reps', e.target.value)}
-                  className="h-9 text-sm bg-background/70"
-                  aria-label={`Reps for set ${index + 1}`}
-                />
-              </div>
-              <div className="flex items-center space-x-2 shrink-0">
-                 <Checkbox
-                    id={`completed-${loggedExercise.id}-${set.id}`} // More unique ID
-                    checked={set.isCompleted}
-                    onCheckedChange={(checked) => onUpdateSetData(set.id, 'isCompleted', !!checked)}
-                    aria-label={`Mark set ${index + 1} as completed`}
+            <div key={set.id} className="space-y-2 p-2.5 border rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
+              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+                <span className="font-medium text-sm text-muted-foreground w-full sm:w-14 text-left sm:text-center mb-1 sm:mb-0">Set {index + 1}</span>
+                <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 w-full">
+                  <Input
+                    type="text"
+                    placeholder="Weight"
+                    value={set.weight}
+                    onChange={(e) => onUpdateSetData(set.id, 'weight', e.target.value)}
+                    className="h-9 text-sm bg-background/70"
+                    aria-label={`Weight for set ${index + 1}`}
                   />
-                  <Label htmlFor={`completed-${loggedExercise.id}-${set.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 sr-only sm:not-sr-only">
-                    Done
-                  </Label>
+                  <Input
+                    type="text"
+                    placeholder="Reps"
+                    value={set.reps}
+                    onChange={(e) => onUpdateSetData(set.id, 'reps', e.target.value)}
+                    className="h-9 text-sm bg-background/70"
+                    aria-label={`Reps for set ${index + 1}`}
+                  />
+                  <Input
+                    type="text"
+                    placeholder="RPE"
+                    value={set.rpe || ''}
+                    onChange={(e) => onUpdateSetData(set.id, 'rpe', e.target.value)}
+                    className="h-9 text-sm bg-background/70 col-span-2 md:col-span-1"
+                    aria-label={`RPE for set ${index + 1}`}
+                  />
+                </div>
+                <div className="flex items-center space-x-2 shrink-0 self-center sm:self-auto mt-2 sm:mt-0">
+                  <Checkbox
+                      id={`completed-${loggedExercise.id}-${set.id}`}
+                      checked={set.isCompleted}
+                      onCheckedChange={(checked) => onUpdateSetData(set.id, 'isCompleted', !!checked)}
+                      aria-label={`Mark set ${index + 1} as completed`}
+                    />
+                    <Label htmlFor={`completed-${loggedExercise.id}-${set.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Done
+                    </Label>
+                </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0 self-center sm:self-auto" onClick={() => onRemoveSet(set.id)}>
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">Remove Set {index + 1}</span>
+                </Button>
               </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0" onClick={() => onRemoveSet(set.id)}>
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Remove Set {index + 1}</span>
-              </Button>
+              <div className="w-full">
+                <Textarea
+                  placeholder="Set notes (e.g., form cue, felt heavy)"
+                  value={set.notes || ''}
+                  onChange={(e) => onUpdateSetData(set.id, 'notes', e.target.value)}
+                  className="h-16 text-xs bg-background/70 w-full resize-none"
+                  aria-label={`Notes for set ${index + 1}`}
+                />
+              </div>
             </div>
           ))}
           {loggedExercise.sets.length === 0 && (
