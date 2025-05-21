@@ -43,7 +43,7 @@ export interface NavigationItem {
   icon?: React.ElementType;
 }
 
-// New types for Workout Plans
+// --- Workout Plans ---
 export interface PlannedExercise {
   id: string; // Unique ID for this specific instance of the exercise in the plan
   exerciseId: string; // Reference to Exercise.id
@@ -74,10 +74,43 @@ export interface WorkoutPlan {
   isArchived?: boolean; // To hide from active plans without deleting
 }
 
-// For PlannedExerciseForm
 export interface PlannedExerciseFormValues {
   sets: string;
   reps: string;
   rest?: string;
   notes?: string;
+}
+
+// --- Workout Logging ---
+export interface LoggedSetData {
+  id: string;
+  setNumber: number;
+  reps?: number | string; // Actual reps performed
+  weight?: number | string; // Weight used
+  duration?: string; // For time-based sets like planks
+  notes?: string;
+  isCompleted: boolean;
+}
+
+export interface LoggedExerciseEntry {
+  id: string; // Unique ID for this logged instance of an exercise
+  exerciseId: string; // Reference to Exercise.id
+  name: string; // From Exercise
+  emoji: string; // From Exercise
+  plannedSets?: string; // From WorkoutPlan if applicable
+  plannedReps?: string; // From WorkoutPlan if applicable
+  sets: LoggedSetData[]; // Actual performance data
+  notes?: string; // Overall notes for this exercise during this log
+}
+
+export interface ActiveWorkoutLog {
+  id: string; // Unique ID for this workout log
+  planId?: string; // If started from a plan
+  planName?: string; // If started from a plan
+  workoutName: string; // e.g., "Leg Day Log" or "Ad-hoc Workout - Oct 26"
+  date: string; // ISO string
+  startTime: number; // Timestamp
+  endTime?: number; // Timestamp
+  exercises: LoggedExerciseEntry[];
+  notes?: string; // Overall workout notes
 }
