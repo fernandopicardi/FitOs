@@ -4,15 +4,27 @@
 import type { ActiveWorkoutLog } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Activity, CalendarDays, Clock, ListChecks, Eye, CheckCircle2, XCircle } from 'lucide-react';
+import { Activity, CalendarDays, Clock, ListChecks, Eye, CheckCircle2, XCircle, Trash2, AlertTriangle } from 'lucide-react';
 import { format, formatDistanceStrict, parseISO } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface WorkoutHistoryCardProps {
   log: ActiveWorkoutLog;
+  onDeleteLog: (logId: string) => void;
 }
 
-export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
+export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps) {
   const { toast } = useToast();
   const workoutDate = parseISO(log.date);
   const formattedDate = format(workoutDate, "MMMM d, yyyy 'at' h:mm a");
@@ -59,8 +71,9 @@ export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
                       <span className="flex-1">
                         Set {setIndex + 1}: {set.weight || 'N/A'} x {set.reps || 'N/A'} reps
                         {set.rpe && <span className="text-muted-foreground text-xs italic"> (RPE: {set.rpe})</span>}
+                        {set.notes && <span className="block text-muted-foreground text-xs italic mt-0.5">Notes: {set.notes}</span>}
                       </span>
-                      {set.isCompleted ? 
+                       {set.isCompleted ? 
                         <CheckCircle2 className="h-4 w-4 text-green-500 ml-2 shrink-0" /> : 
                         <XCircle className="h-4 w-4 text-red-500 ml-2 shrink-0" />}
                     </li>
@@ -93,13 +106,49 @@ export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
   return (
     <Card className="shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.03] flex flex-col h-full bg-card">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg md:text-xl text-primary flex items-center gap-2">
-          <Activity className="h-5 w-5 md:h-6 md:w-6 shrink-0" />
-          <span className="truncate" title={log.planName || log.workoutName}>{log.planName || log.workoutName}</span>
-        </CardTitle>
-        <CardDescription className="text-xs md:text-sm text-muted-foreground flex items-center gap-1.5 pt-1">
-          <CalendarDays className="h-3.5 w-3.5 md:h-4 md:w-4" /> {formattedDate}
-        </CardDescription>
+        <div className="flex justify-between items-start gap-2">
+          <div className="flex-grow min-w-0">
+            <CardTitle className="text-lg md:text-xl text-primary flex items-center gap-2">
+              <Activity className="h-5 w-5 md:h-6 md:w-6 shrink-0" />
+              <span className="truncate" title={log.planName || log.workoutName}>{log.planName || log.workoutName}</span>
+            </CardTitle>
+            <CardDescription className="text-xs md:text-sm text-muted-foreground flex items-center gap-1.5 pt-1">
+              <CalendarDays className="h-3.5 w-3.5 md:h-4 md:w-4" /> {formattedDate}
+            </CardDescription>
+          </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-destructive/70 hover:text-destructive hover:bg-destructive/10 h-8 w-8 shrink-0"
+                aria-label="Delete this workout log"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                   <AlertTriangle className="h-6 w-6 text-destructive" />
+                  Apagar este Treino?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja apagar o registro do treino "{log.planName || log.workoutName}" de {formattedDate}? Esta ação não pode ser desfeita.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDeleteLog(log.id)}
+                  className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                >
+                  Sim, Apagar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </CardHeader>
       <CardContent className="flex-grow pb-4 space-y-1.5 md:space-y-2 text-sm">
         <div className="flex items-center text-foreground/90">
