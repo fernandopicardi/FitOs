@@ -4,7 +4,7 @@
 import type { WorkoutPlan } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit3, Trash2, CalendarDays, ClipboardList, Settings2 } from 'lucide-react';
+import { Trash2, CalendarDays, ClipboardList, Settings2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,11 +19,11 @@ import {
 
 interface PlanCardProps {
   plan: WorkoutPlan;
-  onManageSessions: (plan: WorkoutPlan) => void; 
+  onManagePlan: (plan: WorkoutPlan) => void; // Changed from onManageSessions
   onDeletePlan: (planId: string) => void; 
 }
 
-export function PlanCard({ plan, onManageSessions, onDeletePlan }: PlanCardProps) {
+export function PlanCard({ plan, onManagePlan, onDeletePlan }: PlanCardProps) {
   const sessionCount = plan.sessions?.length || 0;
 
   return (
@@ -52,10 +52,10 @@ export function PlanCard({ plan, onManageSessions, onDeletePlan }: PlanCardProps
         <Button 
           variant="default" 
           size="sm" 
-          className="flex-1 bg-primary hover:bg-primary/90" // Adjusted for prominence
-          onClick={() => onManageSessions(plan)} 
+          className="flex-1 bg-primary hover:bg-primary/90"
+          onClick={() => onManagePlan(plan)} 
         >
-          <Settings2 className="mr-2 h-4 w-4" /> Manage Sessions
+          <Settings2 className="mr-2 h-4 w-4" /> Manage Plan
         </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>

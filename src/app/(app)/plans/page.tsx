@@ -17,12 +17,16 @@ import {
 import { PlanForm, type PlanFormValues } from '@/components/plans/PlanForm';
 import { PlanCard } from '@/components/plans/PlanCard';
 import { PlanEditor } from '@/components/plans/PlanEditor';
-import type { WorkoutPlan } from '@/types';
+import type { WorkoutPlan, Exercise } from '@/types';
+import { PRELOADED_EXERCISES } from '@/constants/exercises'; // Import all exercises
 
 export default function PlansPage() {
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
   const [isPlanFormOpen, setIsPlanFormOpen] = useState(false);
   const [selectedPlanForEditing, setSelectedPlanForEditing] = useState<WorkoutPlan | null>(null);
+  
+  // Make all exercises available
+  const allExercises: Exercise[] = PRELOADED_EXERCISES; // In a real app, this might include custom exercises
 
   const handleAddPlan = (data: PlanFormValues) => {
     const newPlan: WorkoutPlan = {
@@ -35,7 +39,7 @@ export default function PlansPage() {
     setIsPlanFormOpen(false);
   };
 
-  const handleManageSessions = (plan: WorkoutPlan) => {
+  const handleManagePlan = (plan: WorkoutPlan) => {
     setSelectedPlanForEditing(plan);
   };
 
@@ -47,11 +51,11 @@ export default function PlansPage() {
     setPlans(prevPlans => 
       prevPlans.map(p => p.id === updatedPlan.id ? updatedPlan : p)
     );
-    setSelectedPlanForEditing(null); // Close editor after saving
+    // We might want to keep the editor open if it was just a session exercise update
+    // setSelectedPlanForEditing(null); 
   };
 
   const handleDeletePlan = (planId: string) => {
-    // Add confirmation dialog here in a real app
     setPlans(prevPlans => prevPlans.filter(p => p.id !== planId));
     if (selectedPlanForEditing?.id === planId) {
       setSelectedPlanForEditing(null);
@@ -62,8 +66,10 @@ export default function PlansPage() {
     return (
       <PlanEditor 
         initialPlan={selectedPlanForEditing}
+        allExercises={allExercises} // Pass all exercises to the editor
         onUpdatePlan={handleUpdatePlan}
         onClose={handleClosePlanEditor}
+        onDeletePlan={handleDeletePlan} // Pass delete handler
       />
     );
   }
@@ -121,7 +127,7 @@ export default function PlansPage() {
             <PlanCard 
               key={plan.id} 
               plan={plan} 
-              onManageSessions={handleManageSessions}
+              onManagePlan={handleManagePlan} // Changed from onManageSessions
               onDeletePlan={handleDeletePlan} 
             />
           ))}

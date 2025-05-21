@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { WorkoutPlan, WorkoutSession, DayOfWeek } from '@/types';
+import type { WorkoutPlan, WorkoutSession, DayOfWeek, Exercise } from '@/types';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { PlusCircle, Save, XCircle, ArrowLeft, Trash2 } from 'lucide-react';
 import { SessionCard } from './SessionCard';
 import { SessionForm, type SessionFormValues } from './SessionForm';
+import { SessionExerciseManager } from './SessionExerciseManager'; // New import
 import {
   Dialog,
   DialogContent,
@@ -20,17 +21,31 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface PlanEditorProps {
   initialPlan: WorkoutPlan;
+  allExercises: Exercise[]; // New prop
   onUpdatePlan: (updatedPlan: WorkoutPlan) => void;
   onClose: () => void;
+  onDeletePlan: (planId: string) => void;
 }
 
-export function PlanEditor({ initialPlan, onUpdatePlan, onClose }: PlanEditorProps) {
-  const [editedPlan, setEditedPlan] = useState<WorkoutPlan>(JSON.parse(JSON.stringify(initialPlan))); // Deep copy
+export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, onDeletePlan }: PlanEditorProps) {
+  const [editedPlan, setEditedPlan] = useState<WorkoutPlan>(JSON.parse(JSON.stringify(initialPlan)));
   const [isSessionFormOpen, setIsSessionFormOpen] = useState(false);
-  const [sessionToEdit, setSessionToEdit] = useState<WorkoutSession | null>(null);
+  const [sessionToEditDetails, setSessionToEditDetails] = useState<WorkoutSession | null>(null);
+  const [managingExercisesForSession, setManagingExercisesForSession] = useState<WorkoutSession | null>(null);
 
   useEffect(() => {
     setEditedPlan(JSON.parse(JSON.stringify(initialPlan)));
@@ -42,25 +57,23 @@ export function PlanEditor({ initialPlan, onUpdatePlan, onClose }: PlanEditorPro
   };
 
   const openSessionForm = (session?: WorkoutSession) => {
-    setSessionToEdit(session || null);
+    setSessionToEditDetails(session || null);
     setIsSessionFormOpen(true);
   };
 
-  const handleSessionSubmit = (data: SessionFormValues) => {
-    if (sessionToEdit) {
-      // Update existing session
+  const handleSessionDetailsSubmit = (data: SessionFormValues) => {
+    if (sessionToEditDetails) {
       setEditedPlan(prev => ({
         ...prev,
         sessions: prev.sessions.map(s => 
-          s.id === sessionToEdit.id ? { ...s, ...data } : s
+          s.id === sessionToEditDetails.id ? { ...s, ...data, exercises: s.exercises } : s // Preserve exercises
         ),
       }));
     } else {
-      // Add new session
       const newSession: WorkoutSession = {
         id: `session-${Date.now()}`,
         ...data,
-        exercises: [], // New sessions start with no exercises
+        exercises: [], 
       };
       setEditedPlan(prev => ({
         ...prev,
@@ -68,34 +81,86 @@ export function PlanEditor({ initialPlan, onUpdatePlan, onClose }: PlanEditorPro
       }));
     }
     setIsSessionFormOpen(false);
-    setSessionToEdit(null);
+    setSessionToEditDetails(null);
   };
 
   const handleDeleteSession = (sessionId: string) => {
-    // Add confirmation dialog here in a real app
     setEditedPlan(prev => ({
       ...prev,
       sessions: prev.sessions.filter(s => s.id !== sessionId),
     }));
   };
   
-  const handleSaveChanges = () => {
+  const handleSaveChangesToPlan = () => {
     onUpdatePlan(editedPlan);
+    // Optionally close editor or give feedback: onClose();
   };
+
+  const handleManageSessionExercises = (session: WorkoutSession) => {
+    setManagingExercisesForSession(session);
+  };
+
+  const handleSessionExercisesUpdated = (updatedSession: WorkoutSession) => {
+    setEditedPlan(prev => ({
+      ...prev,
+      sessions: prev.sessions.map(s => s.id === updatedSession.id ? updatedSession : s)
+    }));
+    // No need to close manager here, onUpdatePlan will be called when user saves the whole plan
+  };
+
+  if (managingExercisesForSession) {
+    return (
+      <SessionExerciseManager
+        session={managingExercisesForSession}
+        allExercises={allExercises}
+        onSessionUpdated={handleSessionExercisesUpdated} // This will update the session in editedPlan
+        onDone={() => setManagingExercisesForSession(null)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center mb-6 pb-4 border-b">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b gap-4">
         <div>
-          <Button variant="ghost" onClick={onClose} className="mb-2 text-primary hover:text-primary/80">
+          <Button variant="ghost" onClick={onClose} className="mb-2 text-primary hover:text-primary/80 -ml-2 sm:ml-0">
             <ArrowLeft className="mr-2 h-5 w-5" /> Back to Plans
           </Button>
-          <h1 className="text-3xl font-bold text-primary">{initialPlan.name}</h1>
-          <p className="text-muted-foreground">{initialPlan.description || "Edit plan details and manage sessions below."}</p>
+          <h1 className="text-3xl font-bold text-primary break-all">{editedPlan.name}</h1>
+          {editedPlan.description && <p className="text-muted-foreground mt-1">{editedPlan.description}</p>}
         </div>
-        <Button onClick={handleSaveChanges} className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-md">
-          <Save className="mr-2 h-5 w-5" /> Save Plan Changes
-        </Button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="flex-1 sm:flex-none">
+                <Trash2 className="mr-2 h-4 w-4" /> Delete Plan
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Plan: {editedPlan.name}?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action is permanent and cannot be undone. Are you sure you want to delete this workout plan?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    onDeletePlan(editedPlan.id);
+                    onClose(); // Close editor after deletion
+                  }}
+                  className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                >
+                  Confirm Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <Button onClick={handleSaveChangesToPlan} className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-md flex-1 sm:flex-none">
+            <Save className="mr-2 h-5 w-5" /> Save Plan
+          </Button>
+        </div>
       </div>
 
       <Card className="shadow-lg">
@@ -131,11 +196,11 @@ export function PlanEditor({ initialPlan, onUpdatePlan, onClose }: PlanEditorPro
         <CardHeader className="flex flex-row justify-between items-center">
           <div>
             <CardTitle>Workout Sessions</CardTitle>
-            <CardDescription>Organize the sessions within this plan.</CardDescription>
+            <CardDescription>Organize the sessions and their exercises within this plan.</CardDescription>
           </div>
           <Dialog open={isSessionFormOpen} onOpenChange={(isOpen) => {
             setIsSessionFormOpen(isOpen);
-            if (!isOpen) setSessionToEdit(null);
+            if (!isOpen) setSessionToEditDetails(null);
           }}>
             <DialogTrigger asChild>
               <Button variant="outline" className="text-primary border-primary hover:bg-primary/10 hover:text-primary">
@@ -145,19 +210,19 @@ export function PlanEditor({ initialPlan, onUpdatePlan, onClose }: PlanEditorPro
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle className="text-xl text-primary">
-                  {sessionToEdit ? 'Edit Workout Session' : 'Add New Workout Session'}
+                  {sessionToEditDetails ? 'Edit Session Details' : 'Add New Workout Session'}
                 </DialogTitle>
                 <DialogDescription>
-                  {sessionToEdit ? 'Modify the details of this session.' : 'Define a new session for your plan.'}
+                  {sessionToEditDetails ? 'Modify the details of this session.' : 'Define a new session for your plan. Exercises are added separately.'}
                 </DialogDescription>
               </DialogHeader>
               <SessionForm
-                onSubmit={handleSessionSubmit}
+                onSubmit={handleSessionDetailsSubmit}
                 onCancel={() => {
                   setIsSessionFormOpen(false);
-                  setSessionToEdit(null);
+                  setSessionToEditDetails(null);
                 }}
-                session={sessionToEdit || undefined} 
+                session={sessionToEditDetails || undefined} 
               />
             </DialogContent>
           </Dialog>
@@ -168,15 +233,15 @@ export function PlanEditor({ initialPlan, onUpdatePlan, onClose }: PlanEditorPro
               No sessions added to this plan yet. Click &quot;Add Session&quot; to get started.
             </p>
           ) : (
-            <ScrollArea className="h-[400px] pr-3"> {/* Added ScrollArea */}
+            <ScrollArea className="max-h-[500px] pr-3"> {/* Adjusted max height */}
               <div className="space-y-4">
                 {editedPlan.sessions.map(session => (
                   <SessionCard 
                     key={session.id} 
                     session={session} 
-                    onEdit={() => openSessionForm(session)}
+                    onEditDetails={() => openSessionForm(session)}
                     onDelete={() => handleDeleteSession(session.id)}
-                    // onManageExercises will be implemented later
+                    onManageExercises={() => handleManageSessionExercises(session)}
                   />
                 ))}
               </div>

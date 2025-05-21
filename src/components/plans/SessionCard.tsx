@@ -2,9 +2,9 @@
 'use client';
 
 import type { WorkoutSession } from '@/types';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'; // Removed CardDescription
 import { Button } from '@/components/ui/button';
-import { Edit3, Trash2, CalendarPlus, GripVertical, ListChecks } from 'lucide-react'; // Changed CalendarPlus to ListChecks
+import { Edit3, Trash2, ListChecks } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
@@ -20,25 +20,27 @@ import {
 
 interface SessionCardProps {
   session: WorkoutSession;
-  onEdit: (session: WorkoutSession) => void;
+  onEditDetails: (session: WorkoutSession) => void;
   onDelete: (sessionId: string) => void;
-  // onManageExercises: (session: WorkoutSession) => void; // For future implementation
+  onManageExercises: (session: WorkoutSession) => void;
 }
 
-export function SessionCard({ session, onEdit, onDelete }: SessionCardProps) {
+export function SessionCard({ session, onEditDetails, onDelete, onManageExercises }: SessionCardProps) {
   const exerciseCount = session.exercises?.length || 0;
 
   return (
     <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border border-border/70">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
-        <div className="flex items-center gap-3">
-          {/* <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" /> */}
-          <CardTitle className="text-lg text-foreground">{session.name}</CardTitle>
+      <CardHeader className="flex flex-row items-start justify-between pb-2 pt-4 px-4 gap-2">
+        <div className="flex-grow min-w-0"> {/* Ensure title can shrink and wrap */}
+          <CardTitle className="text-lg text-foreground break-words">{session.name}</CardTitle>
+          {session.dayOfWeek && (
+            <Badge variant="outline" className="mt-1 text-xs">{session.dayOfWeek}</Badge>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => onEdit(session)}>
+        <div className="flex items-center gap-1 shrink-0">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => onEditDetails(session)}>
             <Edit3 className="h-4 w-4" />
-            <span className="sr-only">Edit Session</span>
+            <span className="sr-only">Edit Session Details</span>
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -67,27 +69,25 @@ export function SessionCard({ session, onEdit, onDelete }: SessionCardProps) {
           </AlertDialog>
         </div>
       </CardHeader>
-      <CardContent className="px-4 pb-3">
-        {session.dayOfWeek && (
-          <Badge variant="outline" className="mr-2 mb-2 text-xs">{session.dayOfWeek}</Badge>
-        )}
-        <Badge variant="secondary" className="text-xs">
+      <CardContent className="px-4 pb-3 pt-1">
+        <Badge variant="secondary" className="text-xs mb-2">
           {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
         </Badge>
         {session.notes && (
-          <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{session.notes}</p>
+          <p className="text-xs text-muted-foreground line-clamp-2">{session.notes}</p>
         )}
+         {!session.notes && exerciseCount === 0 && <div className="h-5"></div>} {/* Placeholder for consistent height */}
       </CardContent>
-      {/* Footer can be used for "Manage Exercises" button later */}
-      {/* <CardFooter className="pt-3 px-4 pb-4 border-t">
+      <CardFooter className="pt-3 px-4 pb-4 border-t">
         <Button 
-          variant="link" 
-          className="p-0 text-sm text-primary hover:text-primary/80"
-          // onClick={() => onManageExercises(session)} // For future
+          variant="outline" 
+          size="sm"
+          className="w-full text-primary border-primary hover:bg-primary/10 hover:text-primary"
+          onClick={() => onManageExercises(session)}
         >
           <ListChecks className="mr-2 h-4 w-4" /> Manage Exercises
         </Button>
-      </CardFooter> */}
+      </CardFooter>
     </Card>
   );
 }
