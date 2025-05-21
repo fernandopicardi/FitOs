@@ -258,8 +258,3 @@ export default function LogWorkoutPage() {
     </div>
   );
 }
-
-export const metadata = {
-  title: 'Log Workout | Workout Wizard',
-  description: 'Log your completed workouts.',
-};
