@@ -39,6 +39,7 @@ export default function WorkoutHistoryPage() {
   const { toast } = useToast();
 
   useEffect(() => {
+    // This effect runs only on the client side
     if (typeof window !== 'undefined') {
       try {
         const savedHistoryString = localStorage.getItem(LOCAL_STORAGE_HISTORY_KEY);
@@ -139,7 +140,7 @@ export default function WorkoutHistoryPage() {
     }
   };
 
-  if (isLoading && typeof window !== 'undefined') {
+  if (isLoading) { // Changed condition here
     return (
       <div className="space-y-8">
         <PageTitle 
@@ -268,3 +269,4 @@ export default function WorkoutHistoryPage() {
     </div>
   );
 }
+
