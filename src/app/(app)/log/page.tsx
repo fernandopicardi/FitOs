@@ -200,9 +200,20 @@ export default function LogWorkoutPage() {
   
   const handleSaveWorkout = () => {
     if (!activeWorkoutLog) return;
-    const logToSave = { ...activeWorkoutLog, endTime: Date.now() };
-    console.log("Workout Log to Save:", JSON.stringify(logToSave, null, 2)); 
-    toast({ title: "Workout Saved!", description: `${logToSave.workoutName} has been logged. (Check console for data)` });
+    const logToSave: ActiveWorkoutLog = { ...activeWorkoutLog, endTime: Date.now() };
+    
+    try {
+      const existingHistoryString = localStorage.getItem('workoutWizardHistory');
+      const history: ActiveWorkoutLog[] = existingHistoryString ? JSON.parse(existingHistoryString) : [];
+      history.unshift(logToSave); // Add new log to the beginning of the array
+      localStorage.setItem('workoutWizardHistory', JSON.stringify(history));
+      
+      toast({ title: "Workout Saved!", description: `${logToSave.workoutName} has been logged successfully.` });
+    } catch (error) {
+      console.error("Failed to save workout to localStorage", error);
+      toast({ title: "Save Failed", description: "Could not save workout. Check console for details.", variant: "destructive" });
+    }
+    
     setActiveWorkoutLog(null);
     setSelectedPlanId(undefined);
   };
@@ -318,3 +329,9 @@ export default function LogWorkoutPage() {
     </div>
   );
 }
+
+// Metadata removed as it's a client component
+// export const metadata = {
+//   title: 'Log Workout | Workout Wizard',
+//   description: 'Log your completed workouts.',
+// };
