@@ -4,9 +4,9 @@
 import type { ActiveWorkoutLog } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Activity, CalendarDays, Clock, ListChecks, Eye } from 'lucide-react';
+import { Activity, CalendarDays, Clock, ListChecks, Eye, CheckCircle2, XCircle } from 'lucide-react';
 import { format, formatDistanceStrict, parseISO } from 'date-fns';
-import { useToast } from '@/hooks/use-toast'; // For future detailed view toast
+import { useToast } from '@/hooks/use-toast';
 
 interface WorkoutHistoryCardProps {
   log: ActiveWorkoutLog;
@@ -14,7 +14,7 @@ interface WorkoutHistoryCardProps {
 
 export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
   const { toast } = useToast();
-  const workoutDate = parseISO(log.date); // Ensure date is parsed correctly
+  const workoutDate = parseISO(log.date);
   const formattedDate = format(workoutDate, "MMMM d, yyyy 'at' h:mm a");
   
   let duration = 'N/A';
@@ -23,26 +23,69 @@ export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
       duration = formatDistanceStrict(new Date(log.endTime), new Date(log.startTime));
     } catch (error) {
       console.error("Error formatting duration for log:", log.id, error);
-      duration = "Error"; // Indicate if there was an issue with duration calculation
+      duration = "Error";
     }
   } else if (log.startTime && log.endTime && log.endTime <= log.startTime) {
     duration = "Invalid times";
   }
 
-
   const exercisesCount = log.exercises.length;
 
   const handleViewDetails = () => {
-    // For now, we'll just log the details. A modal/dialog would be better.
-    console.log("Workout Log Details:", log);
     toast({
       title: `Details for: ${log.planName || log.workoutName}`,
       description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-card p-4 overflow-x-auto">
-          <code className="text-card-foreground">{JSON.stringify(log, null, 2)}</code>
-        </pre>
+        <div className="text-sm space-y-3 max-h-[70vh] w-full sm:w-[380px] overflow-y-auto text-card-foreground p-1 rounded-md bg-card">
+          <div className="space-y-1 mb-2">
+            <p><strong>Date:</strong> {formattedDate}</p>
+            <p><strong>Duration:</strong> {duration}</p>
+          </div>
+          
+          {log.exercises.map((exercise, index) => (
+            <div key={exercise.id} className="py-2 border-t border-muted/30 first:border-t-0">
+              <p className="font-semibold text-base text-primary flex items-center">
+                <span className="text-xl mr-2">{exercise.emoji}</span> 
+                {exercise.name}
+              </p>
+              {exercise.plannedSets && exercise.plannedReps && (
+                <p className="text-xs text-muted-foreground mb-1">
+                  Plan: {exercise.plannedSets} sets of {exercise.plannedReps}
+                </p>
+              )}
+              {exercise.sets.length > 0 ? (
+                <ul className="list-none pl-1 text-xs space-y-1 mt-1.5">
+                  {exercise.sets.map((set, setIndex) => (
+                    <li key={set.id} className="flex items-center justify-between p-1.5 bg-background/50 rounded-md">
+                      <span className="flex-1">
+                        Set {setIndex + 1}: {set.weight || 'N/A'} x {set.reps || 'N/A'} reps
+                      </span>
+                      {set.isCompleted ? 
+                        <CheckCircle2 className="h-4 w-4 text-green-500 ml-2 shrink-0" /> : 
+                        <XCircle className="h-4 w-4 text-red-500 ml-2 shrink-0" />}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-xs text-muted-foreground italic mt-1">No sets logged for this exercise.</p>
+              )}
+              {exercise.notes && <p className="text-xs text-muted-foreground mt-1.5"><em>Exercise Notes: {exercise.notes}</em></p>}
+            </div>
+          ))}
+          
+          {log.notes && (
+            <div className="pt-2 mt-3 border-t border-muted/30">
+              <p className="font-semibold text-base text-primary">Overall Workout Notes:</p>
+              <p className="text-xs text-muted-foreground">{log.notes}</p>
+            </div>
+          )}
+
+          {!log.exercises.length && !log.notes && (
+             <p className="text-muted-foreground italic text-center py-4">No specific details logged for this workout.</p>
+          )}
+        </div>
       ),
-      duration: 9000, // Make it last longer to view details
+      duration: 15000, // Increased duration for better readability
+      className: 'sm:max-w-md w-full', // Custom class for toast width
     });
   };
 
