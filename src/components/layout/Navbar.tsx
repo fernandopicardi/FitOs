@@ -17,11 +17,8 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Dumbbell className="h-7 w-7 text-primary" />
-          <span className="font-bold text-xl text-primary sm:inline-block">
-            FitOS
-          </span>
+        <Link href="/" className="mr-6 flex items-center">
+          <img src="../../app/logo1.png" alt="FitOS Logo" className="h-8 w-auto" />
         </Link>
         
         <nav className="hidden md:flex flex-1 items-center space-x-6 text-sm font-medium">
@@ -42,7 +39,6 @@ export function Navbar() {
         <div className="flex flex-1 items-center justify-end space-x-4 md:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              {/* Removed onClick from Button, SheetTrigger handles opening */}
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle Menu</span>
@@ -54,7 +50,7 @@ export function Navbar() {
               </SheetHeader>
               
               <Link href="/" className="flex items-center space-x-2 mb-8" onClick={() => setIsMobileMenuOpen(false)}>
-                <Dumbbell className="h-7 w-7 text-primary" />
+                <img src="../../app/logo1.png" alt="FitOS Logo" className="h-7 w-auto text-primary" />
                 <span className="font-bold text-xl text-primary">
                   FitOS
                 </span>
