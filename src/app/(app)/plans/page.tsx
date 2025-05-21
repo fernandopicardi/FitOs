@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageTitle } from '@/components/shared/PageTitle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,15 +18,55 @@ import { PlanForm, type PlanFormValues } from '@/components/plans/PlanForm';
 import { PlanCard } from '@/components/plans/PlanCard';
 import { PlanEditor } from '@/components/plans/PlanEditor';
 import type { WorkoutPlan, Exercise } from '@/types';
-import { PRELOADED_EXERCISES } from '@/constants/exercises'; // Import all exercises
+import { PRELOADED_EXERCISES } from '@/constants/exercises';
+import { useToast } from '@/hooks/use-toast';
+
+const LOCAL_STORAGE_PLANS_KEY = 'workoutWizardPlans';
 
 export default function PlansPage() {
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
   const [isPlanFormOpen, setIsPlanFormOpen] = useState(false);
   const [selectedPlanForEditing, setSelectedPlanForEditing] = useState<WorkoutPlan | null>(null);
+  const { toast } = useToast();
   
-  // Make all exercises available
-  const allExercises: Exercise[] = PRELOADED_EXERCISES; // In a real app, this might include custom exercises
+  const allExercises: Exercise[] = PRELOADED_EXERCISES; 
+
+  // Load plans from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedPlansString = localStorage.getItem(LOCAL_STORAGE_PLANS_KEY);
+        if (savedPlansString) {
+          const loadedPlans = JSON.parse(savedPlansString) as WorkoutPlan[];
+          setPlans(loadedPlans);
+        }
+      } catch (error) {
+        console.error("Failed to load plans from localStorage", error);
+        toast({
+          title: "Error Loading Plans",
+          description: "Could not retrieve your saved plans. Previous data might be lost.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [toast]);
+
+  // Save plans to localStorage whenever the plans state changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_PLANS_KEY, JSON.stringify(plans));
+      } catch (error) {
+        console.error("Failed to save plans to localStorage", error);
+        toast({
+          title: "Error Saving Plans",
+          description: "Your plans could not be saved automatically. Changes might be lost.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [plans, toast]);
+
 
   const handleAddPlan = (data: PlanFormValues) => {
     const newPlan: WorkoutPlan = {
@@ -37,6 +77,7 @@ export default function PlansPage() {
     };
     setPlans(prev => [newPlan, ...prev]);
     setIsPlanFormOpen(false);
+    toast({ title: "Plan Created!", description: `"${data.name}" has been added.` });
   };
 
   const handleManagePlan = (plan: WorkoutPlan) => {
@@ -51,14 +92,17 @@ export default function PlansPage() {
     setPlans(prevPlans => 
       prevPlans.map(p => p.id === updatedPlan.id ? updatedPlan : p)
     );
-    // We might want to keep the editor open if it was just a session exercise update
-    // setSelectedPlanForEditing(null); 
+    toast({ title: "Plan Updated!", description: `Changes to "${updatedPlan.name}" have been saved.`});
   };
 
   const handleDeletePlan = (planId: string) => {
+    const planToDelete = plans.find(p => p.id === planId);
     setPlans(prevPlans => prevPlans.filter(p => p.id !== planId));
     if (selectedPlanForEditing?.id === planId) {
       setSelectedPlanForEditing(null);
+    }
+    if (planToDelete) {
+      toast({ title: "Plan Deleted", description: `"${planToDelete.name}" has been removed.`, variant: "destructive" });
     }
   };
 
@@ -66,10 +110,10 @@ export default function PlansPage() {
     return (
       <PlanEditor 
         initialPlan={selectedPlanForEditing}
-        allExercises={allExercises} // Pass all exercises to the editor
+        allExercises={allExercises}
         onUpdatePlan={handleUpdatePlan}
         onClose={handleClosePlanEditor}
-        onDeletePlan={handleDeletePlan} // Pass delete handler
+        onDeletePlan={handleDeletePlan}
       />
     );
   }
@@ -127,7 +171,7 @@ export default function PlansPage() {
             <PlanCard 
               key={plan.id} 
               plan={plan} 
-              onManagePlan={handleManagePlan} // Changed from onManageSessions
+              onManagePlan={handleManagePlan}
               onDeletePlan={handleDeletePlan} 
             />
           ))}
