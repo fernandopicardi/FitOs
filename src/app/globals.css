@@ -52,48 +52,48 @@
   }
 
   .dark {
-    --background: 227 10% 15%; /* Darker background for dark mode */
-    --foreground: 227 67% 94%; /* Light Blue for text */
+    --background: 220 20% 12%; /* Very Dark Cool Gray #1A1E23 */
+    --foreground: 220 15% 90%; /* Light Gray #E0E3E7 */
 
-    --card: 227 10% 20%;
-    --card-foreground: 227 67% 94%;
+    --card: 220 20% 18%; /* Dark Gray #242930 */
+    --card-foreground: 220 15% 90%; /* Light Gray #E0E3E7 */
 
-    --popover: 227 10% 20%;
-    --popover-foreground: 227 67% 94%;
+    --popover: 220 20% 18%; /* Dark Gray #242930 */
+    --popover-foreground: 220 15% 90%; /* Light Gray #E0E3E7 */
 
-    --primary: 231 48% 58%; /* Lighter primary for dark mode */
-    --primary-foreground: 227 10% 10%;
+    --primary: 217 91% 60%; /* Vibrant Blue #3B82F6 */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 227 10% 30%;
-    --secondary-foreground: 227 67% 94%;
+    --secondary: 220 15% 30%; /* Muted Gray #404754 */
+    --secondary-foreground: 220 15% 85%; /* Lighter Gray #CCD1D9 */
 
-    --muted: 227 10% 25%;
-    --muted-foreground: 227 20% 65%;
+    --muted: 220 15% 25%; /* Darker Muted Gray #333944 */
+    --muted-foreground: 220 10% 65%; /* Medium Gray #9BA1AA */
 
-    --accent: 260 45% 65%; /* Lighter accent for dark mode */
-    --accent-foreground: 227 10% 10%;
+    --accent: 270 70% 65%; /* Vibrant Violet #9F54FF */
+    --accent-foreground: 0 0% 100%; /* White */
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 55%; /* Destructive Red #D43D3D */
+    --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 227 10% 35%;
-    --input: 227 10% 30%;
-    --ring: 231 48% 58%;
+    --border: 220 15% 25%; /* Darker Muted Gray #333944 */
+    --input: 220 15% 22%; /* Dark Input Background #2C313A */
+    --ring: 217 91% 65%; /* Brighter Blue for Focus #5FA4F7 */
 
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 210 80% 60%;
+    --chart-2: 160 70% 50%;
+    --chart-3: 30 80% 65%;
+    --chart-4: 280 70% 70%;
+    --chart-5: 340 85% 70%;
 
-    --sidebar-background: 227 10% 18%;
-    --sidebar-foreground: 227 67% 90%;
-    --sidebar-primary: 227 67% 94%;
-    --sidebar-primary-foreground: 227 10% 18%;
-    --sidebar-accent: 260 45% 60%;
+    --sidebar-background: 220 20% 15%; /* Slightly darker than card for distinction */
+    --sidebar-foreground: 220 15% 85%;
+    --sidebar-primary: 217 91% 65%; 
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 70% 70%; 
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 227 10% 25%;
-    --sidebar-ring: 260 45% 65%;
+    --sidebar-border: 220 15% 22%;
+    --sidebar-ring: 270 70% 65%;
   }
 }
 

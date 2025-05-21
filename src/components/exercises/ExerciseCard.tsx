@@ -12,13 +12,13 @@ interface ExerciseCardProps {
 
 export function ExerciseCard({ exercise, onViewDetails }: ExerciseCardProps) {
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col overflow-hidden h-full">
+    <Card className="shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col overflow-hidden h-full">
       {exercise.imageUrl && (
         <div className="relative w-full h-48">
           <Image 
             src={exercise.imageUrl} 
             alt={exercise.name} 
-            layout="fill" 
+            fill // Changed layout to fill
             objectFit="cover"
             data-ai-hint={`${exercise.muscleGroup} ${exercise.name.split(' ')[0]}`}
           />

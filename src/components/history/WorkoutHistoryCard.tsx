@@ -38,8 +38,8 @@ export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
     toast({
       title: `Details for: ${log.planName || log.workoutName}`,
       description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-          <code className="text-white">{JSON.stringify(log, null, 2)}</code>
+        <pre className="mt-2 w-[340px] rounded-md bg-card p-4 overflow-x-auto">
+          <code className="text-card-foreground">{JSON.stringify(log, null, 2)}</code>
         </pre>
       ),
       duration: 9000, // Make it last longer to view details
@@ -47,7 +47,7 @@ export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
   };
 
   return (
-    <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col h-full bg-card">
+    <Card className="shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg md:text-xl text-primary flex items-center gap-2">
           <Activity className="h-5 w-5 md:h-6 md:w-6 shrink-0" />

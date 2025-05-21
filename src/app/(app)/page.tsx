@@ -41,11 +41,12 @@ export default function DashboardPage() {
             <Image 
               src="https://placehold.co/800x600" 
               alt="Workout motivation" 
-              layout="fill"
+              fill // Changed layout to fill
               objectFit="cover"
               data-ai-hint="fitness workout"
+              className="opacity-80" // Added slight opacity to blend with dark mode if needed
             />
-             <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent md:bg-gradient-to-r"></div>
+             <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent md:bg-gradient-to-r md:from-background/70 md:to-transparent"></div>
           </div>
         </div>
       </Card>
@@ -73,7 +74,7 @@ export default function DashboardPage() {
           linkText="View History"
         />
       </div>
-       <Card className="shadow-lg">
+       <Card className="shadow-md">
         <CardHeader>
           <CardTitle>Humorous Tip of the Day</CardTitle>
         </CardHeader>
@@ -97,7 +98,7 @@ interface FeatureCardProps {
 
 function FeatureCard({ title, description, icon, link, linkText }: FeatureCardProps) {
   return (
-    <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
+    <Card className="shadow-md hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="flex flex-row items-center gap-4 pb-4">
         {icon}
         <CardTitle className="text-xl">{title}</CardTitle>
