@@ -16,22 +16,57 @@ import {
 } from "@/components/ui/dialog";
 import { PlanForm, type PlanFormValues } from '@/components/plans/PlanForm';
 import { PlanCard } from '@/components/plans/PlanCard';
+import { PlanEditor } from '@/components/plans/PlanEditor';
 import type { WorkoutPlan } from '@/types';
 
 export default function PlansPage() {
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
   const [isPlanFormOpen, setIsPlanFormOpen] = useState(false);
+  const [selectedPlanForEditing, setSelectedPlanForEditing] = useState<WorkoutPlan | null>(null);
 
   const handleAddPlan = (data: PlanFormValues) => {
     const newPlan: WorkoutPlan = {
-      id: `plan-${Date.now()}`, // Simple unique ID for client-side
+      id: `plan-${Date.now()}`,
       name: data.name,
       description: data.description,
-      sessions: [], // Sessions will be added in a later step
+      sessions: [], 
     };
     setPlans(prev => [newPlan, ...prev]);
     setIsPlanFormOpen(false);
   };
+
+  const handleManageSessions = (plan: WorkoutPlan) => {
+    setSelectedPlanForEditing(plan);
+  };
+
+  const handleClosePlanEditor = () => {
+    setSelectedPlanForEditing(null);
+  };
+
+  const handleUpdatePlan = (updatedPlan: WorkoutPlan) => {
+    setPlans(prevPlans => 
+      prevPlans.map(p => p.id === updatedPlan.id ? updatedPlan : p)
+    );
+    setSelectedPlanForEditing(null); // Close editor after saving
+  };
+
+  const handleDeletePlan = (planId: string) => {
+    // Add confirmation dialog here in a real app
+    setPlans(prevPlans => prevPlans.filter(p => p.id !== planId));
+    if (selectedPlanForEditing?.id === planId) {
+      setSelectedPlanForEditing(null);
+    }
+  };
+
+  if (selectedPlanForEditing) {
+    return (
+      <PlanEditor 
+        initialPlan={selectedPlanForEditing}
+        onUpdatePlan={handleUpdatePlan}
+        onClose={handleClosePlanEditor}
+      />
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -83,7 +118,12 @@ export default function PlansPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {plans.map(plan => (
-            <PlanCard key={plan.id} plan={plan} />
+            <PlanCard 
+              key={plan.id} 
+              plan={plan} 
+              onManageSessions={handleManageSessions}
+              onDeletePlan={handleDeletePlan} 
+            />
           ))}
         </div>
       )}

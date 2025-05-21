@@ -4,15 +4,26 @@
 import type { WorkoutPlan } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit3, Trash2, CalendarDays, ClipboardList } from 'lucide-react';
+import { Edit3, Trash2, CalendarDays, ClipboardList, Settings2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface PlanCardProps {
   plan: WorkoutPlan;
-  onEdit?: (plan: WorkoutPlan) => void; // Future use
-  onDelete?: (planId: string) => void; // Future use
+  onManageSessions: (plan: WorkoutPlan) => void; 
+  onDeletePlan: (planId: string) => void; 
 }
 
-export function PlanCard({ plan, onEdit, onDelete }: PlanCardProps) {
+export function PlanCard({ plan, onManageSessions, onDeletePlan }: PlanCardProps) {
   const sessionCount = plan.sessions?.length || 0;
 
   return (
@@ -23,41 +34,59 @@ export function PlanCard({ plan, onEdit, onDelete }: PlanCardProps) {
              <ClipboardList className="h-6 w-6 shrink-0" />
             {plan.name}
           </CardTitle>
-          {/* Placeholder for a potential menu or quick actions */}
         </div>
         {plan.description && (
-          <CardDescription className="text-sm text-muted-foreground line-clamp-2 mt-1">
+          <CardDescription className="text-sm text-muted-foreground line-clamp-2 mt-1 h-10">
             {plan.description}
           </CardDescription>
         )}
+         {!plan.description && <div className="h-10 mt-1"></div>}
       </CardHeader>
       <CardContent className="flex-grow pb-4">
         <div className="flex items-center text-sm text-muted-foreground">
           <CalendarDays className="h-4 w-4 mr-2" />
           <span>{sessionCount} session{sessionCount !== 1 ? 's' : ''}</span> 
-          {/* Placeholder for more details like "3 days/week" */}
         </div>
-        {/* Future: Could show a preview of days or muscle groups targeted */}
       </CardContent>
-      <CardFooter className="border-t pt-4 flex justify-between">
+      <CardFooter className="border-t pt-4 flex justify-between items-center">
         <Button 
-          variant="ghost" 
+          variant="default" 
           size="sm" 
-          className="text-muted-foreground hover:text-primary"
-          onClick={() => onEdit?.(plan)} 
-          disabled={!onEdit} // Disable if no handler
+          className="flex-1 bg-primary hover:bg-primary/90" // Adjusted for prominence
+          onClick={() => onManageSessions(plan)} 
         >
-          <Edit3 className="mr-2 h-4 w-4" /> Edit
+          <Settings2 className="mr-2 h-4 w-4" /> Manage Sessions
         </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-destructive/80 hover:text-destructive"
-          onClick={() => onDelete?.(plan.id)}
-          disabled={!onDelete} // Disable if no handler
-        >
-          <Trash2 className="mr-2 h-4 w-4" /> Delete
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-destructive/80 hover:text-destructive hover:bg-destructive/10 ml-2"
+            >
+              <Trash2 className="h-5 w-5" />
+              <span className="sr-only">Delete Plan</span>
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the workout plan
+                &quot;{plan.name}&quot; and all its associated sessions.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => onDeletePlan(plan.id)}
+                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+              >
+                Delete Plan
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardFooter>
     </Card>
   );

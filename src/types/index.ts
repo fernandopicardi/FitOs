@@ -44,6 +44,7 @@ export interface NavigationItem {
 
 // New types for Workout Plans
 export interface PlannedExercise {
+  id: string; // Unique ID for the planned exercise instance
   exerciseId: string; // Reference to Exercise.id
   sets?: number | string; // e.g., 3 or "3-4"
   reps?: number | string; // e.g., 10 or "8-12"
@@ -51,10 +52,13 @@ export interface PlannedExercise {
   notes?: string;
 }
 
+export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday' | 'Custom Day' | 'Rest Day';
+
+
 export interface WorkoutSession {
   id: string;
   name: string; // e.g., "Day 1: Push", "Leg Day"
-  dayOfWeek?: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday' | 'Custom';
+  dayOfWeek?: DayOfWeek;
   exercises: PlannedExercise[];
   notes?: string;
 }
