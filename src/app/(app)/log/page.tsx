@@ -26,7 +26,6 @@ export default function LogWorkoutPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load available plans and all exercises from localStorage
     if (typeof window !== 'undefined') {
       try {
         const savedPlansString = localStorage.getItem(LOCAL_STORAGE_PLANS_KEY);
@@ -41,10 +40,9 @@ export default function LogWorkoutPage() {
         const preloadedWithFlag = PRELOADED_EXERCISES.map(ex => ({ ...ex, isCustom: false }));
         const customWithFlag = customExercises.map(ex => ({ ...ex, isCustom: true }));
 
-        // Create a unique list of all exercises, prioritizing custom if IDs clash (though unlikely)
         const exerciseMap = new Map<string, Exercise>();
         preloadedWithFlag.forEach(ex => exerciseMap.set(ex.id, ex));
-        customWithFlag.forEach(ex => exerciseMap.set(ex.id, ex)); // Custom overwrites preloaded if same ID
+        customWithFlag.forEach(ex => exerciseMap.set(ex.id, ex)); 
         
         setAllAvailableExercises(Array.from(exerciseMap.values()));
 
@@ -55,7 +53,6 @@ export default function LogWorkoutPage() {
           description: "Could not retrieve plans or custom exercises.",
           variant: "destructive",
         });
-        // Fallback for exercises if loading custom fails
         setAllAvailableExercises(PRELOADED_EXERCISES.map(ex => ({ ...ex, isCustom: false })));
       }
     }
@@ -125,7 +122,7 @@ export default function LogWorkoutPage() {
       exerciseId: exercise.id,
       name: exercise.name,
       emoji: exercise.emoji,
-      sets: [],
+      sets: [], // Initialize with empty sets array
     };
 
     setActiveWorkoutLog(prev => prev ? ({ ...prev, exercises: [...prev.exercises, newLoggedExercise] }) : null);
@@ -197,8 +194,6 @@ export default function LogWorkoutPage() {
       const updatedExercises = prevLog.exercises.map(ex => {
         if (ex.id === loggedExerciseId) {
           const updatedSets = ex.sets.filter(set => set.id !== setId);
-          // Re-number sets after removal for display consistency if desired, or keep original numbers
-          // For simplicity, we'll keep original numbers for now or let UI handle display as "Set N" by index
           return { ...ex, sets: updatedSets };
         }
         return ex;
@@ -222,7 +217,12 @@ export default function LogWorkoutPage() {
         history.unshift(logToSave); 
         localStorage.setItem(LOCAL_STORAGE_HISTORY_KEY, JSON.stringify(history));
         
-        toast({ title: "Workout Saved!", description: `${logToSave.workoutName} has been logged successfully.` });
+        toast({ 
+          title: "Workout Saved! 🎉", 
+          description: `${logToSave.workoutName} has been logged successfully.`,
+          className: "border-accent animate-subtle-pulse-bg-accent", // Fancy toast
+          duration: 6000,
+        });
       }
     } catch (error) {
       console.error("Failed to save workout to localStorage", error);

@@ -113,3 +113,29 @@
   h2 { @apply text-2xl; }
   h3 { @apply text-xl; }
 }
+
+@layer utilities {
+  @keyframes subtle-glow {
+    0%, 100% { box-shadow: 0 0 3px hsl(var(--primary) / 0.4), 0 0 6px hsl(var(--primary) / 0.3), 0 0 9px hsl(var(--primary) / 0.2); }
+    50% { box-shadow: 0 0 6px hsl(var(--primary) / 0.6), 0 0 12px hsl(var(--primary) / 0.4), 0 0 18px hsl(var(--primary) / 0.3); }
+  }
+  .animate-subtle-glow {
+    animation: subtle-glow 2.5s infinite ease-in-out;
+  }
+
+  @keyframes subtle-pulse-bg {
+    0%, 100% { background-color: hsl(var(--accent) / 0.05); border-color: hsl(var(--accent) / 0.3); }
+    50% { background-color: hsl(var(--accent) / 0.15); border-color: hsl(var(--accent) / 0.6); }
+  }
+  .animate-subtle-pulse-bg-accent {
+    animation: subtle-pulse-bg 2.5s infinite ease-in-out;
+  }
+
+  @keyframes subtle-pulse-border {
+    0%, 100% { border-color: hsl(var(--primary) / 0.3); }
+    50% { border-color: hsl(var(--primary) / 0.7); }
+  }
+  .animate-subtle-pulse-border-primary {
+     animation: subtle-pulse-border 2s infinite ease-in-out;
+  }
+}

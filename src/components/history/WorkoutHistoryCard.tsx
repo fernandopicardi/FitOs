@@ -58,6 +58,7 @@ export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
                     <li key={set.id} className="flex items-center justify-between p-1.5 bg-background/50 rounded-md">
                       <span className="flex-1">
                         Set {setIndex + 1}: {set.weight || 'N/A'} x {set.reps || 'N/A'} reps
+                        {set.rpe && <span className="text-muted-foreground text-xs italic"> (RPE: {set.rpe})</span>}
                       </span>
                       {set.isCompleted ? 
                         <CheckCircle2 className="h-4 w-4 text-green-500 ml-2 shrink-0" /> : 
@@ -84,13 +85,13 @@ export function WorkoutHistoryCard({ log }: WorkoutHistoryCardProps) {
           )}
         </div>
       ),
-      duration: 8000, // Reduced duration
-      className: 'sm:max-w-md w-full', // Custom class for toast width
+      duration: 8000, 
+      className: 'sm:max-w-md w-full', 
     });
   };
 
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full bg-card">
+    <Card className="shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.03] flex flex-col h-full bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg md:text-xl text-primary flex items-center gap-2">
           <Activity className="h-5 w-5 md:h-6 md:w-6 shrink-0" />
