@@ -25,9 +25,9 @@ const LOCAL_STORAGE_PLANS_KEY = 'workoutWizardPlans';
 
 const getExerciseByName = (name: string): Exercise | undefined => {
   const found = PRELOADED_EXERCISES.find(ex => ex.name.toLowerCase() === name.toLowerCase());
-  if (!found) {
-    console.warn(`Exercise not found in PRELOADED_EXERCISES: ${name}`);
-  }
+  // if (!found) {
+  //   console.warn(`Exercise not found in PRELOADED_EXERCISES: ${name}`);
+  // }
   return found;
 };
 
@@ -66,7 +66,7 @@ const seededPlanDefinitions: Array<{id: string, name: string, description: strin
         { exerciseName: "Flexão nas Argolas", sets: "4", reps: "12", notes: "Se tremer, é só o músculo fazendo live!" },
         { exerciseName: "Kettlebell Press", sets: "4", reps: "8/cada", notes: "Hoje você é um guindaste humano!" },
         { exerciseName: "Liberação de Peitoral (Rodinha)", sets: "2", reps: "1min", notes: "Parece tortura, mas seu futuro eu agradece." },
-        // Cardio Opcional: Pular corda (10 min) - This can be a note in the session or a general plan description. For now, let's keep it as a general idea.
+        { exerciseName: "Pular Corda", sets: "1", reps: "10min", notes: "Cardio opcional para finalizar." },
       ]
     }
   },
@@ -80,7 +80,7 @@ const seededPlanDefinitions: Array<{id: string, name: string, description: strin
       notes: "Foco em pernas, glúteos e abdômen, com destaque para o rollout com rodinha.",
       exercises: [
         { exerciseName: "Agachamento Livre", sets: "2", reps: "15", notes: "Aquecimento para pernas." },
-        { exerciseName: "Mobilidade de Quadril (Rodinha)", sets: "1", reps: " ", notes: "Aquecimento e mobilidade para o quadril." },
+        { exerciseName: "Mobilidade de Quadril (Rodinha)", sets: "1", reps: "1min", notes: "Aquecimento e mobilidade para o quadril." },
         { exerciseName: "Agachamento Goblet (KB)", sets: "4", reps: "15", notes: "Glúteos de aço em construção!" },
         { exerciseName: "Rollout com Rodinha (Ajoelhado)", sets: "4", reps: "8", notes: "Abdominais hoje = tanquinho no verão!" },
         { exerciseName: "Ponte Glútea (1 perna)", sets: "3", reps: "12/cada", notes: "Glúteos de aço em 3... 2... 1..." },
@@ -95,12 +95,12 @@ const seededPlanDefinitions: Array<{id: string, name: string, description: strin
     session: {
       name: "HIIT + Mobilidade",
       dayOfWeek: 'Wednesday',
-      notes: "Treino intervalado de alta intensidade seguido de mobilidade. Circuito: 4 rounds, 30s esforço / 30s descanso entre exercícios de HIIT. Mobilidade: 10 min total.",
+      notes: "Treino intervalado de alta intensidade seguido de mobilidade. Circuito: 4 rounds. Mobilidade: 10 min total.",
       exercises: [
-        { exerciseName: "Burpees", sets: "4 rounds", reps: "30s", notes: "Circuito HIIT.", rest: "30s" },
-        { exerciseName: "Saltos com Superband", sets: "4 rounds", reps: "30s", notes: "Circuito HIIT.", rest: "30s" },
-        { exerciseName: "Liberação de Peitoral (Rodinha)", sets: "1", reps: " ", notes: "Parte da mobilidade de 10 min." },
-        { exerciseName: "Alongamento de Isquiotibiais (Sentado)", sets: "1", reps: " ", notes: "Parte da mobilidade de 10 min." },
+        { exerciseName: "Burpees", sets: "4 rounds", reps: "30s", notes: "Odeie agora, ame os resultados depois.", rest: "30s" },
+        { exerciseName: "Saltos com Superband", sets: "4 rounds", reps: "30s", notes: "Explosão total!", rest: "30s" },
+        { exerciseName: "Liberação de Peitoral (Rodinha)", sets: "1", reps: "5min", notes: "Parte da mobilidade de 10 min." },
+        { exerciseName: "Alongamento de Isquiotibiais (Sentado)", sets: "1", reps: "5min", notes: "Parte da mobilidade de 10 min." },
       ]
     }
   },
@@ -113,7 +113,6 @@ const seededPlanDefinitions: Array<{id: string, name: string, description: strin
       dayOfWeek: 'Thursday',
       notes: "Foco em puxadas para a parte superior do corpo e fortalecimento do core.",
       exercises: [
-        // Warm-up items like "Remada invertida com Superband (2x15)" and "Alongamento de gato-vaca" can be notes or the first exercises.
         { exerciseName: "Remada invertida com Superband", sets: "2", reps: "15", notes: "Aquecimento para costas." },
         { exerciseName: "Alongamento Gato-Vaca", sets: "1", reps: "1min", notes: "Aquecimento e mobilidade para coluna." },
         { exerciseName: "Pull-Up nas Argolas", sets: "4", reps: "8", notes: "Cada repetição te deixa mais largo!" },
@@ -146,8 +145,8 @@ const seededPlanDefinitions: Array<{id: string, name: string, description: strin
       dayOfWeek: 'Saturday',
       notes: "Sessão leve para auxiliar na recuperação, focar na mobilidade e manter o core ativo.",
       exercises: [
-        { exerciseName: "Rollout com Rodinha (Ajoelhado)", sets: "3", reps: "8", notes: "Versão mais leve do Rollout Avançado do plano, foco na forma." }, // Using kneeling as "Rollout Avançado" might be too much for active recovery.
-        { exerciseName: "Ponte Glútea (1 perna)", sets: "3", reps: "15", notes: "Foco na ativação do glúteo e estabilidade." }, // Assuming 15 reps instead of 15s hold for simplicity
+        { exerciseName: "Rollout com Rodinha (Ajoelhado)", sets: "3", reps: "8", notes: "Foco na forma e controle." }, 
+        { exerciseName: "Ponte Glútea (1 perna)", sets: "3", reps: "15/cada", notes: "Foco na ativação do glúteo e estabilidade." }, 
         { exerciseName: "Alongamento Dinâmico", sets: "1", reps: "10min", notes: "Movimentos fluidos para todo o corpo." },
       ]
     }
@@ -170,6 +169,7 @@ export default function PlansPage() {
         const savedPlansString = localStorage.getItem(LOCAL_STORAGE_PLANS_KEY);
         let loadedPlans: WorkoutPlan[] = savedPlansString ? JSON.parse(savedPlansString) : [];
         let plansWereSeeded = false;
+        let newPlansCount = 0;
 
         for (const planDef of seededPlanDefinitions) {
           if (!loadedPlans.some(p => p.id === planDef.id)) {
@@ -181,7 +181,11 @@ export default function PlansPage() {
                 exDef.notes,
                 exDef.rest
               )
-            ).filter(Boolean) as PlannedExercise[];
+            ).filter(ex => ex !== null) as PlannedExercise[];
+
+            if (exercisesForSession.length !== planDef.session.exercises.length) {
+              console.warn(`Some exercises for plan ${planDef.name} could not be found and were skipped. Check PRELOADED_EXERCISES for: ${planDef.session.exercises.filter(exDef => !getExerciseByName(exDef.exerciseName)).map(exDef => exDef.exerciseName).join(', ')}`);
+            }
 
             const newPlan: WorkoutPlan = {
               id: planDef.id,
@@ -197,13 +201,14 @@ export default function PlansPage() {
             };
             loadedPlans.unshift(newPlan); // Add to the beginning
             plansWereSeeded = true;
+            newPlansCount++;
           }
         }
         
         if (plansWereSeeded) {
            toast({
             title: "Planos de Treino Padrão Adicionados!",
-            description: `Os planos de treino diários foram adicionados à sua lista.`,
+            description: `${newPlansCount} plano(s) de treino diário(s) foram adicionados à sua lista.`
           });
         }
         setPlans(loadedPlans);
@@ -218,7 +223,7 @@ export default function PlansPage() {
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast]); // Toast is stable, PRELOADED_EXERCISES should be stable.
+  }, [toast]); // Toast is stable
 
   // Save plans to localStorage whenever the plans state changes
   useEffect(() => {
@@ -354,3 +359,4 @@ export default function PlansPage() {
   );
 }
 
+    
