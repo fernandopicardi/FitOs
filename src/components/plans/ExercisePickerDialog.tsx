@@ -44,7 +44,7 @@ export function ExercisePickerDialog({ isOpen, onOpenChange, allExercises, onSel
           />
         </div>
 
-        <ScrollArea className="flex-grow pr-1">
+        <ScrollArea className="flex-grow pr-1 min-h-0"> {/* Added min-h-0 */}
           <div className="space-y-3">
             {filteredExercises.length > 0 ? (
               filteredExercises.map(exercise => (
