@@ -18,7 +18,8 @@ import { generateWorkoutPlan, type GenerateWorkoutPlanInput, type GenerateWorkou
 import type { Exercise, WorkoutPlan, WorkoutSession, PlannedExercise, MuscleGroup, WorkoutType, AISimplifiedExercise } from '@/types';
 import { PRELOADED_EXERCISES } from '@/constants/exercises';
 import { Loader2, Wand2, Save } from 'lucide-react';
-import { PlanCard } from '@/components/plans/PlanCard'; // Reutilizar para exibir o plano
+// O PlanCard não é usado aqui para exibir o plano gerado, a visualização é customizada abaixo.
+// Importaremos se precisarmos dele para algo diferente.
 
 const LOCAL_STORAGE_PLANS_KEY = 'workoutWizardPlans';
 const LOCAL_STORAGE_CUSTOM_EXERCISES_KEY = 'workoutWizardCustomExercises';
@@ -56,15 +57,14 @@ export default function SmartTrainerPage() {
   });
 
   useEffect(() => {
-    // Carregar todos os exercícios disponíveis (pré-carregados + customizados)
     if (typeof window !== 'undefined') {
       const customExercisesString = localStorage.getItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY);
       const customExercisesLoaded = customExercisesString ? JSON.parse(customExercisesString) as Exercise[] : [];
       
-      const combinedExercises = [
-        ...PRELOADED_EXERCISES.map(ex => ({...ex, isCustom: false, isFetchedFromAPI: false })), 
-        ...customExercisesLoaded.map(ex => ({...ex, isCustom: true, isFetchedFromAPI: false }))
-      ];
+      const preloadedWithFlag = PRELOADED_EXERCISES.map(ex => ({ ...ex, isCustom: false, isFetchedFromAPI: false }));
+      const customWithFlag = customExercisesLoaded.map(ex => ({ ...ex, isCustom: true, isFetchedFromAPI: false }));
+      
+      const combinedExercises = [...preloadedWithFlag, ...customWithFlag];
       
       const uniqueExercisesMap = new Map<string, Exercise>();
       combinedExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
@@ -90,8 +90,6 @@ export default function SmartTrainerPage() {
       name: ex.name,
       muscleGroup: ex.muscleGroup as string, 
       workoutType: ex.workoutType as string[],
-      // A IA também precisa do emoji para poder retorná-lo corretamente.
-      // emoji: ex.emoji, // Adicionar se o schema da IA for atualizado para receber emoji.
     }));
 
     const inputForAI: GenerateWorkoutPlanInput = {
@@ -114,10 +112,7 @@ export default function SmartTrainerPage() {
           exercises: session.exercises.map((plannedEx, exIndex) => {
             const masterExercise = allExercises.find(ex => ex.id === plannedEx.exerciseId);
             if (!masterExercise) {
-                // Isso não deveria acontecer se a IA seguir as instruções e a validação no flow funcionar.
                 console.error(`Exercício com ID ${plannedEx.exerciseId} (nome IA: ${plannedEx.name}) não encontrado na lista local.`);
-                // Lançar um erro ou retornar um exercício placeholder?
-                // Por enquanto, vamos criar um placeholder para não quebrar a UI, mas isso indica um problema.
                  return {
                   id: `ai-plannedex-error-${Date.now()}-${exIndex}`,
                   exerciseId: plannedEx.exerciseId,
@@ -133,7 +128,7 @@ export default function SmartTrainerPage() {
               id: `ai-plannedex-${Date.now()}-${sessionIndex}-${exIndex}`,
               exerciseId: plannedEx.exerciseId,
               name: masterExercise.name, 
-              emoji: plannedEx.emoji || masterExercise.emoji, // Usa o emoji da IA se ela fornecer, senão o do mestre.
+              emoji: plannedEx.emoji || masterExercise.emoji,
               sets: plannedEx.sets,
               reps: plannedEx.reps,
               rest: plannedEx.rest,
@@ -167,14 +162,16 @@ export default function SmartTrainerPage() {
       if (typeof window !== 'undefined') {
         const existingPlansString = localStorage.getItem(LOCAL_STORAGE_PLANS_KEY);
         const plans: WorkoutPlan[] = existingPlansString ? JSON.parse(existingPlansString) : [];
+        // Adiciona o novo plano no início da lista para aparecer primeiro
         plans.unshift(generatedPlan); 
         localStorage.setItem(LOCAL_STORAGE_PLANS_KEY, JSON.stringify(plans));
         toast({
           title: 'Plano Gerado Salvo!',
-          description: `O plano "${generatedPlan.name}" foi adicionado à sua lista de planos.`,
+          description: `O plano "${generatedPlan.name}" foi adicionado à sua lista de planos. Você pode acessá-lo na página 'Planos'.`,
           duration: 3000,
         });
-        setGeneratedPlan(null); 
+        setGeneratedPlan(null); // Limpa o plano gerado da tela após salvar
+        form.reset(); // Reseta o formulário para uma nova geração
       }
     } catch (error) {
       console.error("Falha ao salvar plano gerado por IA no localStorage", error);
@@ -326,7 +323,7 @@ export default function SmartTrainerPage() {
       </Card>
 
       {generatedPlan && (
-        <Card className="mt-8 shadow-lg border-primary animate-subtle-pulse-border-primary"> {/* Destaque para o card gerado */}
+        <Card className="mt-8 shadow-lg border-primary animate-subtle-pulse-border-primary">
           <CardHeader>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div>
