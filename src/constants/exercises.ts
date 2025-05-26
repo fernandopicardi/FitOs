@@ -18,7 +18,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Mantenha os glúteos no banco e uma leve curvatura na parte inferior das costas.', 'Controle o peso durante todo o movimento.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'peito abstrato',
+    dataAiHint: 'supino barra',
     isCustom: false,
   },
   {
@@ -38,7 +38,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Contraia o core durante todo o levantamento.', 'Certifique-se de que seus joelhos sigam a linha dos dedos dos pés.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pernas abstrato',
+    dataAiHint: 'agachamento barra',
     isCustom: false,
   },
   {
@@ -59,7 +59,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Prepare o core antes de levantar.', 'Não curve a parte inferior das costas.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'costas abstrato',
+    dataAiHint: 'levantamento terra',
     isCustom: false,
   },
   {
@@ -78,7 +78,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Evite abrir muito os cotovelos.', 'Mantenha o core firme para evitar arquear as costas excessivamente.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'ombros abstrato',
+    dataAiHint: 'desenvolvimento ombros',
     isCustom: false,
   },
   {
@@ -98,7 +98,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Evite usar impulso (kipping), a menos que esteja treinando especificamente para isso.', 'Amplitude total de movimento é fundamental.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'costas abstrato',
+    dataAiHint: 'barra fixa',
     isCustom: false,
   },
   {
@@ -116,7 +116,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Calçados adequados para corrida são importantes.', 'Mantenha-se hidratado.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'cardio abstrato',
+    dataAiHint: 'corrida cardio',
     isCustom: false,
   },
   {
@@ -135,7 +135,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ["Não deixe os quadris caírem ou subirem muito.", 'Respire de forma constante.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'abdomen abstrato',
+    dataAiHint: 'prancha abdominal',
     isCustom: false,
   },
   {
@@ -148,7 +148,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Segure a banda com as mãos afastadas, palmas para baixo.', 'Mantendo os braços esticados ou levemente flexionados, eleve a banda acima da cabeça e para trás, o mais longe que conseguir sem dor.', 'Retorne o movimento pela frente.', 'Gire os ombros para trás e para frente, mantendo os braços esticados ou levemente flexionados.'],
     tips: ['Mantenha o movimento controlado.', 'Não arqueie as costas excessivamente.', 'Regra: Imagine que está virando uma maçaneta gigante!'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'ombros abstrato',
+    dataAiHint: 'ombros superband',
     isCustom: false,
   },
   {
@@ -162,7 +162,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Posicione as mãos em uma superfície elevada (banco, parede, caixa), um pouco mais largas que os ombros.', 'Mantenha o corpo reto da cabeça aos calcanhares, core ativado.', 'Desça o peito em direção à superfície dobrando os cotovelos.', 'Empurre de volta à posição inicial, estendendo os braços.'],
     tips: ['Mantenha o core ativado.', 'Controle a descida e a subida.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'peito abstrato',
+    dataAiHint: 'flexao inclinada',
     isCustom: false,
   },
   {
@@ -187,7 +187,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         'Hack: Contraia glúteos.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'peito abstrato',
+    dataAiHint: 'flexao argolas',
     isCustom: false,
   },
   {
@@ -212,7 +212,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         'Regra (Clean): Cotovelo grudado no corpo na fase de puxar!'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'corpo inteiro abstrato',
+    dataAiHint: 'kettlebell cleanpress',
     isCustom: false,
   },
   {
@@ -237,7 +237,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
       'Hack: Expire ao empurrar.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'kettlebell ombro',
+    dataAiHint: 'kettlebell press',
     isCustom: false,
   },
   {
@@ -251,7 +251,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Comece com os braços esticados, segurando as argolas, corpo suspenso e estável.', 'Mantenha as argolas próximas ao corpo.', 'Desça lentamente dobrando os cotovelos, até que os ombros cheguem aproximadamente na altura das mãos ou cotovelos formem um ângulo de 90 graus.', 'Empurre de volta à posição inicial, estendendo completamente os braços.'],
     tips: ['Mantenha o core ativado para evitar balanços.', 'Evite que os ombros rolem para frente; mantenha o peito aberto.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'triceps argolas abstrato',
+    dataAiHint: 'mergulho argolas',
     isCustom: false,
   },
   {
@@ -264,7 +264,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Fixe a superband em um ponto alto e seguro (ex: barra de pull-up).', 'Segure as extremidades da banda com as duas mãos, palmas para baixo ou neutras, cotovelos próximos ao corpo.', 'Comece com os antebraços paralelos ao chão ou levemente acima.', 'Empurre a banda para baixo até que os braços estejam totalmente estendidos.', 'Retorne lentamente à posição inicial, controlando a tensão da banda.'],
     tips: ['Mantenha os cotovelos fixos ao lado do corpo, evitando que se abram.', 'Concentre-se na contração do tríceps no final do movimento.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'triceps abstrato',
+    dataAiHint: 'triceps superband',
     isCustom: false,
   },
   {
@@ -278,7 +278,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Fique em pé com os pés na largura dos ombros, pontas dos pés levemente para fora.', 'Mantenha o peito erguido, costas retas e o core ativado.', 'Agache como se fosse sentar em uma cadeira, levando o quadril para trás e para baixo, até que as coxas fiquem paralelas ao chão ou mais baixo, se possível.', 'Mantenha os calcanhares no chão.', 'Empurre com os calcanhares para voltar à posição inicial.'],
     tips: ['Mantenha os joelhos alinhados com os pés, não deixe que entrem.', 'Costas retas durante todo o movimento.', 'A profundidade é importante para ativação dos glúteos.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pernas abstrato',
+    dataAiHint: 'agachamento livre',
     isCustom: false,
   },
   {
@@ -292,7 +292,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Deite-se de costas com os joelhos dobrados a 90 graus (acima do quadril) e os braços estendidos em direção ao teto (acima dos ombros).', 'Mantenha a lombar pressionada firmemente contra o chão (core ativado).', 'Estenda lentamente um braço para trás da cabeça (em direção ao chão) e a perna oposta em direção ao chão, sem tocar.', 'Retorne à posição inicial de forma controlada e repita com o outro lado (braço e perna opostos).'],
     tips: ['Mantenha o core sempre contraído para evitar que a lombar arqueie.', 'Movimentos lentos e controlados são mais eficazes.', 'Se sentir a lombar arquear, reduza a amplitude do movimento.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'abdomen abstrato',
+    dataAiHint: 'dead bug',
     isCustom: false,
   },
   {
@@ -316,7 +316,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         'Regra: Empurre o chão com os calcanhares! Use os cotovelos para afastar os joelhos, se necessário, na parte inferior do agachamento.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pernas abstrato',
+    dataAiHint: 'agachamento goblet',
     isCustom: false,
   },
   {
@@ -342,7 +342,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         'Regra: Contraia glúteos como se estivesse segurando uma nota de R$100!'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'gluteos abstrato',
+    dataAiHint: 'ponte glutea',
     isCustom: false,
   },
   {
@@ -367,7 +367,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         'Regra: Abdômen mais duro que a realidade! Mantenha o nariz alinhado com o umbigo durante o movimento para ajudar a manter a coluna neutra.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'abdomen abstrato',
+    dataAiHint: 'rollout rodinha',
     isCustom: false,
   },
   {
@@ -381,7 +381,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Comece na posição de prancha alta (mãos diretamente abaixo dos ombros, corpo reto dos calcanhares à cabeça).', 'Mantenha o quadril estável e evite balançar o corpo lateralmente.', 'Lentamente, levante uma mão do chão e toque o ombro oposto.', 'Retorne a mão ao chão de forma controlada e repita com o outro lado.', 'Alterne continuamente durante o tempo determinado.'],
     tips: ['Quanto mais lento o movimento, maior o desafio para o core.', 'Afaste os pés para maior estabilidade, se necessário.', 'Concentre-se em manter o umbigo apontado para o chão.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'abdomen abstrato',
+    dataAiHint: 'prancha toque',
     isCustom: false,
   },
   {
@@ -395,7 +395,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Comece em pé com os pés juntos e os braços ao lado do corpo.', 'Em um movimento coordenado, salte abrindo as pernas para além da largura dos ombros enquanto eleva os braços lateralmente até que as mãos se encontrem (ou cheguem perto) acima da cabeça.', 'Salte novamente, retornando os pés à posição inicial e os braços ao lado do corpo.', 'Repita em um ritmo constante.'],
     tips: ['Mantenha um ritmo que consiga sustentar.', 'Aterrisse suavemente na ponta dos pés.', 'Pode ser usado como aquecimento ou parte de um treino HIIT.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'cardio abstrato',
+    dataAiHint: 'polichinelos cardio',
     isCustom: false,
   },
   {
@@ -421,7 +421,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         'Regra: Velocidade é bom, mas a forma vem primeiro para evitar lesões!'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'corpo inteiro abstrato',
+    dataAiHint: 'burpees hiit',
     isCustom: false,
   },
   {
@@ -435,7 +435,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Deite-se de bruços ou fique de quatro.', 'Posicione a rodinha abdominal sob o seu abdômen.', 'Role lentamente a rodinha para cima e para baixo e de um lado para o outro sobre a região abdominal, aplicando uma pressão suave e controlada.', 'Concentre-se em áreas de tensão, respirando profundamente.'],
     tips: ['Seja gentil, especialmente no início; evite pressão excessiva.', 'Evite rolar sobre ossos (costelas, quadril) ou áreas muito sensíveis.', 'Este não é um exercício de fortalecimento, mas de mobilidade e liberação.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'abdomen abstrato',
+    dataAiHint: 'abdominal rodinha',
     isCustom: false,
   },
   {
@@ -449,7 +449,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Fixe uma superband em um suporte baixo e estável (ex: poste, rack), ou passe-a por uma barra baixa.', 'Segure a banda (ou a barra com a banda auxiliando) com as mãos na largura dos ombros, palmas para baixo ou para cima.', 'Posicione o corpo inclinado para trás, com os calcanhares no chão e o corpo reto dos tornozelos à cabeça.', 'Puxe o peito em direção ao ponto de ancoragem (ou à barra), contraindo as omoplatas.', 'Desça controladamente até os braços estarem quase esticados.'],
     tips: ['Quanto mais horizontal o corpo, mais difícil o exercício.', 'Mantenha o core firme para evitar que o quadril caia.', 'Concentre-se em puxar com os músculos das costas.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'costas abstrato',
+    dataAiHint: 'remada superband',
     isCustom: false,
   },
   {
@@ -463,7 +463,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Comece na posição de quatro apoios (mãos diretamente abaixo dos ombros, joelhos diretamente abaixo do quadril).', 'Inspire, arqueando as costas para baixo (extensão da coluna), elevando a cabeça e o cóccix em direção ao teto (postura da vaca).', 'Expire, arredondando as costas para cima (flexão da coluna), levando o queixo ao peito e o cóccix para baixo (postura do gato).', 'Alterne entre as duas posturas de forma fluida, sincronizando com a respiração.'],
     tips: ['Mantenha os movimentos lentos e controlados.', 'Concentre-se na mobilidade de cada vértebra.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'costas abstrato',
+    dataAiHint: 'gato vaca',
     isCustom: false,
   },
   {
@@ -487,7 +487,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         'Regra: Ative as costas, não só os braços! Imagine que está puxando os cotovelos para baixo e para trás.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'costas abstrato',
+    dataAiHint: 'pullup argolas',
     isCustom: false,
   },
   {
@@ -512,7 +512,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         "Regra: Cotovelo deve 'raspar' no corpo (ou passar próximo a ele)!"
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'costas abstrato',
+    dataAiHint: 'remada kettlebell',
     isCustom: false,
   },
   {
@@ -526,7 +526,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Fixe uma superband em um ponto de ancoragem na altura do peito ou rosto.', 'Segure as extremidades da banda com as duas mãos, palmas para baixo ou neutras (polegares para cima).', 'Afaste-se para criar tensão na banda.', 'Puxe a banda em direção ao seu rosto (nariz/testa), mantendo os cotovelos altos e para fora (mais altos que os punhos).', 'Conduza o movimento com os cotovelos, apertando as omoplatas juntas na parte de trás do movimento.', 'Retorne lentamente à posição inicial, controlando a tensão.'],
     tips: ['Concentre-se na rotação externa dos ombros e na retração das escápulas.', 'Não use impulso; o movimento deve ser controlado.', 'Mantenha os ombros para baixo, longe das orelhas.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'ombros abstrato',
+    dataAiHint: 'facepull superband',
     isCustom: false,
   },
   {
@@ -550,7 +550,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         'Regra: Abdômen contraído = escudo contra lesões! Se sentir qualquer desconforto na lombar, pare.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'abdomen abstrato',
+    dataAiHint: 'rollout pe',
     isCustom: false,
   },
   {
@@ -575,7 +575,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
         'Regra: Imagine uma linha reta dos tornozelos à cabeça! Mantenha tudo contraído.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'abdomen abstrato',
+    dataAiHint: 'prancha argolas',
     isCustom: false,
   },
   {
@@ -589,7 +589,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     instructions: ['Sente-se no chão com os joelhos dobrados e os pés levemente levantados do chão (ou apoiados para facilitar).', 'Incline o tronco para trás em cerca de 45 graus, mantendo as costas retas e o core ativado.', 'Segure um kettlebell com as duas mãos na frente do peito.', 'Torça o tronco lentamente para um lado, levando o kettlebell em direção ao chão ao lado do quadril.', 'Retorne ao centro e torça para o outro lado.', 'Continue alternando os lados de forma controlada.'],
     tips: ['Mantenha o movimento controlado, focando na contração dos oblíquos.', 'Evite usar impulso com os braços; o movimento deve vir do tronco.', 'Mantenha a cabeça e o peito erguidos.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'abdomen abstrato',
+    dataAiHint: 'russiantwist kettlebell',
     isCustom: false,
   },
   {
@@ -691,7 +691,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
       'Ajuste a tensão da banda para o nível de dificuldade desejado.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'saltos banda',
+    dataAiHint: 'saltos superband',
     isCustom: false,
   },
   {
@@ -713,7 +713,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
       'Se for muito difícil, comece com os joelhos no chão ou realize flexões inclinadas com as mãos em diamante.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'triceps flexao',
+    dataAiHint: 'flexao diamante',
     isCustom: false,
   },
   {
@@ -738,7 +738,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
       'Mantenha o cotovelo de apoio diretamente abaixo do ombro.'
     ],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'core rotacao',
+    dataAiHint: 'prancha rotacao',
     isCustom: false,
   },
   {
@@ -783,7 +783,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Mantenha o movimento controlado, evitando balançar o corpo.', 'Concentre-se na contração dos músculos do antebraço.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'antebraços força',
+    dataAiHint: 'rosca inversa',
     isCustom: false,
   },
   {
@@ -802,7 +802,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Evite usar impulso ou balançar o corpo.', 'Concentre-se em sentir a contração nos ombros laterais.', 'Não eleve os halteres acima da altura dos ombros.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'ombros halteres',
+    dataAiHint: 'elevacao lateral',
     isCustom: false,
   },
   {
@@ -822,7 +822,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Mantenha o core ativado para estabilidade.', 'Controle o movimento durante a descida e a subida.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pernas afundo',
+    dataAiHint: 'afundo halteres',
     isCustom: false,
   },
   {
@@ -842,7 +842,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Mantenha o movimento controlado, especialmente na descida.', 'Evite arredondar as costas.', 'Pode ser feito com peso adicional (ex: anilha no peito) para aumentar a dificuldade.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'lombar fortalecimento',
+    dataAiHint: 'hiperextensao lombar',
     isCustom: false,
   },
   {
@@ -901,7 +901,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Mantenha as costas retas durante todo o movimento; não as curve.', 'Concentre-se em empurrar o quadril para trás ao descer.', 'A barra deve permanecer próxima às pernas.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'isquiotibiais barra',
+    dataAiHint: 'stiff barra',
     isCustom: false,
   },
   {
@@ -920,7 +920,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Controle o movimento em ambas as direções; não use impulso.', 'Concentre-se na contração máxima no topo do movimento.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'panturrilha exercicio',
+    dataAiHint: 'panturrilha pe',
     isCustom: false,
   },
   {
@@ -940,7 +940,7 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     ],
     tips: ['Mantenha o core ativado para evitar que o quadril caia ou gire excessivamente.', 'Tente manter o joelho o mais próximo possível do cotovelo.'],
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'flexao dinamica',
+    dataAiHint: 'flexao aranha',
     isCustom: false,
   },
   {
@@ -962,6 +962,582 @@ export const PRELOADED_EXERCISES: Exercise[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'abdominal bicicleta',
     isCustom: false,
-  }
+  },
+  // Novos exercícios adicionados (30)
+  // Argolas
+  {
+    id: 'ring-row',
+    name: 'Remada nas Argolas',
+    emoji: '🤸‍♂️',
+    muscleGroup: 'Costas',
+    secondaryMuscleGroups: ['Bíceps', 'Ombros'],
+    workoutType: ['Força', 'Hipertrofia', 'Calistenia'],
+    description: 'Remada utilizando argolas, permite um movimento mais natural e maior ativação dos estabilizadores.',
+    instructions: [
+      'Ajuste as argolas a uma altura que permita inclinar o corpo para trás, mantendo os pés no chão.',
+      'Segure as argolas com pegada neutra ou pronada.',
+      'Mantenha o corpo reto e puxe o peito em direção às argolas, apertando as omoplatas.',
+      'Desça de forma controlada. Quanto mais horizontal o corpo, mais difícil.'
+    ],
+    tips: ['Mantenha o core firme.', 'Não deixe os quadris caírem.', 'Foque em usar os músculos das costas para puxar.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'remada argolas',
+    isCustom: false,
+  },
+  {
+    id: 'ring-fly',
+    name: 'Crucifixo nas Argolas',
+    emoji: '🤸‍♂️',
+    muscleGroup: 'Peito',
+    secondaryMuscleGroups: ['Ombros'],
+    workoutType: ['Hipertrofia', 'Calistenia'],
+    description: 'Exercício de isolamento para o peito, utilizando a instabilidade das argolas.',
+    instructions: [
+      'Com as argolas baixas, segure-as com os braços esticados à frente do corpo, em posição de flexão.',
+      'Afaste lentamente os braços para os lados, como se fosse dar um abraço, mantendo uma leve flexão nos cotovelos.',
+      'Desça até sentir um bom alongamento no peito.',
+      'Retorne à posição inicial contraindo o peitoral.'
+    ],
+    tips: ['Mantenha o core ativado.', 'Controle o movimento para evitar lesões.', 'Ajuste a inclinação do corpo para a dificuldade.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'crucifixo argolas',
+    isCustom: false,
+  },
+  {
+    id: 'ring-bicep-curl',
+    name: 'Rosca Bíceps nas Argolas',
+    emoji: '💪',
+    muscleGroup: 'Bíceps',
+    secondaryMuscleGroups: ['Antebraços'],
+    workoutType: ['Hipertrofia', 'Calistenia'],
+    description: 'Rosca direta utilizando argolas, focando nos bíceps com maior instabilidade.',
+    instructions: [
+      'Segure as argolas com pegada supinada (palmas para cima), corpo inclinado para trás.',
+      'Mantendo os cotovelos fixos, puxe as argolas em direção aos ombros, contraindo os bíceps.',
+      'Desça de forma controlada.'
+    ],
+    tips: ['Evite balançar o corpo.', 'Concentre-se na contração do bíceps.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'biceps argolas',
+    isCustom: false,
+  },
+  {
+    id: 'ring-triceps-extension',
+    name: 'Extensão de Tríceps nas Argolas',
+    emoji: '💪',
+    muscleGroup: 'Tríceps',
+    workoutType: ['Hipertrofia', 'Calistenia'],
+    description: 'Extensão de tríceps utilizando a instabilidade das argolas.',
+    instructions: [
+      'Segure as argolas com os braços esticados acima da cabeça, corpo inclinado para frente.',
+      'Mantenha os cotovelos próximos à cabeça e dobre-os, levando as mãos para trás da cabeça.',
+      'Estenda os braços, contraindo o tríceps.'
+    ],
+    tips: ['Mantenha o core firme.', 'Não deixe os cotovelos abrirem demais.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'triceps argolas',
+    isCustom: false,
+  },
+  {
+    id: 'ring-l-sit',
+    name: 'L-Sit nas Argolas',
+    emoji: '🤸‍♂️',
+    muscleGroup: 'Abdômen',
+    secondaryMuscleGroups: ['Core', 'Flexores do Quadril', 'Ombros'],
+    workoutType: ['Força', 'Calistenia', 'Isométrico'],
+    description: 'Exercício isométrico avançado que exige muita força do core e dos ombros.',
+    instructions: [
+      'Suspenda-se nas argolas com os braços esticados e o corpo reto.',
+      'Eleve as pernas retas à frente até formarem um ângulo de 90 graus com o tronco.',
+      'Mantenha a posição pelo tempo desejado.'
+    ],
+    tips: ['Mantenha os ombros deprimidos (para baixo).', 'Contraia o abdômen e os quadríceps.', 'Se for difícil, comece com os joelhos dobrados (tuck L-sit).'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'lsit argolas',
+    isCustom: false,
+  },
+  {
+    id: 'ring-muscle-up',
+    name: 'Muscle-Up nas Argolas',
+    emoji: '🤸‍♂️',
+    muscleGroup: 'Corpo Inteiro',
+    secondaryMuscleGroups: ['Costas', 'Peito', 'Ombros', 'Tríceps', 'Bíceps'],
+    workoutType: ['Força', 'Calistenia', 'Avançado'],
+    description: 'Movimento avançado de calistenia que combina uma puxada alta com um mergulho.',
+    instructions: [
+      'Comece pendurado nas argolas com pegada falsa (false grip) se possível.',
+      'Puxe o corpo explosivamente para cima, tentando levar o peito acima das argolas.',
+      'Faça a transição dos pulsos sobre as argolas.',
+      'Empurre para cima, finalizando com um mergulho (dip) até os braços estarem esticados.'
+    ],
+    tips: ['Requer muita força e técnica.', 'Domine pull-ups e dips nas argolas antes de tentar.', 'Mantenha as argolas próximas ao corpo durante a transição.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'muscleup argolas',
+    isCustom: false,
+  },
+  // Rodinha Abdominal
+  {
+    id: 'ab-wheel-pike-rollout',
+    name: 'Rollout "Pike" com Rodinha',
+    emoji: '⚙️',
+    muscleGroup: 'Abdômen',
+    secondaryMuscleGroups: ['Ombros', 'Flexores do Quadril'],
+    workoutType: ['Força', 'Core', 'Avançado'],
+    description: 'Variação do rollout onde o quadril é elevado ao retornar, focando mais na parte inferior do abdômen.',
+    instructions: [
+      'Comece ajoelhado com a rodinha à frente.',
+      'Role para frente estendendo o corpo.',
+      'Ao retornar, em vez de voltar à posição ajoelhada, levante o quadril em direção ao teto, mantendo as pernas o mais retas possível (formando um "V" invertido).',
+      'Controle a descida do quadril e role novamente.'
+    ],
+    tips: ['Mantenha o core sempre contraído.', 'Este é um exercício avançado.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'rollout pike',
+    isCustom: false,
+  },
+  {
+    id: 'ab-wheel-oblique-rollout',
+    name: 'Rollout Oblíquo com Rodinha',
+    emoji: '⚙️',
+    muscleGroup: 'Oblíquos',
+    secondaryMuscleGroups: ['Abdômen', 'Core'],
+    workoutType: ['Força', 'Core'],
+    description: 'Rollout direcionado para os lados, trabalhando os músculos oblíquos.',
+    instructions: [
+      'Ajoelhe-se com a rodinha à frente.',
+      'Em vez de rolar reto, role a rodinha diagonalmente para um lado, estendendo o corpo.',
+      'Retorne ao centro e repita para o outro lado.',
+      'Concentre-se na contração do oblíquo do lado oposto ao movimento.'
+    ],
+    tips: ['Mantenha o core firme.', 'Comece com uma amplitude menor.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'rollout obliquo',
+    isCustom: false,
+  },
+  {
+    id: 'ab-wheel-plank-hold',
+    name: 'Prancha com Rodinha (Isometria)',
+    emoji: '⚙️',
+    muscleGroup: 'Abdômen',
+    secondaryMuscleGroups: ['Core', 'Ombros'],
+    workoutType: ['Isométrico', 'Core'],
+    description: 'Manter a posição de prancha estendida com a rodinha, desafiando a estabilidade.',
+    instructions: [
+      'Ajoelhe-se e segure a rodinha.',
+      'Role para frente até uma posição desafiadora, mas onde consiga manter a forma correta (corpo reto, core contraído).',
+      'Mantenha essa posição estática pelo tempo desejado.'
+    ],
+    tips: ['Não deixe a lombar arquear.', 'Respire de forma controlada.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'prancha rodinha',
+    isCustom: false,
+  },
+  {
+    id: 'single-arm-ab-wheel-rollout',
+    name: 'Rollout Unilateral com Rodinha',
+    emoji: '⚙️',
+    muscleGroup: 'Abdômen',
+    secondaryMuscleGroups: ['Oblíquos', 'Core', 'Ombros'],
+    workoutType: ['Força', 'Core', 'Avançado'],
+    description: 'Rollout realizado com apenas uma mão na rodinha, aumentando significativamente o desafio de estabilização.',
+    instructions: [
+      'Ajoelhe-se com a rodinha em uma mão.',
+      'Com a outra mão apoiada no chão para equilíbrio (ou estendida para o lado), role a rodinha para frente.',
+      'Retorne controladamente. Este é um exercício muito avançado.'
+    ],
+    tips: ['Domine o rollout com duas mãos primeiro.', 'Mantenha o core extremamente firme para evitar rotação do tronco.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'rollout unilateral',
+    isCustom: false,
+  },
+  // Kettlebell
+  {
+    id: 'kettlebell-swing',
+    name: 'Kettlebell Swing',
+    emoji: '🏋️',
+    muscleGroup: 'Corpo Inteiro',
+    secondaryMuscleGroups: ['Glúteos', 'Isquiotibiais', 'Lombar', 'Cardio'],
+    workoutType: ['Força', 'Powerlifting', 'Condicionamento', 'HIIT'],
+    description: 'Exercício fundamental com kettlebell que desenvolve potência, força e resistência, com foco no movimento de quadril.',
+    instructions: [
+      'Posicione o kettlebell à frente dos pés.',
+      'Com as costas retas, dobre o quadril para trás e segure o kettlebell com as duas mãos.',
+      'Puxe o kettlebell para trás, entre as pernas.',
+      'Com um movimento explosivo do quadril (não dos braços), projete o kettlebell para frente e para cima, até a altura do peito ou ombros.',
+      'Deixe o kettlebell balançar de volta entre as pernas e repita.'
+    ],
+    tips: ['Mantenha as costas retas o tempo todo.', 'O movimento é gerado pelo quadril, os braços apenas guiam o peso.', 'Mantenha o core firme.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'kettlebell swing',
+    isCustom: false,
+  },
+  {
+    id: 'kettlebell-turkish-get-up',
+    name: 'Turkish Get-Up (TGU)',
+    emoji: '🏋️',
+    muscleGroup: 'Corpo Inteiro',
+    secondaryMuscleGroups: ['Ombros', 'Core', 'Abdômen'],
+    workoutType: ['Força', 'Mobilidade', 'Estabilidade'],
+    description: 'Exercício complexo que envolve levantar-se do chão para uma posição em pé enquanto se segura um kettlebell acima da cabeça.',
+    instructions: [
+      'Deite-se de costas, segurando o kettlebell com um braço esticado para o teto.',
+      'Use o braço e a perna opostos para se apoiar e rolar para o lado.',
+      'Empurre-se para uma posição sentada, depois para uma posição ajoelhada (ponte).',
+      'Levante-se completamente, mantendo o kettlebell acima da cabeça o tempo todo.',
+      'Reverta o movimento lentamente para voltar à posição inicial.'
+    ],
+    tips: ['Mantenha o olho no kettlebell durante todo o movimento.', 'Movimente-se de forma lenta e controlada.', 'Pratique sem peso ou com peso leve primeiro.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'turkish getup',
+    isCustom: false,
+  },
+  {
+    id: 'kettlebell-sumo-deadlift-high-pull',
+    name: 'Sumo Deadlift High Pull (KB)',
+    emoji: '🏋️',
+    muscleGroup: 'Corpo Inteiro',
+    secondaryMuscleGroups: ['Pernas', 'Glúteos', 'Costas', 'Ombros', 'Trapézio'],
+    workoutType: ['Força', 'Condicionamento', 'CrossFit'],
+    description: 'Movimento explosivo que combina um levantamento terra sumô com uma puxada alta.',
+    instructions: [
+      'Posicione-se com os pés mais afastados que a largura dos ombros, kettlebell no chão entre os pés.',
+      'Agache com as costas retas e segure o kettlebell.',
+      'Levante o peso estendendo quadris e joelhos.',
+      'Continue o movimento puxando o kettlebell para cima, em direção ao queixo, com os cotovelos altos e para fora.',
+      'Retorne o kettlebell ao chão de forma controlada.'
+    ],
+    tips: ['Mantenha o kettlebell próximo ao corpo.', 'O movimento deve ser fluido e explosivo.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'sumo deadlift highpull',
+    isCustom: false,
+  },
+  {
+    id: 'kettlebell-snatch',
+    name: 'Kettlebell Snatch',
+    emoji: '🏋️',
+    muscleGroup: 'Corpo Inteiro',
+    secondaryMuscleGroups: ['Ombros', 'Costas', 'Pernas', 'Core'],
+    workoutType: ['Força', 'Powerlifting', 'Condicionamento', 'Avançado'],
+    description: 'Exercício avançado que move o kettlebell do chão para acima da cabeça em um único movimento fluido.',
+    instructions: [
+      'Comece com um swing de kettlebell.',
+      'Quando o kettlebell estiver subindo, puxe-o para perto do corpo e, em seguida, "soque" a mão através da alça, finalizando com o kettlebell acima da cabeça e o braço esticado.',
+      'O movimento deve ser explosivo e coordenado.'
+    ],
+    tips: ['Domine o swing e o clean & press antes de tentar.', 'Mantenha o kettlebell próximo ao corpo.', 'Evite que o kettlebell bata no antebraço.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'kettlebell snatch',
+    isCustom: false,
+  },
+  {
+    id: 'kettlebell-windmill',
+    name: 'Kettlebell Windmill',
+    emoji: '🧘',
+    muscleGroup: 'Oblíquos',
+    secondaryMuscleGroups: ['Core', 'Ombros', 'Isquiotibiais', 'Mobilidade'],
+    workoutType: ['Força', 'Mobilidade', 'Flexibilidade'],
+    description: 'Exercício para core e mobilidade, onde se inclina lateralmente segurando um kettlebell acima da cabeça.',
+    instructions: [
+      'Segure um kettlebell acima da cabeça com um braço esticado.',
+      'Pés afastados na largura dos ombros, com o pé do lado oposto ao kettlebell apontado para fora.',
+      'Mantenha o braço com o kettlebell reto e olhe para ele.',
+      'Dobre o quadril e deslize a mão livre pela perna em direção ao chão, mantendo as costas retas.',
+      'Retorne à posição inicial.'
+    ],
+    tips: ['Mantenha o movimento lento e controlado.', 'Mantenha o joelho da perna da frente levemente flexionado.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'kettlebell windmill',
+    isCustom: false,
+  },
+  {
+    id: 'kettlebell-halo',
+    name: 'Kettlebell Halo',
+    emoji: '😇',
+    muscleGroup: 'Ombros',
+    secondaryMuscleGroups: ['Core', 'Mobilidade'],
+    workoutType: ['Aquecimento', 'Mobilidade'],
+    description: 'Exercício para mobilidade dos ombros e ativação do core.',
+    instructions: [
+      'Segure o kettlebell pela alça com as duas mãos, com a base para cima, na frente do peito.',
+      'Circule o kettlebell ao redor da cabeça, como se estivesse traçando uma auréola.',
+      'Mantenha o core firme e evite mover o tronco excessivamente.',
+      'Alterne a direção do círculo.'
+    ],
+    tips: ['Mantenha o movimento fluido e controlado.', 'Mantenha os cotovelos próximos à cabeça.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'kettlebell halo',
+    isCustom: false,
+  },
+  {
+    id: 'kettlebell-figure-8',
+    name: 'Kettlebell Figure 8',
+    emoji: '♾️',
+    muscleGroup: 'Core',
+    secondaryMuscleGroups: ['Pernas', 'Ombros'],
+    workoutType: ['Condicionamento', 'Coordenação'],
+    description: 'Exercício dinâmico que envolve passar o kettlebell entre as pernas em um movimento de "oito".',
+    instructions: [
+      'Fique com os pés afastados, kettlebell em uma mão.',
+      'Flexione o quadril e os joelhos, passando o kettlebell por baixo de uma perna para a outra mão.',
+      'Continue o movimento, traçando um "oito" ao redor das pernas.',
+      'Mantenha as costas retas e o core ativado.'
+    ],
+    tips: ['Mantenha o movimento fluido.', 'Evite bater o kettlebell nas pernas.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'kettlebell figure8',
+    isCustom: false,
+  },
+  {
+    id: 'kettlebell-bottom-up-press',
+    name: 'Kettlebell Bottom-Up Press',
+    emoji: '🏋️',
+    muscleGroup: 'Ombros',
+    secondaryMuscleGroups: ['Antebraços', 'Core', 'Estabilidade'],
+    workoutType: ['Força', 'Estabilidade', 'Avançado'],
+    description: 'Pressão de ombro com o kettlebell invertido (base para cima), desafiando a força de preensão e estabilidade.',
+    instructions: [
+      'Segure o kettlebell pela alça com a base voltada para cima.',
+      'Equilibre o kettlebell e pressione-o lentamente acima da cabeça.',
+      'O controle é crucial neste exercício.'
+    ],
+    tips: ['Comece com um peso leve.', 'Concentre-se em manter o kettlebell equilibrado.', 'Mantenha o core firme.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'kettlebell bottomup',
+    isCustom: false,
+  },
+  // Peso Corporal
+  {
+    id: 'bodyweight-lunge',
+    name: 'Afundo (Peso Corporal)',
+    emoji: '🦵',
+    muscleGroup: 'Pernas',
+    secondaryMuscleGroups: ['Glúteos', 'Quadríceps'],
+    workoutType: ['Força', 'Resistência', 'Calistenia'],
+    description: 'Exercício unilateral para pernas e glúteos, usando apenas o peso do corpo.',
+    instructions: [
+      'Dê um passo à frente com uma perna.',
+      'Abaixe o corpo até que ambos os joelhos formem um ângulo de 90 graus.',
+      'O joelho da frente não deve ultrapassar o tornozelo, e o joelho de trás deve quase tocar o chão.',
+      'Empurre com o calcanhar da perna da frente para retornar à posição inicial.',
+      'Alterne as pernas.'
+    ],
+    tips: ['Mantenha o tronco ereto.', 'Controle o movimento.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'afundo peso corporal',
+    isCustom: false,
+  },
+  {
+    id: 'mountain-climbers',
+    name: 'Escalador (Mountain Climber)',
+    emoji: '🧗',
+    muscleGroup: 'Core',
+    secondaryMuscleGroups: ['Cardio', 'Abdômen', 'Ombros'],
+    workoutType: ['Condicionamento', 'HIIT', 'Cardio'],
+    description: 'Exercício dinâmico que simula o movimento de escalar, trabalhando o core e elevando a frequência cardíaca.',
+    instructions: [
+      'Comece na posição de prancha alta.',
+      'Traga um joelho em direção ao peito, depois retorne à posição inicial.',
+      'Alterne as pernas rapidamente, como se estivesse correndo no lugar.'
+    ],
+    tips: ['Mantenha o quadril baixo e o core ativado.', 'Não deixe o quadril subir e descer excessivamente.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'escalador exercicio',
+    isCustom: false,
+  },
+  {
+    id: 'glute-bridge',
+    name: 'Ponte de Glúteos',
+    emoji: '🌉',
+    muscleGroup: 'Glúteos',
+    secondaryMuscleGroups: ['Isquiotibiais', 'Lombar'],
+    workoutType: ['Ativação', 'Força', 'Aquecimento'],
+    description: 'Exercício para ativação e fortalecimento dos glúteos e isquiotibiais.',
+    instructions: [
+      'Deite-se de barriga para cima com os joelhos dobrados e os pés apoiados no chão, próximos aos glúteos.',
+      'Mantenha os braços ao lado do corpo.',
+      'Eleve o quadril em direção ao teto, contraindo os glúteos no topo.',
+      'Mantenha uma linha reta dos ombros aos joelhos.',
+      'Abaixe o quadril lentamente.'
+    ],
+    tips: ['Concentre-se na contração dos glúteos.', 'Evite arquear excessivamente a lombar.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'ponte gluteos',
+    isCustom: false,
+  },
+  {
+    id: 'triceps-dip-bench',
+    name: 'Mergulho no Banco (Tríceps)',
+    emoji: '💪',
+    muscleGroup: 'Tríceps',
+    secondaryMuscleGroups: ['Peito', 'Ombros'],
+    workoutType: ['Força', 'Hipertrofia'],
+    description: 'Exercício para tríceps usando um banco ou cadeira.',
+    instructions: [
+      'Sente-se na borda de um banco, mãos apoiadas ao lado do quadril, dedos para frente.',
+      'Deslize o quadril para fora do banco, apoiando o peso nas mãos.',
+      'Pernas esticadas ou levemente flexionadas à frente.',
+      'Dobre os cotovelos e abaixe o corpo até os cotovelos formarem um ângulo de 90 graus.',
+      'Empurre de volta para cima, estendendo os braços.'
+    ],
+    tips: ['Mantenha os cotovelos apontados para trás, não para os lados.', 'Mantenha o corpo próximo ao banco.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'mergulho banco',
+    isCustom: false,
+  },
+  {
+    id: 'high-knees',
+    name: 'Corrida com Joelhos Altos',
+    emoji: '🏃‍♂️',
+    muscleGroup: 'Cardio',
+    secondaryMuscleGroups: ['Pernas', 'Core'],
+    workoutType: ['Aquecimento', 'Cardio', 'HIIT'],
+    description: 'Exercício cardiovascular que envolve correr no lugar, elevando os joelhos o mais alto possível.',
+    instructions: [
+      'Corra no lugar, elevando um joelho de cada vez em direção ao peito, o mais alto que conseguir.',
+      'Mantenha um ritmo rápido e contínuo.',
+      'Use os braços para ajudar no movimento.'
+    ],
+    tips: ['Mantenha o core ativado.', 'Aterrisse suavemente na ponta dos pés.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'joelhos altos',
+    isCustom: false,
+  },
+  {
+    id: 'side-plank',
+    name: 'Prancha Lateral',
+    emoji: '🧍‍♀️',
+    muscleGroup: 'Oblíquos',
+    secondaryMuscleGroups: ['Abdômen', 'Core'],
+    workoutType: ['Isométrico', 'Core'],
+    description: 'Exercício isométrico que fortalece os músculos oblíquos e o core.',
+    instructions: [
+      'Deite-se de lado, apoiando-se no antebraço, com o cotovelo diretamente abaixo do ombro.',
+      'Pés juntos ou um sobre o outro.',
+      'Eleve o quadril do chão, formando uma linha reta da cabeça aos pés.',
+      'Mantenha a posição pelo tempo desejado e depois troque de lado.'
+    ],
+    tips: ['Não deixe o quadril cair.', 'Mantenha o core firme.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'prancha lateral',
+    isCustom: false,
+  },
+  {
+    id: 'calf-raises-bodyweight',
+    name: 'Panturrilha (Peso Corporal)',
+    emoji: '🦵',
+    muscleGroup: 'Panturrilhas',
+    workoutType: ['Força', 'Resistência'],
+    description: 'Exercício para panturrilhas usando apenas o peso do corpo.',
+    instructions: [
+      'Fique em pé, pés apoiados no chão.',
+      'Eleve os calcanhares o máximo possível, contraindo as panturrilhas.',
+      'Pause no topo e desça lentamente.',
+      'Pode ser feito em um degrau para maior amplitude.'
+    ],
+    tips: ['Concentre-se na contração máxima.', 'Controle o movimento.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'panturrilha peso',
+    isCustom: false,
+  },
+  {
+    id: 'superman-exercise',
+    name: 'Superman',
+    emoji: '🦸',
+    muscleGroup: 'Lombar',
+    secondaryMuscleGroups: ['Glúteos', 'Costas'],
+    workoutType: ['Força', 'Corretivo'],
+    description: 'Exercício para fortalecer a região lombar e os eretores da espinha.',
+    instructions: [
+      'Deite-se de bruços com os braços esticados à frente e as pernas retas.',
+      'Simultaneamente, levante os braços, o peito e as pernas do chão, mantendo o pescoço alinhado com a coluna.',
+      'Mantenha a posição por alguns segundos e depois abaixe lentamente.',
+      'Concentre-se em usar os músculos da lombar e glúteos para levantar.'
+    ],
+    tips: ['Evite olhar para cima para não tensionar o pescoço.', 'Mantenha o movimento controlado.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'superman lombar',
+    isCustom: false,
+  },
+  // Elásticos (Superbands)
+  {
+    id: 'band-pull-apart',
+    name: 'Puxada com Elástico (Pull-Apart)',
+    emoji: '↔️',
+    muscleGroup: 'Ombros',
+    secondaryMuscleGroups: ['Costas', 'Trapézio'],
+    workoutType: ['Aquecimento', 'Corretivo', 'Força'],
+    description: 'Exercício para fortalecer os músculos da parte superior das costas e ombros posteriores, bom para postura.',
+    instructions: [
+      'Segure um elástico (superband leve ou theraband) com as duas mãos, palmas para baixo ou para dentro, braços esticados à frente na altura dos ombros.',
+      'Mantenha os braços retos e puxe o elástico para os lados, afastando as mãos uma da outra.',
+      'Aperte as omoplatas juntas na parte de trás do movimento.',
+      'Retorne lentamente à posição inicial.'
+    ],
+    tips: ['Mantenha os ombros para baixo, longe das orelhas.', 'Controle o movimento, não deixe o elástico "puxar" de volta.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'band pullapart',
+    isCustom: false,
+  },
+  {
+    id: 'band-good-morning',
+    name: 'Good Morning com Elástico',
+    emoji: '🌅',
+    muscleGroup: 'Isquiotibiais',
+    secondaryMuscleGroups: ['Glúteos', 'Lombar'],
+    workoutType: ['Aquecimento', 'Força', 'Mobilidade'],
+    description: 'Exercício para a cadeia posterior, similar ao stiff, usando a resistência de um elástico.',
+    instructions: [
+      'Pise no meio de uma superband com os dois pés, afastados na largura do quadril.',
+      'Passe a outra extremidade da banda por trás do pescoço, apoiando-a nos ombros/trapézio.',
+      'Mantenha as pernas quase retas (leve flexão nos joelhos).',
+      'Com as costas retas, dobre o quadril para frente, levando o tronco em direção ao chão.',
+      'Sinta o alongamento nos isquiotibiais.',
+      'Retorne à posição inicial estendendo o quadril.'
+    ],
+    tips: ['Mantenha as costas retas o tempo todo.', 'O movimento é uma dobradiça de quadril, não uma flexão da coluna.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'goodmorning elastico',
+    isCustom: false,
+  },
+  {
+    id: 'band-bicep-curl',
+    name: 'Rosca Bíceps com Elástico',
+    emoji: '💪',
+    muscleGroup: 'Bíceps',
+    secondaryMuscleGroups: ['Antebraços'],
+    workoutType: ['Força', 'Hipertrofia', 'Resistência'],
+    description: 'Rosca direta para bíceps usando a resistência de um elástico.',
+    instructions: [
+      'Pise no meio de uma superband com um ou dois pés.',
+      'Segure as extremidades da banda com as palmas das mãos voltadas para cima.',
+      'Mantenha os cotovelos próximos ao corpo.',
+      'Flexione os cotovelos, trazendo as mãos em direção aos ombros, contraindo os bíceps.',
+      'Abaixe lentamente, controlando a tensão do elástico.'
+    ],
+    tips: ['Evite balançar o corpo.', 'Ajuste a tensão pisando mais ou menos sobre a banda.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'biceps elastico',
+    isCustom: false,
+  },
+  {
+    id: 'band-glute-kickback',
+    name: 'Coice com Elástico (Glúteos)',
+    emoji: '🍑',
+    muscleGroup: 'Glúteos',
+    secondaryMuscleGroups: ['Isquiotibiais'],
+    workoutType: ['Ativação', 'Força', 'Hipertrofia'],
+    description: 'Exercício de isolamento para os glúteos usando um elástico (mini band ou superband).',
+    instructions: [
+      'Posicione uma mini band ao redor dos tornozelos ou prenda uma superband em um ponto baixo e coloque a outra extremidade no tornozelo.',
+      'Fique de quatro ou em pé, apoiando-se em algo se necessário.',
+      'Mantenha a perna levemente flexionada e estenda-a para trás, contraindo o glúteo.',
+      'Concentre-se em "chutar" com o calcanhar.',
+      'Retorne lentamente à posição inicial.'
+    ],
+    tips: ['Evite arquear excessivamente a lombar.', 'Concentre-se na contração do glúteo, não em levantar a perna o mais alto possível com impulso.'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'gluteo elastico',
+    isCustom: false,
+  },
 ];
 
