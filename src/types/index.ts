@@ -12,6 +12,18 @@ export type MuscleGroup =
   | 'Glutes'
   | 'Hamstrings'
   | 'Hips'
+  // From API Ninjas (alguns são mais específicos, podem ser mapeados ou adicionados)
+  | 'abdominals'
+  | 'abductors'
+  | 'adductors'
+  | 'calves'
+  | 'forearms'
+  | 'lats'
+  | 'lower_back'
+  | 'middle_back'
+  | 'neck'
+  | 'quadriceps'
+  | 'traps'
   | 'Other' // Standard "Other" option
   | string; // Allows for custom string values
 
@@ -35,14 +47,20 @@ export type WorkoutType =
   | 'Core'
   | 'Advanced'
   | 'Isometric' // Added for Plank nas Argolas
+  // From API Ninjas
+  | 'olympic_weightlifting'
+  | 'stretching'
+  | 'strongman'
   | 'Other'
   | string; // Allows for custom string values
+
+export type ExerciseDifficulty = 'beginner' | 'intermediate' | 'expert' | string;
 
 export interface Exercise {
   id: string;
   name: string;
   emoji: string;
-  muscleGroup: MuscleGroup; // Can now be any string if custom
+  muscleGroup: MuscleGroup; 
   secondaryMuscleGroups?: MuscleGroup[];
   workoutType: WorkoutType[];
   description: string;
@@ -51,6 +69,10 @@ export interface Exercise {
   isCustom?: boolean;
   imageUrl?: string; 
   dataAiHint?: string;
+  // Fields from API Ninjas
+  equipment?: string;
+  difficulty?: ExerciseDifficulty;
+  isFetchedFromAPI?: boolean; // Flag to identify API exercises
 }
 
 export interface NavigationItem {
@@ -131,3 +153,12 @@ export interface ActiveWorkoutLog {
   notes?: string; 
 }
 
+// Type for raw exercise data from API Ninjas
+export interface ApiNinjaExercise {
+  name: string;
+  type: string; // e.g., "strength"
+  muscle: string; // e.g., "biceps"
+  equipment: string; // e.g., "dumbbell"
+  difficulty: string; // e.g., "beginner"
+  instructions: string;
+}
