@@ -3,7 +3,7 @@ import type { Exercise } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Tag, Edit3 } from 'lucide-react';
+import { ChevronRight, Edit3, Cloud, UserCog, Star } from 'lucide-react';
 import Image from 'next/image';
 
 interface ExerciseCardProps {
@@ -28,17 +28,30 @@ export function ExerciseCard({ exercise, onViewDetails, onEditExercise }: Exerci
       )}
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
-          <div>
+          <div> {/* Container for title and status badges */}
             <CardTitle className="text-2xl mb-1 flex items-center">
               <span className="text-3xl mr-2">{exercise.emoji}</span>
               {exercise.name}
             </CardTitle>
-            {exercise.isCustom && (
-              <Badge variant="outline" className="mb-2 border-accent text-accent">
-                <Tag className="mr-1 h-3 w-3" /> Custom
-              </Badge>
-            )}
+            <div className="flex flex-wrap gap-1 mt-1 mb-2"> {/* Container for status badges */}
+              {exercise.isFetchedFromAPI && (
+                <Badge variant="outline" className="text-xs text-sky-500 border-sky-500">
+                  <Cloud className="mr-1 h-3 w-3" /> API
+                </Badge>
+              )}
+              {exercise.isCustom && !exercise.isFetchedFromAPI && (
+                <Badge variant="outline" className="text-xs text-amber-500 border-amber-500">
+                  <UserCog className="mr-1 h-3 w-3" /> Custom
+                </Badge>
+              )}
+              {!exercise.isCustom && !exercise.isFetchedFromAPI && (
+                <Badge variant="secondary" className="text-xs">
+                  <Star className="mr-1 h-3 w-3" /> Core
+                </Badge>
+              )}
+            </div>
           </div>
+          {/* Future actions like a quick add to plan could go here */}
         </div>
         <div className="flex flex-wrap gap-2 mt-1">
           <Badge variant="secondary">{exercise.muscleGroup}</Badge>
@@ -58,12 +71,12 @@ export function ExerciseCard({ exercise, onViewDetails, onEditExercise }: Exerci
             View Details <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
         )}
-        {onEditExercise && (
+        {onEditExercise && !exercise.isFetchedFromAPI && ( // Only allow editing non-API exercises
           <Button variant="outline" size="sm" onClick={() => onEditExercise(exercise)} className="text-accent border-accent hover:bg-accent/10 hover:text-accent">
             <Edit3 className="mr-2 h-4 w-4" /> Edit
           </Button>
         )}
-         {(!onViewDetails && !onEditExercise) && <div className="h-10"></div>}
+         {(!onViewDetails && (!onEditExercise || exercise.isFetchedFromAPI)) && <div className="h-10"></div>} {/* Ensure footer has consistent height */}
       </CardFooter>
     </Card>
   );
