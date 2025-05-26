@@ -2,7 +2,7 @@
 'use client';
 
 import type { WorkoutSession } from '@/types';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'; // Removed CardDescription
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Edit3, Trash2, ListChecks } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -31,7 +31,7 @@ export function SessionCard({ session, onEditDetails, onDelete, onManageExercise
   return (
     <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border/70">
       <CardHeader className="flex flex-row items-start justify-between pb-2 pt-4 px-4 gap-2">
-        <div className="flex-grow min-w-0"> {/* Ensure title can shrink and wrap */}
+        <div className="flex-grow min-w-0"> 
           <CardTitle className="text-lg text-foreground break-words">{session.name}</CardTitle>
           {session.dayOfWeek && (
             <Badge variant="outline" className="mt-1 text-xs">{session.dayOfWeek}</Badge>
@@ -40,29 +40,29 @@ export function SessionCard({ session, onEditDetails, onDelete, onManageExercise
         <div className="flex items-center gap-1 shrink-0">
           <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => onEditDetails(session)}>
             <Edit3 className="h-4 w-4" />
-            <span className="sr-only">Edit Session Details</span>
+            <span className="sr-only">Editar Detalhes da Sessão</span>
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
                 <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Delete Session</span>
+                <span className="sr-only">Excluir Sessão</span>
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete Session: {session.name}?</AlertDialogTitle>
+                <AlertDialogTitle>Excluir Sessão: {session.name}?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently remove this session and all its planned exercises. This action cannot be undone.
+                  Isso removerá permanentemente esta sessão e todos os seus exercícios planejados. Esta ação não pode ser desfeita.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction 
                   onClick={() => onDelete(session.id)}
                   className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                 >
-                  Delete Session
+                  Excluir Sessão
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -71,12 +71,12 @@ export function SessionCard({ session, onEditDetails, onDelete, onManageExercise
       </CardHeader>
       <CardContent className="px-4 pb-3 pt-1">
         <Badge variant="secondary" className="text-xs mb-2">
-          {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
+          {exerciseCount} exercício{exerciseCount !== 1 ? 's' : ''}
         </Badge>
         {session.notes && (
           <p className="text-xs text-muted-foreground line-clamp-2">{session.notes}</p>
         )}
-         {!session.notes && exerciseCount === 0 && <div className="h-5"></div>} {/* Placeholder for consistent height */}
+         {!session.notes && exerciseCount === 0 && <div className="h-5"></div>} 
       </CardContent>
       <CardFooter className="pt-3 px-4 pb-4 border-t">
         <Button 
@@ -85,7 +85,7 @@ export function SessionCard({ session, onEditDetails, onDelete, onManageExercise
           className="w-full text-primary border-primary hover:bg-primary/10 hover:text-primary"
           onClick={() => onManageExercises(session)}
         >
-          <ListChecks className="mr-2 h-4 w-4" /> Manage Exercises
+          <ListChecks className="mr-2 h-4 w-4" /> Gerenciar Exercícios
         </Button>
       </CardFooter>
     </Card>

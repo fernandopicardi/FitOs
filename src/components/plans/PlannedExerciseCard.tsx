@@ -9,13 +9,13 @@ import { Badge } from '@/components/ui/badge';
 
 interface PlannedExerciseCardProps {
   plannedExercise: PlannedExercise;
-  exercise?: MasterExercise; // Master exercise details for name/emoji
+  exercise?: MasterExercise; 
   onEdit: () => void;
   onDelete: () => void;
 }
 
 export function PlannedExerciseCard({ plannedExercise, exercise, onEdit, onDelete }: PlannedExerciseCardProps) {
-  const displayName = plannedExercise.name || exercise?.name || "Exercise";
+  const displayName = plannedExercise.name || exercise?.name || "Exercício";
   const displayEmoji = plannedExercise.emoji || exercise?.emoji || "💪";
 
   return (
@@ -26,26 +26,26 @@ export function PlannedExerciseCard({ plannedExercise, exercise, onEdit, onDelet
           <div className="flex-grow">
             <p className="font-medium text-foreground truncate">{displayName}</p>
             <div className="flex flex-wrap gap-2 mt-1">
-              {plannedExercise.sets && <Badge variant="secondary" className="text-xs">Sets: {plannedExercise.sets}</Badge>}
+              {plannedExercise.sets && <Badge variant="secondary" className="text-xs">Séries: {plannedExercise.sets}</Badge>}
               {plannedExercise.reps && <Badge variant="secondary" className="text-xs">Reps: {plannedExercise.reps}</Badge>}
-              {plannedExercise.rest && <Badge variant="outline" className="text-xs">Rest: {plannedExercise.rest}</Badge>}
+              {plannedExercise.rest && <Badge variant="outline" className="text-xs">Descanso: {plannedExercise.rest}</Badge>}
             </div>
           </div>
         </div>
         <div className="flex gap-1 shrink-0">
           <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={onEdit}>
             <Edit3 className="h-4 w-4" />
-            <span className="sr-only">Edit Exercise</span>
+            <span className="sr-only">Editar Exercício</span>
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={onDelete}>
             <Trash2 className="h-4 w-4" />
-            <span className="sr-only">Remove Exercise</span>
+            <span className="sr-only">Remover Exercício</span>
           </Button>
         </div>
       </CardContent>
       {plannedExercise.notes && (
         <div className="px-3 pb-3 pt-0 border-t mt-2">
-          <p className="text-xs text-muted-foreground pt-2"><strong>Notes:</strong> {plannedExercise.notes}</p>
+          <p className="text-xs text-muted-foreground pt-2"><strong>Notas:</strong> {plannedExercise.notes}</p>
         </div>
       )}
     </Card>

@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: 'FitOS',
-  description: 'Your ultimate companion for planning and logging workouts.',
+  description: 'Seu companheiro definitivo para planejar e registrar treinos.',
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="pt-BR" className="dark">
       <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased font-sans`}>
         {children}
         <Toaster />

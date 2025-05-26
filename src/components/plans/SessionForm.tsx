@@ -25,18 +25,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const DAYS_OF_WEEK: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Custom Day', 'Rest Day'];
+const DAYS_OF_WEEK: DayOfWeek[] = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo', 'Dia Customizado', 'Dia de Descanso'];
 
 const sessionFormSchema = z.object({
-  name: z.string().min(2, "Session name must be at least 2 characters.").max(100),
+  name: z.string().min(2, "O nome da sessão deve ter pelo menos 2 caracteres.").max(100),
   dayOfWeek: z.enum(DAYS_OF_WEEK as [DayOfWeek, ...DayOfWeek[]]).optional(),
-  notes: z.string().max(500, "Notes must be 500 characters or less.").optional(),
+  notes: z.string().max(500, "As notas devem ter no máximo 500 caracteres.").optional(),
 });
 
 export type SessionFormValues = z.infer<typeof sessionFormSchema>;
 
 interface SessionFormProps {
-  session?: Omit<WorkoutSession, 'id' | 'exercises'>; // For editing sessions
+  session?: Omit<WorkoutSession, 'id' | 'exercises'>; 
   onSubmit: (data: SessionFormValues) => void;
   onCancel: () => void;
 }
@@ -67,9 +67,9 @@ export function SessionForm({ session, onSubmit, onCancel }: SessionFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Session Name</FormLabel>
+              <FormLabel>Nome da Sessão</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Push Day, Leg Annihilation" {...field} />
+                <Input placeholder="ex: Dia de Empurrar, Aniquilação de Pernas" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -81,11 +81,11 @@ export function SessionForm({ session, onSubmit, onCancel }: SessionFormProps) {
           name="dayOfWeek"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Day of Week (Optional)</FormLabel>
+              <FormLabel>Dia da Semana (Opcional)</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a day (optional)" />
+                    <SelectValue placeholder="Selecione um dia (opcional)" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -106,10 +106,10 @@ export function SessionForm({ session, onSubmit, onCancel }: SessionFormProps) {
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notes (Optional)</FormLabel>
+              <FormLabel>Notas (Opcional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Any specific focus for this session, reminders, etc."
+                  placeholder="Qualquer foco específico para esta sessão, lembretes, etc."
                   className="resize-y min-h-[80px]"
                   {...field}
                 />
@@ -121,10 +121,10 @@ export function SessionForm({ session, onSubmit, onCancel }: SessionFormProps) {
 
         <div className="flex justify-end space-x-3 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
+            Cancelar
           </Button>
           <Button type="submit" className="bg-primary hover:bg-primary/90">
-            {session ? "Save Session" : "Add Session"}
+            {session ? "Salvar Sessão" : "Adicionar Sessão"}
           </Button>
         </div>
       </form>

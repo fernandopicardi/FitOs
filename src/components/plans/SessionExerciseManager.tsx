@@ -15,15 +15,15 @@ import { PlannedExerciseCard } from './PlannedExerciseCard';
 interface SessionExerciseManagerProps {
   session: WorkoutSession;
   allExercises: Exercise[];
-  onSessionUpdated: (updatedSession: WorkoutSession) => void; // Callback to inform PlanEditor of changes
-  onDone: () => void; // Callback to go back to PlanEditor's session list
+  onSessionUpdated: (updatedSession: WorkoutSession) => void; 
+  onDone: () => void; 
 }
 
 export function SessionExerciseManager({ session: initialSession, allExercises, onSessionUpdated, onDone }: SessionExerciseManagerProps) {
   const [currentSession, setCurrentSession] = useState<WorkoutSession>(JSON.parse(JSON.stringify(initialSession)));
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
   const [isPlannedExerciseFormOpen, setIsPlannedExerciseFormOpen] = useState(false);
-  const [exerciseToPlan, setExerciseToPlan] = useState<Exercise | null>(null); // Exercise selected from picker
+  const [exerciseToPlan, setExerciseToPlan] = useState<Exercise | null>(null); 
   const [plannedExerciseToEdit, setPlannedExerciseToEdit] = useState<PlannedExercise | null>(null);
 
   const handleOpenExercisePicker = () => setIsExercisePickerOpen(true);
@@ -31,14 +31,14 @@ export function SessionExerciseManager({ session: initialSession, allExercises, 
   const handleExerciseSelected = (selectedExercise: Exercise) => {
     setIsExercisePickerOpen(false);
     setExerciseToPlan(selectedExercise);
-    setPlannedExerciseToEdit(null); // Ensure we're adding new, not editing
+    setPlannedExerciseToEdit(null); 
     setIsPlannedExerciseFormOpen(true);
   };
 
   const handleEditPlannedExercise = (plannedExercise: PlannedExercise) => {
     const masterExercise = allExercises.find(ex => ex.id === plannedExercise.exerciseId);
     if (masterExercise) {
-      setExerciseToPlan(masterExercise); // To provide context like name/emoji
+      setExerciseToPlan(masterExercise); 
       setPlannedExerciseToEdit(plannedExercise);
       setIsPlannedExerciseFormOpen(true);
     }
@@ -48,16 +48,16 @@ export function SessionExerciseManager({ session: initialSession, allExercises, 
     const updatedExercises = currentSession.exercises.filter(pe => pe.id !== plannedExerciseId);
     const updatedSession = { ...currentSession, exercises: updatedExercises };
     setCurrentSession(updatedSession);
-    onSessionUpdated(updatedSession); // Inform parent immediately
+    onSessionUpdated(updatedSession); 
   };
 
   const handlePlannedExerciseFormSubmit = (data: PlannedExerciseFormValues) => {
     let updatedExercises: PlannedExercise[];
-    if (plannedExerciseToEdit) { // Editing existing
+    if (plannedExerciseToEdit) { 
       updatedExercises = currentSession.exercises.map(pe =>
         pe.id === plannedExerciseToEdit.id ? { ...plannedExerciseToEdit, ...data } : pe
       );
-    } else if (exerciseToPlan) { // Adding new
+    } else if (exerciseToPlan) { 
       const newPlannedExercise: PlannedExercise = {
         id: `plannedex-${Date.now()}`,
         exerciseId: exerciseToPlan.id,
@@ -67,12 +67,12 @@ export function SessionExerciseManager({ session: initialSession, allExercises, 
       };
       updatedExercises = [...currentSession.exercises, newPlannedExercise];
     } else {
-      return; // Should not happen
+      return; 
     }
 
     const updatedSession = { ...currentSession, exercises: updatedExercises };
     setCurrentSession(updatedSession);
-    onSessionUpdated(updatedSession); // Inform parent immediately
+    onSessionUpdated(updatedSession); 
 
     setIsPlannedExerciseFormOpen(false);
     setExerciseToPlan(null);
@@ -84,24 +84,24 @@ export function SessionExerciseManager({ session: initialSession, allExercises, 
       <div className="flex justify-between items-center mb-6 pb-4 border-b">
         <div>
           <Button variant="ghost" onClick={onDone} className="mb-2 text-primary hover:text-primary/80 -ml-2">
-            <ArrowLeft className="mr-2 h-5 w-5" /> Back to Sessions
+            <ArrowLeft className="mr-2 h-5 w-5" /> Voltar para Sessões
           </Button>
-          <h2 className="text-2xl font-bold text-primary">Manage Exercises for: {currentSession.name}</h2>
-          <p className="text-muted-foreground">Add, edit, or remove exercises for this session.</p>
+          <h2 className="text-2xl font-bold text-primary">Gerenciar Exercícios para: {currentSession.name}</h2>
+          <p className="text-muted-foreground">Adicione, edite ou remova exercícios para esta sessão.</p>
         </div>
       </div>
 
       <Card>
         <CardHeader className="flex flex-row justify-between items-center">
-          <CardTitle>Exercises in this Session</CardTitle>
+          <CardTitle>Exercícios nesta Sessão</CardTitle>
           <Button variant="outline" onClick={handleOpenExercisePicker} className="text-primary border-primary hover:bg-primary/10">
-            <PlusCircle className="mr-2 h-5 w-5" /> Add Exercise
+            <PlusCircle className="mr-2 h-5 w-5" /> Adicionar Exercício
           </Button>
         </CardHeader>
         <CardContent>
           {currentSession.exercises.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
-              No exercises added to this session yet. Click &quot;Add Exercise&quot; to get started.
+              Nenhum exercício adicionado a esta sessão ainda. Clique em &quot;Adicionar Exercício&quot; para começar.
             </p>
           ) : (
             <ScrollArea className="h-[400px] pr-2">
@@ -112,7 +112,7 @@ export function SessionExerciseManager({ session: initialSession, allExercises, 
                     <PlannedExerciseCard
                       key={plannedEx.id}
                       plannedExercise={plannedEx}
-                      exercise={masterEx} // Pass master exercise for name/emoji if not on plannedEx
+                      exercise={masterEx} 
                       onEdit={() => handleEditPlannedExercise(plannedEx)}
                       onDelete={() => handleDeletePlannedExercise(plannedEx.id)}
                     />
@@ -142,7 +142,7 @@ export function SessionExerciseManager({ session: initialSession, allExercises, 
             }
           }}
           onSubmit={handlePlannedExerciseFormSubmit}
-          exerciseName={exerciseToPlan?.name || plannedExerciseToEdit?.name || "Exercise"}
+          exerciseName={exerciseToPlan?.name || plannedExerciseToEdit?.name || "Exercício"}
           initialValues={plannedExerciseToEdit ? {
             sets: plannedExerciseToEdit.sets || "",
             reps: plannedExerciseToEdit.reps || "",

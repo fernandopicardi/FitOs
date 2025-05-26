@@ -1,19 +1,18 @@
 
 export type MuscleGroup = 
-  | 'Chest' 
-  | 'Back' 
-  | 'Legs' 
-  | 'Shoulders' 
-  | 'Biceps' 
-  | 'Triceps' 
-  | 'Abs' 
-  | 'Full Body'
+  | 'Peito' 
+  | 'Costas' 
+  | 'Pernas' 
+  | 'Ombros' 
+  | 'Bíceps' 
+  | 'Tríceps' 
+  | 'Abdômen' 
+  | 'Corpo Inteiro'
   | 'Cardio'
-  | 'Glutes'
-  | 'Hamstrings'
-  | 'Hips'
-  // From API Ninjas (alguns são mais específicos, podem ser mapeados ou adicionados)
-  | 'abdominals'
+  | 'Glúteos'
+  | 'Isquiotibiais'
+  | 'Quadril'
+  | 'abdominals' 
   | 'abductors'
   | 'adductors'
   | 'calves'
@@ -24,37 +23,36 @@ export type MuscleGroup =
   | 'neck'
   | 'quadriceps'
   | 'traps'
-  | 'Other' // Standard "Other" option
-  | string; // Allows for custom string values
+  | 'Outro' 
+  | string; 
 
 export type WorkoutType = 
-  | 'Strength' 
+  | 'Força' 
   | 'Cardio' 
-  | 'Flexibility' 
-  | 'Hypertrophy' 
+  | 'Flexibilidade' 
+  | 'Hipertrofia' 
   | 'Powerlifting' 
-  | 'Bodybuilding'
+  | 'Fisiculturismo'
   | 'CrossFit'
   | 'Yoga'
-  | 'Warm-up'
-  | 'Cooldown'
+  | 'Aquecimento'
+  | 'Desaquecimento'
   | 'Mobilidade'
-  | 'Plyometrics'
-  | 'Corrective'
-  | 'Calisthenics'
+  | 'Pliometria'
+  | 'Corretivo'
+  | 'Calistenia'
   | 'HIIT'
-  | 'Endurance'
+  | 'Resistência'
   | 'Core'
-  | 'Advanced'
-  | 'Isometric' // Added for Plank nas Argolas
-  // From API Ninjas
+  | 'Avançado'
+  | 'Isométrico'
   | 'olympic_weightlifting'
   | 'stretching'
   | 'strongman'
-  | 'Other'
-  | string; // Allows for custom string values
+  | 'Outro'
+  | string; 
 
-export type ExerciseDifficulty = 'beginner' | 'intermediate' | 'expert' | string;
+export type ExerciseDifficulty = 'iniciante' | 'intermediário' | 'avançado' | string;
 
 export interface Exercise {
   id: string;
@@ -69,10 +67,9 @@ export interface Exercise {
   isCustom?: boolean;
   imageUrl?: string; 
   dataAiHint?: string;
-  // Fields from API Ninjas
   equipment?: string;
   difficulty?: ExerciseDifficulty;
-  isFetchedFromAPI?: boolean; // Flag to identify API exercises
+  isFetchedFromAPI?: boolean; 
 }
 
 export interface NavigationItem {
@@ -81,7 +78,6 @@ export interface NavigationItem {
   icon?: React.ElementType;
 }
 
-// --- Workout Plans ---
 export interface PlannedExercise {
   id: string; 
   exerciseId: string; 
@@ -93,7 +89,7 @@ export interface PlannedExercise {
   notes?: string;
 }
 
-export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday' | 'Custom Day' | 'Rest Day';
+export type DayOfWeek = 'Segunda-feira' | 'Terça-feira' | 'Quarta-feira' | 'Quinta-feira' | 'Sexta-feira' | 'Sábado' | 'Domingo' | 'Dia Customizado' | 'Dia de Descanso';
 
 
 export interface WorkoutSession {
@@ -119,13 +115,12 @@ export interface PlannedExerciseFormValues {
   notes?: string;
 }
 
-// --- Workout Logging ---
 export interface LoggedSetData {
   id: string;
   setNumber: number;
   weight: string; 
   reps: string;   
-  rpe?: string; // Rate of Perceived Exertion
+  rpe?: string; 
   isCompleted: boolean;
   notes?: string; 
 }
@@ -153,12 +148,11 @@ export interface ActiveWorkoutLog {
   notes?: string; 
 }
 
-// Type for raw exercise data from API Ninjas
 export interface ApiNinjaExercise {
   name: string;
-  type: string; // e.g., "strength"
-  muscle: string; // e.g., "biceps"
-  equipment: string; // e.g., "dumbbell"
-  difficulty: string; // e.g., "beginner"
+  type: string; 
+  muscle: string; 
+  equipment: string; 
+  difficulty: string; 
   instructions: string;
 }

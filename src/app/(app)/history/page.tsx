@@ -23,8 +23,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend as RechartsLegend } from 'recharts'; 
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegendContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend as RechartsLegend, Tooltip as RechartsTooltip } from 'recharts'; 
+import { ChartContainer, ChartTooltipContent, ChartLegendContent } from '@/components/ui/chart';
 
 const LOCAL_STORAGE_HISTORY_KEY = 'workoutWizardHistory';
 
@@ -34,7 +34,7 @@ interface PersonalRecord {
   emoji: string;
   maxWeight: number;
   reps: string;
-  date: string; // ISO string
+  date: string; 
   formattedDate: string;
 }
 
@@ -53,7 +53,7 @@ export default function WorkoutHistoryPage() {
           setWorkoutHistory(history);
         }
       } catch (error) {
-        console.error("Failed to load workout history from localStorage", error);
+        console.error("Falha ao carregar histórico de treinos do localStorage", error);
         toast({
           title: "Erro ao Carregar Histórico",
           description: "Não foi possível recuperar seu histórico de treino.",
@@ -79,14 +79,12 @@ export default function WorkoutHistoryPage() {
     const sortedMonths = Object.keys(dataByMonth).sort((a, b) => {
       const [monthA, yearA] = a.split(' ');
       const [monthB, yearB] = b.split(' ');
-      // Ensure month names are correctly parsed by creating a full date string
-      // This assumes month names from format 'MMM' are English for Date constructor
       const dateA = new Date(Date.parse(monthA + " 1," + yearA));
       const dateB = new Date(Date.parse(monthB + " 1," + yearB));
       return dateA.getTime() - dateB.getTime();
     });
     return sortedMonths.map(monthYear => ({
-      month: monthYear.charAt(0).toUpperCase() + monthYear.slice(1), // Capitalize first letter
+      month: monthYear.charAt(0).toUpperCase() + monthYear.slice(1), 
       workouts: dataByMonth[monthYear],
     }));
   }, [workoutHistory]);
@@ -117,7 +115,7 @@ export default function WorkoutHistoryPage() {
                 maxWeight: weight,
                 reps: set.reps,
                 date: log.date,
-                formattedDate: format(parseISO(log.date), "dd/MM/yy"),
+                formattedDate: format(parseISO(log.date), "dd/MM/yy", { locale: ptBR }),
               };
             }
           }
@@ -140,7 +138,7 @@ export default function WorkoutHistoryPage() {
         });
       }
     } catch (error) {
-      console.error("Failed to clear workout history from localStorage", error);
+      console.error("Falha ao apagar histórico de treinos do localStorage", error);
       toast({
         title: "Erro ao Apagar Histórico",
         description: "Não foi possível limpar o histórico. Tente novamente.",
@@ -161,7 +159,7 @@ export default function WorkoutHistoryPage() {
         });
       }
     } catch (error) {
-      console.error(`Failed to delete log ${logId} from localStorage`, error);
+      console.error(`Falha ao excluir log ${logId} do localStorage`, error);
       toast({
         title: "Erro ao Apagar Treino",
         description: "Não foi possível remover o registro deste treino. Tente novamente.",
@@ -179,7 +177,7 @@ export default function WorkoutHistoryPage() {
         />
         <div className="text-center py-10">
           <ListChecks className="mx-auto h-12 w-12 text-primary animate-pulse" />
-          <p className="mt-4 text-lg text-muted-foreground">Loading your workout history...</p>
+          <p className="mt-4 text-lg text-muted-foreground">Carregando seu histórico de treinos...</p>
         </div>
       </div>
     );
@@ -202,7 +200,7 @@ export default function WorkoutHistoryPage() {
               <AlertDialogHeader>
                 <AlertDialogTitle className="flex items-center gap-2">
                   <AlertTriangle className="h-6 w-6 text-destructive" />{' '}
- Tem Certeza Absoluta?
+                  Tem Certeza Absoluta?
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   Esta ação não pode ser desfeita. Isso apagará permanentemente todo o seu histórico de treinos.
@@ -229,15 +227,15 @@ export default function WorkoutHistoryPage() {
             <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-4">
               <CalendarClock className="h-16 w-16 text-primary" />
             </div>
-            <CardTitle className="text-2xl">No Workout History Yet</CardTitle>
-            <CardDescription className="text-lg text-muted-foreground mt-1">Looks like your fitness journal is waiting for its first entry!&quot;</CardDescription>
+            <CardTitle className="text-2xl">Nenhum Histórico de Treino Ainda</CardTitle>
+            <CardDescription className="text-lg text-muted-foreground mt-1">Parece que seu diário fitness está esperando pela primeira entrada!</CardDescription>
           </CardHeader>
           <CardContent className="p-0 mt-6">
             <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-md">
               <Link
                 href="/log"
               >
-                <Activity className="mr-2 h-5 w-5" /> Log Your First Workout
+                <Activity className="mr-2 h-5 w-5" /> Registre Seu Primeiro Treino
               </Link>
             </Button>
           </CardContent>
@@ -249,9 +247,9 @@ export default function WorkoutHistoryPage() {
               <CardHeader>
                 <CardTitle className="text-xl flex items-center gap-2">
                   <BarChart3 className="h-6 w-6 text-primary" />
-                  Monthly Workout Consistency
+                  Consistência Mensal de Treinos
                 </CardTitle>
-                <CardDescription>Number of workouts logged per month.</CardDescription>
+                <CardDescription>Número de treinos registrados por mês.</CardDescription>
               </CardHeader>
               <CardContent className="pl-2 pr-6 pb-6 pt-2">
                 <ChartContainer config={chartConfig} className="h-[250px] w-full">
@@ -274,7 +272,7 @@ export default function WorkoutHistoryPage() {
                         allowDecimals={false}
                         className="fill-muted-foreground"
                       />
-                      <ChartTooltip
+                      <RechartsTooltip
                         cursorStyle={{ fill: 'hsl(var(--muted)/0.3)' }}
                         content={<ChartTooltipContent indicator="dot" />}
                       />
@@ -287,8 +285,7 @@ export default function WorkoutHistoryPage() {
             </Card>
           )}
 
-          {/* Personal Records Card Section */}
-          {workoutHistory.length > 0 && ( // Only show PR card if there is history to analyze
+          {workoutHistory.length > 0 && ( 
             <Card className="shadow-lg mt-8">
               <CardHeader>
                 <CardTitle className="text-xl flex items-center gap-2">
@@ -301,9 +298,9 @@ export default function WorkoutHistoryPage() {
                 {isLoading ? (
                    <p className="text-muted-foreground text-center py-4">Carregando recordes...</p>
                 ) : personalRecordsData.length === 0 ? (
- <p className="text-muted-foreground text-center py-4">{' '}{`
- Nenhuma recorde pessoal encontrado ainda. Registre alguns treinos com peso para ver seus PRs!
- `}</p>
+                 <p className="text-muted-foreground text-center py-4">
+                    Nenhum recorde pessoal encontrado ainda. Registre alguns treinos com peso para ver seus PRs!
+                 </p>
                 ) : (
                     <ul className="space-y-3">
                     {personalRecordsData.map(pr => (

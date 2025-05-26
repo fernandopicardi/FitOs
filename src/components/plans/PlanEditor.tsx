@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label'; // Keep Label import
+import { Label } from '@/components/ui/label';
 import { PlusCircle, Save, ArrowLeft, Trash2 } from 'lucide-react';
 import { SessionCard } from './SessionCard';
 import { SessionForm, type SessionFormValues } from './SessionForm';
-import { SessionExerciseManager } from './SessionExerciseManager'; // New import
+import { SessionExerciseManager } from './SessionExerciseManager';
 import {
   Dialog,
   DialogContent,
@@ -35,7 +35,7 @@ import {
 
 interface PlanEditorProps {
   initialPlan: WorkoutPlan;
-  allExercises: Exercise[]; // New prop
+  allExercises: Exercise[]; 
   onUpdatePlan: (updatedPlan: WorkoutPlan) => void;
   onClose: () => void;
   onDeletePlan: (planId: string) => void;
@@ -66,7 +66,7 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
       setEditedPlan(prev => ({
         ...prev,
         sessions: prev.sessions.map(s => 
-          s.id === sessionToEditDetails.id ? { ...s, ...data, exercises: s.exercises } : s // Preserve exercises
+          s.id === sessionToEditDetails.id ? { ...s, ...data, exercises: s.exercises } : s 
         ),
       }));
     } else {
@@ -93,7 +93,6 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
   
   const handleSaveChangesToPlan = () => {
     onUpdatePlan(editedPlan);
-    // Optionally close editor or give feedback: onClose();
   };
 
   const handleManageSessionExercises = (session: WorkoutSession) => {
@@ -105,7 +104,6 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
       ...prev,
       sessions: prev.sessions.map(s => s.id === updatedSession.id ? updatedSession : s)
     }));
-    // No need to close manager here, onUpdatePlan will be called when user saves the whole plan
   };
 
   if (managingExercisesForSession) {
@@ -113,7 +111,7 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
       <SessionExerciseManager
         session={managingExercisesForSession}
         allExercises={allExercises}
-        onSessionUpdated={handleSessionExercisesUpdated} // This will update the session in editedPlan
+        onSessionUpdated={handleSessionExercisesUpdated} 
         onDone={() => setManagingExercisesForSession(null)}
       />
     );
@@ -124,7 +122,7 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b gap-4">
         <div>
           <Button variant="ghost" onClick={onClose} className="mb-2 text-primary hover:text-primary/80 -ml-2 sm:ml-0">
-            <ArrowLeft className="mr-2 h-5 w-5" /> Back to Plans
+            <ArrowLeft className="mr-2 h-5 w-5" /> Voltar para Planos
           </Button>
           <h1 className="text-3xl font-bold text-primary break-all">{editedPlan.name}</h1>
           {editedPlan.description && <p className="text-muted-foreground mt-1">{editedPlan.description}</p>}
@@ -133,44 +131,44 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" className="flex-1 sm:flex-none">
-                <Trash2 className="mr-2 h-4 w-4" /> Delete Plan
+                <Trash2 className="mr-2 h-4 w-4" /> Excluir Plano
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete Plan: {editedPlan.name}?</AlertDialogTitle>
+                <AlertDialogTitle>Excluir Plano: {editedPlan.name}?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action is permanent and cannot be undone. Are you sure you want to delete this workout plan?
+                  Esta ação é permanente e não pode ser desfeita. Tem certeza de que deseja excluir este plano de treino?
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
                     onDeletePlan(editedPlan.id);
-                    onClose(); // Close editor after deletion
+                    onClose(); 
                   }}
                   className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                 >
-                  Confirm Delete
+                  Confirmar Exclusão
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
           <Button onClick={handleSaveChangesToPlan} className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-md flex-1 sm:flex-none">
-            <Save className="mr-2 h-5 w-5" /> Save Plan
+            <Save className="mr-2 h-5 w-5" /> Salvar Plano
           </Button>
         </div>
       </div>
 
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle>Plan Details</CardTitle>
-          <CardDescription>Modify the name and description of your workout plan.</CardDescription>
+          <CardTitle>Detalhes do Plano</CardTitle>
+          <CardDescription>Modifique o nome e a descrição do seu plano de treino.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="planName">Plan Name</Label>
+            <Label htmlFor="planName">Nome do Plano</Label>
             <Input 
               id="planName" 
               name="name" 
@@ -180,7 +178,7 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
             />
           </div>
           <div>
-            <Label htmlFor="planDescription">Description (Optional)</Label>
+            <Label htmlFor="planDescription">Descrição (Opcional)</Label>
             <Textarea 
               id="planDescription" 
               name="description" 
@@ -195,8 +193,8 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
       <Card className="shadow-lg">
         <CardHeader className="flex flex-row justify-between items-center">
           <div>
-            <CardTitle>Workout Sessions</CardTitle>
-            <CardDescription>Organize the sessions and their exercises within this plan.</CardDescription>
+            <CardTitle>Sessões de Treino</CardTitle>
+            <CardDescription>Organize as sessões e seus exercícios dentro deste plano.</CardDescription>
           </div>
           <Dialog open={isSessionFormOpen} onOpenChange={(isOpen) => {
             setIsSessionFormOpen(isOpen);
@@ -204,16 +202,16 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
           }}>
             <DialogTrigger asChild>
               <Button variant="outline" className="text-primary border-primary hover:bg-primary/10 hover:text-primary">
-                <PlusCircle className="mr-2 h-5 w-5" /> Add Session
+                <PlusCircle className="mr-2 h-5 w-5" /> Adicionar Sessão
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle className="text-xl text-primary">
-                  {sessionToEditDetails ? 'Edit Session Details' : 'Add New Workout Session'}
+                  {sessionToEditDetails ? 'Editar Detalhes da Sessão' : 'Adicionar Nova Sessão de Treino'}
                 </DialogTitle>
                 <DialogDescription>
-                  {sessionToEditDetails ? 'Modify the details of this session.' : 'Define a new session for your plan. Exercises are added separately.'}
+                  {sessionToEditDetails ? 'Modifique os detalhes desta sessão.' : 'Defina uma nova sessão para o seu plano. Exercícios são adicionados separadamente.'}
                 </DialogDescription>
               </DialogHeader>
               <SessionForm
@@ -230,10 +228,10 @@ export function PlanEditor({ initialPlan, allExercises, onUpdatePlan, onClose, o
         <CardContent>
           {editedPlan.sessions.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
-              No sessions added to this plan yet. Click &quot;Add Session&quot; to get started.
+              Nenhuma sessão adicionada a este plano ainda. Clique em &quot;Adicionar Sessão&quot; para começar.
             </p>
           ) : (
-            <ScrollArea className="max-h-[500px] pr-3"> {/* Adjusted max height */}
+            <ScrollArea className="max-h-[500px] pr-3"> 
               <div className="space-y-4">
                 {editedPlan.sessions.map(session => (
                   <SessionCard 

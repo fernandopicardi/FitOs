@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Search, PlusCircle } from 'lucide-react';
-import Image from 'next/image'; // For displaying exercise image if available
+import Image from 'next/image'; 
 
 interface ExercisePickerProps {
   isOpen: boolean;
@@ -29,22 +29,22 @@ export function ExercisePickerDialog({ isOpen, onOpenChange, allExercises, onSel
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-primary">Select an Exercise</DialogTitle>
-          <DialogDescription>Browse or search the exercise library to add to the session.</DialogDescription>
+          <DialogTitle className="text-2xl text-primary">Selecionar um Exercício</DialogTitle>
+          <DialogDescription>Navegue ou pesquise na biblioteca de exercícios para adicionar à sessão.</DialogDescription>
         </DialogHeader>
         
         <div className="relative my-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search exercises by name or muscle group..."
+            placeholder="Buscar exercícios por nome ou grupo muscular..."
             className="pl-10 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <ScrollArea className="flex-grow pr-1 min-h-0"> {/* Added min-h-0 */}
+        <ScrollArea className="flex-grow pr-1 min-h-0"> 
           <div className="space-y-3">
             {filteredExercises.length > 0 ? (
               filteredExercises.map(exercise => (
@@ -58,8 +58,8 @@ export function ExercisePickerDialog({ isOpen, onOpenChange, allExercises, onSel
                         <Image 
                           src={exercise.imageUrl} 
                           alt={exercise.name} 
-                          layout="fill" 
-                          objectFit="cover" 
+                          fill 
+                          style={{ objectFit: "cover" }}
                           data-ai-hint={exercise.dataAiHint || `${exercise.muscleGroup} exercise`}
                         />
                       </div>
@@ -78,12 +78,12 @@ export function ExercisePickerDialog({ isOpen, onOpenChange, allExercises, onSel
                     onClick={() => onSelectExercise(exercise)}
                     className="text-primary border-primary hover:text-primary hover:bg-primary/10"
                   >
-                    <PlusCircle className="mr-2 h-4 w-4" /> Select
+                    <PlusCircle className="mr-2 h-4 w-4" /> Selecionar
                   </Button>
                 </div>
               ))
             ) : (
-              <p className="text-muted-foreground text-center py-8">No exercises found matching your search.</p>
+              <p className="text-muted-foreground text-center py-8">Nenhum exercício encontrado para sua busca.</p>
             )}
           </div>
         </ScrollArea>

@@ -34,7 +34,7 @@ export default function DashboardPage() {
   const handleSaveImage = () => {
     if (newImageUrl.trim() === '') {
       toast({
-        title: "Invalid URL",
+        title: "URL Inválida",
         description: "A URL da imagem não pode estar vazia.",
         variant: "destructive",
       });
@@ -42,17 +42,17 @@ export default function DashboardPage() {
     }
     setHeroImageUrl(newImageUrl);
     localStorage.setItem(DASHBOARD_HERO_IMAGE_KEY, newImageUrl);
- setIsEditingImage(false);
+    setIsEditingImage(false);
     toast({
-      title: "Hero Image Updated!",
-      description: "The new dashboard hero image has been saved.",
+      title: "Imagem de Destaque Atualizada!",
+      description: "A nova imagem de destaque do painel foi salva.",
       duration: 3000,
     });
   };
 
   const handleCancelEdit = () => {
     setIsEditingImage(false);
-    setNewImageUrl(''); // Reset the new image URL input
+    setNewImageUrl(''); 
   };
 
 
@@ -91,14 +91,14 @@ export default function DashboardPage() {
           <div className="md:w-1/2 relative min-h-[250px] md:min-h-full group">
             <Image 
               src={heroImageUrl} 
-              alt="Modern fitness abstract background" 
+              alt="Fundo abstrato moderno de fitness" 
               fill
-              objectFit="cover"
+              style={{ objectFit: "cover" }} // Alterado para style object
               data-ai-hint="fitness abstract"
               className="opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-              onError={() => { // Fallback if user provides a bad URL
- toast({ title: 'Erro ao Carregar Imagem', description: 'Não foi possível carregar a imagem. Revertendo para o padrão.', variant: 'destructive' });
- setHeroImageUrl(DEFAULT_HERO_IMAGE_URL);
+              onError={() => { 
+                toast({ title: 'Erro ao Carregar Imagem', description: 'Não foi possível carregar a imagem. Revertendo para o padrão.', variant: 'destructive' });
+                setHeroImageUrl(DEFAULT_HERO_IMAGE_URL);
                 localStorage.removeItem(DASHBOARD_HERO_IMAGE_KEY);
               }}
             />
@@ -118,7 +118,7 @@ export default function DashboardPage() {
                   type="url"
                   value={newImageUrl}
                   onChange={(e) => setNewImageUrl(e.target.value)}
-                  placeholder="Digite a nova URL da imagem (ex: https://...)"
+                  placeholder="Cole a nova URL da imagem (ex: https://...)"
                   className="bg-background/70 border-border"
                 />
                 <div className="flex justify-end space-x-2">
@@ -126,7 +126,7 @@ export default function DashboardPage() {
                     <X className="mr-1 h-4 w-4" /> Cancelar
                   </Button>
                   <Button size="sm" onClick={handleSaveImage} className="bg-primary hover:bg-primary/90">
-                    <Check className="mr-1 h-4 w-4" /> Save
+                    <Check className="mr-1 h-4 w-4" /> Salvar
                   </Button>
                 </div>
               </div>

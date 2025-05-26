@@ -28,17 +28,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 const plannedExerciseSchema = z.object({
-  sets: z.string().min(1, "Sets are required."),
-  reps: z.string().min(1, "Reps are required."),
+  sets: z.string().min(1, "Séries são obrigatórias."),
+  reps: z.string().min(1, "Repetições são obrigatórias."),
   rest: z.string().optional(),
-  notes: z.string().max(300, "Notes must be 300 characters or less.").optional(),
+  notes: z.string().max(300, "As notas devem ter no máximo 300 caracteres.").optional(),
 });
 
 interface PlannedExerciseFormDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   onSubmit: (data: PlannedExerciseFormValues) => void;
-  exerciseName: string; // To display in the title
+  exerciseName: string; 
   initialValues?: PlannedExerciseFormValues;
 }
 
@@ -61,8 +61,8 @@ export function PlannedExerciseFormDialog({
 
   const handleSubmit = (data: PlannedExerciseFormValues) => {
     onSubmit(data);
-    form.reset(); // Reset form after submission for next use
-    onOpenChange(false); // Close dialog
+    form.reset(); 
+    onOpenChange(false); 
   };
 
   return (
@@ -70,10 +70,10 @@ export function PlannedExerciseFormDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-xl text-primary">
-            {initialValues ? "Edit" : "Add"} Details for: {exerciseName}
+            {initialValues ? "Editar" : "Adicionar"} Detalhes para: {exerciseName}
           </DialogTitle>
           <DialogDescription>
-            Specify the sets, reps, rest, and any notes for this exercise in the session.
+            Especifique as séries, repetições, descanso e quaisquer notas para este exercício na sessão.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -84,9 +84,9 @@ export function PlannedExerciseFormDialog({
                 name="sets"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sets</FormLabel>
+                    <FormLabel>Séries</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., 3 or 3-4" {...field} />
+                      <Input placeholder="ex: 3 ou 3-4" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -97,9 +97,9 @@ export function PlannedExerciseFormDialog({
                 name="reps"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Reps / Duration</FormLabel>
+                    <FormLabel>Reps / Duração</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., 10, 8-12, 30s" {...field} />
+                      <Input placeholder="ex: 10, 8-12, 30s" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -111,9 +111,9 @@ export function PlannedExerciseFormDialog({
               name="rest"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rest (Optional)</FormLabel>
+                  <FormLabel>Descanso (Opcional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., 60s, 1-2min" {...field} />
+                    <Input placeholder="ex: 60s, 1-2min" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -124,10 +124,10 @@ export function PlannedExerciseFormDialog({
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes (Optional)</FormLabel>
+                  <FormLabel>Notas (Opcional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="e.g., Focus on form, RPE 8, use dropset on last set..."
+                      placeholder="ex: Foco na forma, RPE 8, usar dropset na última série..."
                       className="resize-y min-h-[80px]"
                       {...field}
                     />
@@ -139,11 +139,11 @@ export function PlannedExerciseFormDialog({
             <DialogFooter className="pt-4">
               <DialogClose asChild>
                 <Button type="button" variant="outline">
-                  Cancel
+                  Cancelar
                 </Button>
               </DialogClose>
               <Button type="submit" className="bg-primary hover:bg-primary/90">
-                {initialValues ? "Save Changes" : "Add to Session"}
+                {initialValues ? "Salvar Alterações" : "Adicionar à Sessão"}
               </Button>
             </DialogFooter>
           </form>

@@ -29,31 +29,31 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusCircle } from "lucide-react";
-import { Label } from "@/components/ui/label"; // Added import
+import { Label } from "@/components/ui/label";
 
-const MUSCLE_GROUPS: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders', 'Biceps', 'Triceps', 'Abs', 'Full Body', 'Cardio', 'Glutes', 'Hamstrings', 'Hips', 'Other'];
-const PREDEFINED_WORKOUT_TYPES: WorkoutType[] = ['Strength', 'Cardio', 'Flexibility', 'Hypertrophy', 'Powerlifting', 'Bodybuilding', 'CrossFit', 'Yoga', 'Warm-up', 'Cooldown', 'Mobilidade', 'Plyometrics', 'Corrective', 'Calisthenics', 'HIIT', 'Endurance', 'Core', 'Advanced', 'Isometric', 'Other'];
+const MUSCLE_GROUPS: MuscleGroup[] = ['Peito', 'Costas', 'Pernas', 'Ombros', 'Bíceps', 'Tríceps', 'Abdômen', 'Corpo Inteiro', 'Cardio', 'Glúteos', 'Isquiotibiais', 'Quadril', 'Outro'];
+const PREDEFINED_WORKOUT_TYPES: WorkoutType[] = ['Força', 'Cardio', 'Flexibilidade', 'Hipertrofia', 'Powerlifting', 'Fisiculturismo', 'CrossFit', 'Yoga', 'Aquecimento', 'Desaquecimento', 'Mobilidade', 'Pliometria', 'Corretivo', 'Calistenia', 'HIIT', 'Resistência', 'Core', 'Avançado', 'Isométrico', 'Outro'];
 
 
 const exerciseFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters.").max(100),
-  emoji: z.string().min(1).max(5, "Emoji should be a single character or short sequence."),
+  name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres.").max(100),
+  emoji: z.string().min(1).max(5, "O emoji deve ser um único caractere ou sequência curta."),
   muscleGroup: z.enum(MUSCLE_GROUPS as [MuscleGroup, ...MuscleGroup[]]),
-  customMuscleGroup: z.string().max(50, "Custom muscle group must be 50 characters or less.").optional(),
-  workoutType: z.array(z.string()).min(1, "Select at least one workout type."),
-  description: z.string().min(10, "Description must be at least 10 characters.").max(500),
+  customMuscleGroup: z.string().max(50, "O grupo muscular customizado deve ter no máximo 50 caracteres.").optional(),
+  workoutType: z.array(z.string()).min(1, "Selecione pelo menos um tipo de treino."),
+  description: z.string().min(10, "A descrição deve ter pelo menos 10 caracteres.").max(500),
   instructions: z.string().optional(),
   tips: z.string().optional(),
-  imageUrl: z.string().url("Must be a valid URL.").optional().or(z.literal('')),
+  imageUrl: z.string().url("Deve ser uma URL válida.").optional().or(z.literal('')),
 }).refine(
   (data) => {
-    if (data.muscleGroup === 'Other') {
+    if (data.muscleGroup === 'Outro') {
       return data.customMuscleGroup && data.customMuscleGroup.trim().length >= 2;
     }
     return true;
   },
   {
-    message: "Custom muscle group name must be at least 2 characters.",
+    message: "O nome do grupo muscular customizado deve ter pelo menos 2 caracteres.",
     path: ['customMuscleGroup'],
   }
 );
@@ -68,11 +68,11 @@ interface ExerciseFormProps {
 
 export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps) {
   const getInitialMuscleGroup = (ex?: Exercise) => {
-    if (!ex) return "Other" as MuscleGroup;
+    if (!ex) return "Outro" as MuscleGroup;
     if (MUSCLE_GROUPS.includes(ex.muscleGroup as MuscleGroup)) {
       return ex.muscleGroup as MuscleGroup;
     }
-    return "Other" as MuscleGroup;
+    return "Outro" as MuscleGroup;
   };
 
   const getInitialCustomMuscleGroup = (ex?: Exercise) => {
@@ -98,7 +98,7 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
     } : {
       name: "",
       emoji: "💪",
-      muscleGroup: "Other" as MuscleGroup,
+      muscleGroup: "Outro" as MuscleGroup,
       customMuscleGroup: "",
       workoutType: [],
       description: "",
@@ -111,7 +111,7 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
   const watchedMuscleGroup = form.watch("muscleGroup");
 
   useEffect(() => {
-    if (watchedMuscleGroup !== 'Other') {
+    if (watchedMuscleGroup !== 'Outro') {
       form.setValue('customMuscleGroup', '');
       if (form.formState.errors.customMuscleGroup) {
         form.clearErrors('customMuscleGroup');
@@ -120,7 +120,6 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
   }, [watchedMuscleGroup, form]);
 
   useEffect(() => {
-    // Initialize displayableWorkoutTypes with predefined types + any custom types from the exercise being edited
     if (exercise && exercise.workoutType) {
       const allTypes = new Set([...PREDEFINED_WORKOUT_TYPES, ...exercise.workoutType]);
       setDisplayableWorkoutTypes(Array.from(allTypes));
@@ -129,10 +128,9 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
 
   function handleSubmit(data: ExerciseFormValues) {
     const submissionData = { ...data };
-    if (data.muscleGroup !== 'Other') {
+    if (data.muscleGroup !== 'Outro') {
       submissionData.customMuscleGroup = '';
     }
-    // The actual workout types are already in data.workoutType from the checkboxes
     onSubmit(submissionData);
   }
 
@@ -142,7 +140,6 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
       setDisplayableWorkoutTypes(prev => [...prev, newType]);
     }
     if (newType) {
-      // Also add to selected workout types if not already there
       const currentSelected = form.getValues("workoutType") || [];
       if (!currentSelected.includes(newType)) {
         form.setValue("workoutType", [...currentSelected, newType]);
@@ -161,9 +158,9 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Exercise Name</FormLabel>
+                <FormLabel>Nome do Exercício</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Barbell Bench Press" {...field} />
+                  <Input placeholder="ex: Supino Reto com Barra" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -189,11 +186,11 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
           name="muscleGroup"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Primary Muscle Group</FormLabel>
+              <FormLabel>Grupo Muscular Principal</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a muscle group" />
+                    <SelectValue placeholder="Selecione um grupo muscular" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -209,18 +206,18 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
           )}
         />
 
-        {watchedMuscleGroup === 'Other' && (
+        {watchedMuscleGroup === 'Outro' && (
           <FormField
             control={form.control}
             name="customMuscleGroup"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Custom Muscle Group Name</FormLabel>
+                <FormLabel>Nome do Grupo Muscular Customizado</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Forearms, Calves" {...field} />
+                  <Input placeholder="ex: Antebraços, Panturrilhas" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Enter the name for your new muscle group.
+                  Digite o nome para seu novo grupo muscular.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -233,8 +230,8 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
           name="workoutType"
           render={() => (
             <FormItem>
-              <FormLabel>Workout Types</FormLabel>
-              <FormDescription>Select applicable workout types or add new ones.</FormDescription>
+              <FormLabel>Tipos de Treino</FormLabel>
+              <FormDescription>Selecione os tipos de treino aplicáveis ou adicione novos.</FormDescription>
               <ScrollArea className="h-40 rounded-md border p-4">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {displayableWorkoutTypes.map((type) => (
@@ -279,17 +276,17 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
 
         <div className="flex items-end gap-2">
           <div className="flex-grow">
-            <Label htmlFor="newWorkoutTypeInput">Add New Workout Type</Label>
+            <Label htmlFor="newWorkoutTypeInput">Adicionar Novo Tipo de Treino</Label>
             <Input
               id="newWorkoutTypeInput"
-              placeholder="e.g., Olympic Lifting"
+              placeholder="ex: Levantamento Olímpico"
               value={newWorkoutTypeInput}
               onChange={(e) => setNewWorkoutTypeInput(e.target.value)}
               className="mt-1"
             />
           </div>
           <Button type="button" variant="outline" onClick={handleAddCustomWorkoutType} className="shrink-0">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Type
+            <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Tipo
           </Button>
         </div>
         
@@ -298,10 +295,10 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Descrição</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Detailed description of the exercise..."
+                  placeholder="Descrição detalhada do exercício..."
                   className="resize-y min-h-[100px]"
                   {...field}
                 />
@@ -316,11 +313,11 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
           name="instructions"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Instructions (Optional)</FormLabel>
-              <FormDescription>Enter each step on a new line.</FormDescription>
+              <FormLabel>Instruções (Opcional)</FormLabel>
+              <FormDescription>Digite cada passo em uma nova linha.</FormDescription>
               <FormControl>
                 <Textarea
-                  placeholder="1. Step one...\\n2. Step two..."
+                  placeholder="1. Passo um...\\n2. Passo dois..."
                   className="resize-y min-h-[100px]"
                   {...field}
                 />
@@ -335,11 +332,11 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
           name="tips"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tips (Optional)</FormLabel>
-              <FormDescription>Enter each tip on a new line.</FormDescription>
+              <FormLabel>Dicas (Opcional)</FormLabel>
+              <FormDescription>Digite cada dica em uma nova linha.</FormDescription>
               <FormControl>
                 <Textarea
-                  placeholder="- Keep your core tight.\\n- Breathe normally."
+                  placeholder="- Mantenha o core firme.\\n- Respire normalmente."
                   className="resize-y min-h-[80px]"
                   {...field}
                 />
@@ -354,11 +351,11 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
           name="imageUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Image URL (Optional)</FormLabel>
+              <FormLabel>URL da Imagem (Opcional)</FormLabel>
               <FormControl>
-                <Input placeholder="https://example.com/image.png" {...field} />
+                <Input placeholder="https://exemplo.com/imagem.png" {...field} />
               </FormControl>
-              <FormDescription>Paste a URL for an image of the exercise.</FormDescription>
+              <FormDescription>Cole uma URL para uma imagem do exercício.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -366,10 +363,10 @@ export function ExerciseForm({ exercise, onSubmit, onCancel }: ExerciseFormProps
 
         <div className="flex justify-end space-x-3 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
+            Cancelar
           </Button>
           <Button type="submit" className="bg-primary hover:bg-primary/90">
-            {exercise ? "Save Changes" : "Create Exercise"}
+            {exercise ? "Salvar Alterações" : "Criar Exercício"}
           </Button>
         </div>
       </form>

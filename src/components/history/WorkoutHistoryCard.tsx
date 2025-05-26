@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Activity, CalendarDays, Clock, ListChecks, Eye, CheckCircle2, XCircle, Trash2, AlertTriangle } from 'lucide-react';
 import { format, formatDistanceStrict, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog,
@@ -27,30 +28,30 @@ interface WorkoutHistoryCardProps {
 export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps) {
   const { toast } = useToast();
   const workoutDate = parseISO(log.date);
-  const formattedDate = format(workoutDate, "MMMM d, yyyy 'at' h:mm a");
+  const formattedDate = format(workoutDate, "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
   
-  let duration = 'N/A';
+  let duration = 'N/D';
   if (log.startTime && log.endTime && log.endTime > log.startTime) {
     try {
-      duration = formatDistanceStrict(new Date(log.endTime), new Date(log.startTime));
+      duration = formatDistanceStrict(new Date(log.endTime), new Date(log.startTime), { locale: ptBR, addSuffix: false });
     } catch (error) {
-      console.error("Error formatting duration for log:", log.id, error);
-      duration = "Error";
+      console.error("Erro ao formatar duração para o log:", log.id, error);
+      duration = "Erro";
     }
   } else if (log.startTime && log.endTime && log.endTime <= log.startTime) {
-    duration = "Invalid times";
+    duration = "Tempos inválidos";
   }
 
   const exercisesCount = log.exercises.length;
 
   const handleViewDetails = () => {
     toast({
-      title: `Details for: ${log.planName || log.workoutName}`,
+      title: `Detalhes para: ${log.planName || log.workoutName}`,
       description: (
         <div className="text-sm space-y-3 max-h-[70vh] w-full sm:w-[380px] overflow-y-auto text-card-foreground p-1 rounded-md bg-card">
           <div className="space-y-1 mb-2">
-            <p><strong>Date:</strong> {formattedDate}</p>
-            <p><strong>Duration:</strong> {duration}</p>
+            <p><strong>Data:</strong> {formattedDate}</p>
+            <p><strong>Duração:</strong> {duration}</p>
           </div>
           
           {log.exercises.map((exercise, index) => (
@@ -61,7 +62,7 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
               </p>
               {exercise.plannedSets && exercise.plannedReps && (
                 <p className="text-xs text-muted-foreground mb-1">
-                  Plan: {exercise.plannedSets} sets of {exercise.plannedReps}
+                  Plano: {exercise.plannedSets} séries de {exercise.plannedReps}
                 </p>
               )}
               {exercise.sets.length > 0 ? (
@@ -69,9 +70,9 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
                   {exercise.sets.map((set, setIndex) => (
                     <li key={set.id} className="flex items-center justify-between p-1.5 bg-background/50 rounded-md">
                       <span className="flex-1">
-                        Set {setIndex + 1}: {set.weight || 'N/A'} x {set.reps || 'N/A'} reps
-                        {set.rpe && <span className="text-muted-foreground text-xs italic\"> (RPE: {set.rpe})</span>}
-                        {set.notes && <span className="block text-muted-foreground text-xs italic mt-0.5">Notes: {set.notes}&quot;</span>}
+                        Série {setIndex + 1}: {set.weight || 'N/A'}kg x {set.reps || 'N/A'} reps
+                        {set.rpe && <span className="text-muted-foreground text-xs italic"> (RPE: {set.rpe})</span>}
+                        {set.notes && <span className="block text-muted-foreground text-xs italic mt-0.5">Notas: {set.notes}</span>}
                       </span>
                        {set.isCompleted ?
                         <CheckCircle2 className="h-4 w-4 text-green-500 ml-2 shrink-0" /> : 
@@ -80,21 +81,21 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-muted-foreground italic mt-1">No sets logged for this exercise.</p>
+                <p className="text-xs text-muted-foreground italic mt-1">Nenhuma série registrada para este exercício.</p>
               )}
-              {exercise.notes && <p className="text-xs text-muted-foreground mt-1.5"><em>Exercise Notes: {exercise.notes}</em></p>}
+              {exercise.notes && <p className="text-xs text-muted-foreground mt-1.5"><em>Notas do Exercício: {exercise.notes}</em></p>}
             </div>
           ))}
           
           {log.notes && (
             <div className="pt-2 mt-3 border-t border-muted/30">
-              <p className="font-semibold text-base text-primary">Overall Workout Notes:</p>
+              <p className="font-semibold text-base text-primary">Notas Gerais do Treino:</p>
               <p className="text-xs text-muted-foreground">{log.notes}</p>
             </div>
           )}
 
           {!log.exercises.length && !log.notes && (
-             <p className="text-muted-foreground italic text-center py-4">No specific details logged for this workout.</p>
+             <p className="text-muted-foreground italic text-center py-4">Nenhum detalhe específico registrado para este treino.</p>
           )}
         </div>
       ),
@@ -122,7 +123,7 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
                 variant="ghost" 
                 size="icon" 
                 className="text-destructive/70 hover:text-destructive hover:bg-destructive/10 h-8 w-8 shrink-0"
-                aria-label="Delete this workout log"
+                aria-label="Excluir este registro de treino"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -131,10 +132,10 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
               <AlertDialogHeader>
                 <AlertDialogTitle className="flex items-center gap-2">
                    <AlertTriangle className="h-6 w-6 text-destructive" />
-                  Apagar este Treino?
+                  Excluir este Treino?
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  Tem certeza que deseja apagar o registro do treino &quot;{log.planName || log.workoutName}&quot; de {formattedDate}? Esta ação não pode ser desfeita.
+                  Tem certeza que deseja excluir o registro do treino &quot;{log.planName || log.workoutName}&quot; de {formattedDate}? Esta ação não pode ser desfeita.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -143,7 +144,7 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
                   onClick={() => onDeleteLog(log.id)}
                   className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                 >
-                  Sim, Apagar
+                  Sim, Excluir
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -153,15 +154,15 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
       <CardContent className="flex-grow pb-4 space-y-1.5 md:space-y-2 text-sm">
         <div className="flex items-center text-foreground/90">
           <ListChecks className="h-4 w-4 mr-2 text-muted-foreground" />
-          <span>{exercisesCount} exercise{exercisesCount !== 1 ? 's' : ''}</span>
+          <span>{exercisesCount} exercício{exercisesCount !== 1 ? 's' : ''}</span>
         </div>
         <div className="flex items-center text-foreground/90">
           <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-          <span>Duration: {duration}</span>
+          <span>Duração: {duration}</span>
         </div>
         {log.notes && (
           <div className="pt-1 md:pt-2">
-            <p className="text-xs font-semibold text-muted-foreground mb-0.5">Notes:</p>
+            <p className="text-xs font-semibold text-muted-foreground mb-0.5">Notas:</p>
             <p className="text-xs text-foreground/80 line-clamp-2" title={log.notes}>{log.notes}</p>
           </div>
         )}
@@ -173,7 +174,7 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
           className="w-full text-primary border-primary hover:bg-primary/10 hover:text-primary"
           onClick={handleViewDetails}
         >
-          <Eye className="mr-2 h-4 w-4" /> View Details
+          <Eye className="mr-2 h-4 w-4" /> Ver Detalhes
         </Button>
       </CardFooter>
     </Card>

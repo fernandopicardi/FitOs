@@ -19,14 +19,14 @@ import { Textarea } from "@/components/ui/textarea";
 import type { WorkoutPlan } from "@/types";
 
 const planFormSchema = z.object({
-  name: z.string().min(2, "Plan name must be at least 2 characters.").max(100, "Plan name must be 100 characters or less."),
-  description: z.string().max(500, "Description must be 500 characters or less.").optional(),
+  name: z.string().min(2, "O nome do plano deve ter pelo menos 2 caracteres.").max(100, "O nome do plano deve ter no máximo 100 caracteres."),
+  description: z.string().max(500, "A descrição deve ter no máximo 500 caracteres.").optional(),
 });
 
 export type PlanFormValues = z.infer<typeof planFormSchema>;
 
 interface PlanFormProps {
-  plan?: WorkoutPlan; // For editing existing plans in the future
+  plan?: WorkoutPlan; 
   onSubmit: (data: PlanFormValues) => void;
   onCancel: () => void;
 }
@@ -45,7 +45,7 @@ export function PlanForm({ plan, onSubmit, onCancel }: PlanFormProps) {
 
   function handleSubmit(data: PlanFormValues) {
     onSubmit(data);
-    form.reset(); // Reset form after submission
+    form.reset(); 
   }
 
   return (
@@ -56,9 +56,9 @@ export function PlanForm({ plan, onSubmit, onCancel }: PlanFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Plan Name</FormLabel>
+              <FormLabel>Nome do Plano</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., My Awesome Bulk Plan, 3-Day Split" {...field} />
+                <Input placeholder="ex: Meu Plano de Bulk Incrível, Divisão de 3 Dias" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -70,10 +70,10 @@ export function PlanForm({ plan, onSubmit, onCancel }: PlanFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description (Optional)</FormLabel>
+              <FormLabel>Descrição (Opcional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="A brief overview of this workout plan, its goals, or any specific notes."
+                  placeholder="Uma breve visão geral deste plano de treino, seus objetivos ou quaisquer notas específicas."
                   className="resize-y min-h-[100px]"
                   {...field}
                 />
@@ -85,10 +85,10 @@ export function PlanForm({ plan, onSubmit, onCancel }: PlanFormProps) {
 
         <div className="flex justify-end space-x-3 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
+            Cancelar
           </Button>
           <Button type="submit" className="bg-primary hover:bg-primary/90">
-            {plan ? "Save Changes" : "Create Plan"}
+            {plan ? "Salvar Alterações" : "Criar Plano"}
           </Button>
         </div>
       </form>

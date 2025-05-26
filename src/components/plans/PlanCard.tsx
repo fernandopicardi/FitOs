@@ -19,7 +19,7 @@ import {
 
 interface PlanCardProps {
   plan: WorkoutPlan;
-  onManagePlan: (plan: WorkoutPlan) => void; // Changed from onManageSessions
+  onManagePlan: (plan: WorkoutPlan) => void; 
   onDeletePlan: (planId: string) => void; 
 }
 
@@ -45,7 +45,7 @@ export function PlanCard({ plan, onManagePlan, onDeletePlan }: PlanCardProps) {
       <CardContent className="flex-grow pb-4">
         <div className="flex items-center text-sm text-muted-foreground">
           <CalendarDays className="h-4 w-4 mr-2" />
-          <span>{sessionCount} session{sessionCount !== 1 ? 's' : ''}</span> 
+          <span>{sessionCount} sessão{sessionCount !== 1 ? 'ões' : ''}</span> 
         </div>
       </CardContent>
       <CardFooter className="border-t pt-4 flex justify-between items-center">
@@ -55,7 +55,7 @@ export function PlanCard({ plan, onManagePlan, onDeletePlan }: PlanCardProps) {
           className="flex-1 bg-primary hover:bg-primary/90"
           onClick={() => onManagePlan(plan)} 
         >
-          <Settings2 className="mr-2 h-4 w-4" /> Manage Plan
+          <Settings2 className="mr-2 h-4 w-4" /> Gerenciar Plano
         </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -65,24 +65,24 @@ export function PlanCard({ plan, onManagePlan, onDeletePlan }: PlanCardProps) {
               className="text-destructive/80 hover:text-destructive hover:bg-destructive/10 ml-2"
             >
               <Trash2 className="h-5 w-5" />
-              <span className="sr-only">Delete Plan</span>
+              <span className="sr-only">Excluir Plano</span>
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the workout plan
-                &quot;{plan.name}&quot; and all its associated sessions.
+                Esta ação não pode ser desfeita. Isso excluirá permanentemente o plano de treino
+                &quot;{plan.name}&quot; e todas as suas sessões associadas.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => onDeletePlan(plan.id)}
                 className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
               >
-                Delete Plan
+                Excluir Plano
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

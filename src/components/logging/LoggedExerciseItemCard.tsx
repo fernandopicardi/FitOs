@@ -3,7 +3,7 @@
 
 import type { LoggedExerciseEntry, LoggedSetData, Exercise } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button'; // CardDescription removed
+import { Button } from '@/components/ui/button';
 import { Trash2, PlusSquare, BookOpen, Lightbulb } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -18,11 +18,12 @@ import {
 } from "@/components/ui/accordion";
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 
 
 interface LoggedExerciseItemCardProps {
   loggedExercise: LoggedExerciseEntry;
-  masterExercise?: Exercise; // Full details of the exercise
+  masterExercise?: Exercise; 
   onRemove: () => void;
   onAddSet: () => void;
   onUpdateSetData: (setId: string, field: keyof LoggedSetData, value: string | boolean) => void;
@@ -32,6 +33,7 @@ interface LoggedExerciseItemCardProps {
 export function LoggedExerciseItemCard({
   loggedExercise,
   masterExercise,
+  onRemove, 
   onAddSet,
   onUpdateSetData,
   onRemoveSet,
@@ -48,13 +50,13 @@ export function LoggedExerciseItemCard({
             {displayName}
           </CardTitle>
           <div className="flex flex-wrap gap-1 mt-2">
-            {loggedExercise.plannedSets && <Badge variant="outline" className="text-xs">Plan: {loggedExercise.plannedSets} sets</Badge>}
+            {loggedExercise.plannedSets && <Badge variant="outline" className="text-xs">Plano: {loggedExercise.plannedSets} séries</Badge>}
             {loggedExercise.plannedReps && <Badge variant="outline" className="text-xs">{loggedExercise.plannedReps} reps</Badge>}
           </div>
         </div>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0" onClick={onRemove}>
           <Trash2 className="h-4 w-4" />
-          <span className="sr-only">Remove Exercise</span>
+          <span className="sr-only">Remover Exercício</span>
         </Button>
       </CardHeader>
 
@@ -66,8 +68,8 @@ export function LoggedExerciseItemCard({
                 <Image
                   src={masterExercise.imageUrl}
                   alt={masterExercise.name}
-                  layout="fill"
-                  objectFit="cover"
+                  fill
+                  style={{ objectFit: "cover" }}
                   data-ai-hint={masterExercise.dataAiHint || `${masterExercise.muscleGroup} exercise`}
                   className="transition-transform duration-300 group-hover:scale-105"
                 />
@@ -87,7 +89,7 @@ export function LoggedExerciseItemCard({
                 <AccordionItem value="instructions">
                   <AccordionTrigger className="text-primary hover:no-underline py-2 hover:text-primary/80 transition-colors">
                     <div className="flex items-center gap-2">
-                      <BookOpen className="h-4 w-4" /> Instructions
+                      <BookOpen className="h-4 w-4" /> Instruções
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pt-1 pb-2 pl-1">
@@ -97,16 +99,16 @@ export function LoggedExerciseItemCard({
                   </AccordionContent>
                 </AccordionItem>
               )}
-              {masterExercise.tips && masterExercise.tips.length > 0 && (
+              {masterExercise.tips && masterExercise.tips.length > 0 && masterExercise.tips.some(tip => tip.trim() !== "") && (
                 <AccordionItem value="tips" className="border-b-0">
                   <AccordionTrigger className="text-primary hover:no-underline py-2 hover:text-primary/80 transition-colors">
                      <div className="flex items-center gap-2">
-                      <Lightbulb className="h-4 w-4" /> Tips
+                      <Lightbulb className="h-4 w-4" /> Dicas
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pt-1 pb-2 pl-1">
                     <ul className="list-disc list-outside space-y-1 pl-5 text-muted-foreground">
-                      {masterExercise.tips.map((tip, i) => <li key={i}>{tip}</li>)}
+                      {masterExercise.tips.filter(tip => tip.trim() !== "").map((tip, i) => <li key={i}>{tip}</li>)}
                     </ul>
                   </AccordionContent>
                 </AccordionItem>
@@ -116,9 +118,8 @@ export function LoggedExerciseItemCard({
           </div>
         )}
 
-        {/* Sets Management UI */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-foreground">Log Your Sets:</h4>
+          <h4 className="text-sm font-medium text-foreground">Registre Suas Séries:</h4>
           {loggedExercise.sets.map((set, index) => (
             <div 
               key={set.id} 
@@ -128,15 +129,15 @@ export function LoggedExerciseItemCard({
               )}
             >
               <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
-                <span className="font-medium text-sm text-muted-foreground w-full sm:w-14 text-left sm:text-center mb-1 sm:mb-0">Set {index + 1}</span>
+                <span className="font-medium text-sm text-muted-foreground w-full sm:w-14 text-left sm:text-center mb-1 sm:mb-0">Série {index + 1}</span>
                 <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 w-full">
                   <Input
                     type="text"
-                    placeholder="Weight"
+                    placeholder="Peso"
                     value={set.weight}
                     onChange={(e) => onUpdateSetData(set.id, 'weight', e.target.value)}
                     className={cn("h-9 text-sm bg-background/70", set.isCompleted && "disabled:opacity-60 disabled:bg-muted/20")}
-                    aria-label={`Weight for set ${index + 1}`}
+                    aria-label={`Peso para a série ${index + 1}`}
                     disabled={set.isCompleted}
                   />
                   <Input
@@ -145,7 +146,7 @@ export function LoggedExerciseItemCard({
                     value={set.reps}
                     onChange={(e) => onUpdateSetData(set.id, 'reps', e.target.value)}
                     className={cn("h-9 text-sm bg-background/70", set.isCompleted && "disabled:opacity-60 disabled:bg-muted/20")}
-                    aria-label={`Reps for set ${index + 1}`}
+                    aria-label={`Repetições para a série ${index + 1}`}
                     disabled={set.isCompleted}
                   />
                   <Input
@@ -154,7 +155,7 @@ export function LoggedExerciseItemCard({
                     value={set.rpe || ''}
                     onChange={(e) => onUpdateSetData(set.id, 'rpe', e.target.value)}
                     className={cn("h-9 text-sm bg-background/70 col-span-2 md:col-span-1", set.isCompleted && "disabled:opacity-60 disabled:bg-muted/20")}
-                    aria-label={`RPE for set ${index + 1}`}
+                    aria-label={`RPE para a série ${index + 1}`}
                     disabled={set.isCompleted}
                   />
                 </div>
@@ -163,32 +164,32 @@ export function LoggedExerciseItemCard({
                       id={`completed-${loggedExercise.id}-${set.id}`}
                       checked={set.isCompleted}
                       onCheckedChange={(checked) => onUpdateSetData(set.id, 'isCompleted', !!checked)}
-                      aria-label={`Mark set ${index + 1} as completed`}
+                      aria-label={`Marcar série ${index + 1} como concluída`}
                       className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                     />
                     <Label htmlFor={`completed-${loggedExercise.id}-${set.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                      Done
+                      Feito
                     </Label>
                 </div>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0 self-center sm:self-auto" onClick={() => onRemoveSet(set.id)}>
                   <Trash2 className="h-4 w-4" />
-                  <span className="sr-only">Remove Set {index + 1}</span>
+                  <span className="sr-only">Remover Série {index + 1}</span>
                 </Button>
               </div>
               <div className="w-full">
                 <Textarea
-                  placeholder="Set notes (e.g., form cue, felt heavy)"
+                  placeholder="Notas da série (ex: foco na forma, senti pesado)"
                   value={set.notes || ''}
                   onChange={(e) => onUpdateSetData(set.id, 'notes', e.target.value)}
                   className={cn("h-16 text-xs bg-background/70 w-full resize-none", set.isCompleted && "disabled:opacity-60 disabled:bg-muted/20")}
-                  aria-label={`Notes for set ${index + 1}`}
+                  aria-label={`Notas para a série ${index + 1}`}
                   disabled={set.isCompleted}
                 />
               </div>
             </div>
           ))}
           {loggedExercise.sets.length === 0 && (
-            <p className="text-sm text-muted-foreground italic text-center py-2">No sets added yet for this exercise.</p>
+            <p className="text-sm text-muted-foreground italic text-center py-2">Nenhuma série adicionada ainda para este exercício.</p>
           )}
         </div>
         <Button 
@@ -197,7 +198,7 @@ export function LoggedExerciseItemCard({
           className="w-full mt-3 text-primary border-primary hover:text-primary hover:bg-primary/10" 
           onClick={onAddSet}
         >
-          <PlusSquare className="mr-2 h-4 w-4" /> Add Set
+          <PlusSquare className="mr-2 h-4 w-4" /> Adicionar Série
         </Button>
       </CardContent>
     </Card>

@@ -48,10 +48,10 @@ export default function LogWorkoutPage() {
         setAllAvailableExercises(Array.from(exerciseMap.values()));
 
       } catch (error) {
-        console.error("Failed to load data from localStorage for logging", error);
+        console.error("Falha ao carregar dados do localStorage para registro", error);
         toast({
-          title: "Error Loading Data",
-          description: "Could not retrieve plans or custom exercises.",
+          title: "Erro ao Carregar Dados",
+          description: "Não foi possível recuperar planos ou exercícios customizados.",
           variant: "destructive",
         });
         setAllAvailableExercises(PRELOADED_EXERCISES.map(ex => ({ ...ex, isCustom: false })));
@@ -66,24 +66,24 @@ export default function LogWorkoutPage() {
   const handleStartEmptyWorkout = () => {
     const newLog: ActiveWorkoutLog = {
       id: `log-${Date.now()}`,
-      workoutName: `Ad-hoc Workout - ${new Date().toLocaleDateString()}`,
+      workoutName: `Treino Ad-hoc - ${new Date().toLocaleDateString()}`,
       date: new Date().toISOString(),
       startTime: Date.now(),
       exercises: [],
     };
     setActiveWorkoutLog(newLog);
     setSelectedPlanId(undefined);
-    toast({ title: "Empty workout started!", description: "Add exercises to begin logging.", duration: 3000 });
+    toast({ title: "Treino vazio iniciado!", description: "Adicione exercícios para começar a registrar.", duration: 3000 });
   };
 
   const handleStartFromPlan = () => {
     if (!selectedPlanId) {
-      toast({ title: "No Plan Selected", description: "Please select a plan to start logging.", variant: "destructive" });
+      toast({ title: "Nenhum Plano Selecionado", description: "Por favor, selecione um plano para começar a registrar.", variant: "destructive" });
       return;
     }
     const plan = availablePlans.find(p => p.id === selectedPlanId);
     if (!plan) {
-      toast({ title: "Plan Not Found", description: "Could not find the selected plan.", variant: "destructive" });
+      toast({ title: "Plano Não Encontrado", description: "Não foi possível encontrar o plano selecionado.", variant: "destructive" });
       return;
     }
 
@@ -93,12 +93,12 @@ export default function LogWorkoutPage() {
         return {
           id: `le-${Date.now()}-${pe.exerciseId}-${Math.random().toString(36).substring(2,7)}`,
           exerciseId: pe.exerciseId,
-          name: masterExercise?.name || pe.name || 'Unknown Exercise',
+          name: masterExercise?.name || pe.name || 'Exercício Desconhecido',
           emoji: masterExercise?.emoji || '❓',
           plannedSets: pe.sets,
           plannedReps: pe.reps,
           sets: [], 
-          notes: pe.notes, // Carry over notes from planned exercise
+          notes: pe.notes, 
         };
       })
     );
@@ -107,13 +107,13 @@ export default function LogWorkoutPage() {
       id: `log-${Date.now()}`,
       planId: plan.id,
       planName: plan.name,
-      workoutName: `Logging: ${plan.name}`,
+      workoutName: `Registrando: ${plan.name}`,
       date: new Date().toISOString(),
       startTime: Date.now(),
       exercises: exercisesFromPlan,
     };
     setActiveWorkoutLog(newLog);
-    toast({ title: `Workout started: ${plan.name}`, description: "Begin logging your exercises.", duration: 3000 });
+    toast({ title: `Treino iniciado: ${plan.name}`, description: "Comece a registrar seus exercícios.", duration: 3000 });
   };
 
   const handleAddExerciseToLog = (exercise: Exercise) => {
@@ -129,7 +129,7 @@ export default function LogWorkoutPage() {
 
     setActiveWorkoutLog(prev => prev ? ({ ...prev, exercises: [...prev.exercises, newLoggedExercise] }) : null);
     setIsExercisePickerOpen(false);
-    toast({ title: `${exercise.name} added to workout.`, duration: 3000});
+    toast({ title: `${exercise.name} adicionado ao treino.`, duration: 3000});
   };
 
   const handleRemoveExerciseFromLog = (loggedExerciseId: string) => {
@@ -138,7 +138,7 @@ export default function LogWorkoutPage() {
       ...prev,
       exercises: prev.exercises.filter(ex => ex.id !== loggedExerciseId),
     }) : null);
-    toast({ title: "Exercise removed from log." });
+    toast({ title: "Exercício removido do registro." });
   };
 
   const handleAddSetToLoggedExercise = (loggedExerciseId: string) => {
@@ -168,7 +168,7 @@ export default function LogWorkoutPage() {
     loggedExerciseId: string, 
     setId: string, 
     field: keyof LoggedSetData, 
-    value: string | boolean | undefined // Allow undefined for optional fields like RPE/notes
+    value: string | boolean | undefined 
   ) => {
     if (!activeWorkoutLog) return;
     setActiveWorkoutLog(prevLog => {
@@ -196,7 +196,6 @@ export default function LogWorkoutPage() {
       const updatedExercises = prevLog.exercises.map(ex => {
         if (ex.id === loggedExerciseId) {
           const updatedSets = ex.sets.filter(set => set.id !== setId);
-          // Re-number sets after removal
           const renumberedSets = updatedSets.map((set, index) => ({ ...set, setNumber: index + 1 }));
           return { ...ex, sets: renumberedSets };
         }
@@ -204,13 +203,13 @@ export default function LogWorkoutPage() {
       });
       return { ...prevLog, exercises: updatedExercises };
     });
-    toast({ title: "Set removed."});
+    toast({ title: "Série removida."});
   };
   
   const handleSaveWorkout = () => {
     if (isSavingWorkout || !activeWorkoutLog || activeWorkoutLog.exercises.length === 0) {
       if (!activeWorkoutLog || activeWorkoutLog.exercises.length === 0) {
-        toast({ title: "Cannot Save Empty Workout", description: "Add some exercises and log your sets before saving.", variant: "destructive" });
+        toast({ title: "Não é Possível Salvar Treino Vazio", description: "Adicione alguns exercícios e registre suas séries antes de salvar.", variant: "destructive" });
       }
       return;
     }
@@ -227,15 +226,14 @@ export default function LogWorkoutPage() {
         localStorage.setItem(LOCAL_STORAGE_HISTORY_KEY, JSON.stringify(history));
         
         toast({ 
-          title: "Workout Saved! 🎉", 
-          description: `${logToSave.workoutName} has been logged successfully.`,
-          duration: 3000, 
-
+          title: "Treino Salvo! 🎉", 
+          description: `${logToSave.workoutName} foi registrado com sucesso.`,
+          duration: 3000,
         });
       }
     } catch (error) {
-      console.error("Failed to save workout to localStorage", error);
-      toast({ title: "Save Failed", description: "Could not save workout. Check console for details.", variant: "destructive" });
+      console.error("Falha ao salvar treino no localStorage", error);
+      toast({ title: "Falha ao Salvar", description: "Não foi possível salvar o treino. Verifique o console para detalhes.", variant: "destructive" });
     } finally {
       setActiveWorkoutLog(null);
       setSelectedPlanId(undefined);
@@ -246,7 +244,7 @@ export default function LogWorkoutPage() {
   const handleCancelWorkout = () => {
     setActiveWorkoutLog(null);
     setSelectedPlanId(undefined);
-    toast({ title: "Workout Canceled", description: "No data was logged." });
+    toast({ title: "Treino Cancelado", description: "Nenhum dado foi registrado." });
   };
 
   return (
@@ -254,28 +252,28 @@ export default function LogWorkoutPage() {
       {!activeWorkoutLog ? (
         <>
           <PageTitle 
-            title="Log Your Workout"
-            subtitle="Record your sets, reps, and how you felt during your session.&quot;"
+            title="Registrar Seu Treino"
+            subtitle="Grave suas séries, repetições e como se sentiu durante a sessão."
           />
           <Card className="shadow-lg">\
             <CardHeader>
-              <CardTitle className="text-2xl">Start a New Logging Session&quot;</CardTitle>
-              <CardDescription>Choose how you want to begin your workout log.&quot;</CardDescription>
+              <CardTitle className="text-2xl">Iniciar Nova Sessão de Registro</CardTitle>
+              <CardDescription>Escolha como você quer começar seu registro de treino.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <Button 
- size="lg" 
+                size="lg" 
                 className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" 
                 onClick={handleStartEmptyWorkout}
               >
-                <Play className="mr-2 h-5 w-5" /> Start Empty Workout
+                <Play className="mr-2 h-5 w-5" /> Iniciar Treino Vazio
               </Button>
               
               <div className="space-y-2">
-                <p className="text-sm font-medium">Or, start from a plan:</p>
+                <p className="text-sm font-medium">Ou, comece a partir de um plano:</p>
                 <Select value={selectedPlanId} onValueChange={setSelectedPlanId} disabled={availablePlans.length === 0}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={availablePlans.length > 0 ? "Select a workout plan..." : "No plans available"} />
+                    <SelectValue placeholder={availablePlans.length > 0 ? "Selecione um plano de treino..." : "Nenhum plano disponível"} />
                   </SelectTrigger>
 
                   <SelectContent>
@@ -284,7 +282,7 @@ export default function LogWorkoutPage() {
                         <SelectItem key={plan.id} value={plan.id}>{plan.name}</SelectItem>
                       ))
                     ) : (
-                      <SelectItem value="no-plans" disabled>No plans created yet</SelectItem>
+                      <SelectItem value="no-plans" disabled>Nenhum plano criado ainda</SelectItem>
                     )}
                   </SelectContent>
                 </Select>
@@ -295,7 +293,7 @@ export default function LogWorkoutPage() {
                   onClick={handleStartFromPlan}
                   disabled={!selectedPlanId || availablePlans.length === 0}
                 >
-                  <Play className="mr-2 h-5 w-5" /> Start Selected Plan
+                  <Play className="mr-2 h-5 w-5" /> Iniciar Plano Selecionado
                 </Button>
               </div>
             </CardContent>
@@ -303,19 +301,19 @@ export default function LogWorkoutPage() {
         </>
       ) : (
         <>
-          <PageTitle title={activeWorkoutLog.workoutName} subtitle="Log your performance for each exercise.&quot;" />
+          <PageTitle title={activeWorkoutLog.workoutName} subtitle="Registre seu desempenho para cada exercício." />
           <div className="space-y-6">
             <Card>
               <CardHeader className="flex flex-row justify-between items-center">
-                <CardTitle>Exercises in this Workout</CardTitle>
+                <CardTitle>Exercícios neste Treino</CardTitle>
                 <Button variant="outline" onClick={() => setIsExercisePickerOpen(true)} className="text-primary border-primary hover:bg-primary/10">
-                  <PlusCircle className="mr-2 h-5 w-5" /> Add Exercise
+                  <PlusCircle className="mr-2 h-5 w-5" /> Adicionar Exercício
                 </Button>
               </CardHeader>
               <CardContent>
                 {activeWorkoutLog.exercises.length === 0 ? (
                   <p className="text-muted-foreground text-center py-8">
-                    No exercises added to this workout yet. Click "Add Exercise" to get started.
+                    Nenhum exercício adicionado a este treino ainda. Clique em "Adicionar Exercício" para começar.
                   </p>
                 ) : (
                   <div className="space-y-4">
@@ -344,7 +342,7 @@ export default function LogWorkoutPage() {
                 onClick={handleCancelWorkout} 
                 className="text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive w-full sm:w-auto"
               >
-                <XCircle className="mr-2 h-5 w-5" /> Cancel Workout
+                <XCircle className="mr-2 h-5 w-5" /> Cancelar Treino
               </Button>
               <Button 
                 onClick={handleSaveWorkout} 
@@ -352,7 +350,7 @@ export default function LogWorkoutPage() {
                 disabled={activeWorkoutLog.exercises.length === 0 || isSavingWorkout}
               >
                 <Save className="mr-2 h-5 w-5" /> 
-                {isSavingWorkout ? "Saving..." : "Save Workout"}
+                {isSavingWorkout ? "Salvando..." : "Salvar Treino"}
               </Button>
             </div>
           </div>
@@ -368,4 +366,3 @@ export default function LogWorkoutPage() {
     </div>
   );
 }
-

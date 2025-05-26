@@ -163,7 +163,7 @@ export default function PlansPage() {
     if (typeof window !== 'undefined') {
       try {
         const savedPlansString = localStorage.getItem(LOCAL_STORAGE_PLANS_KEY);
-        const loadedPlans: WorkoutPlan[] = savedPlansString ? JSON.parse(savedPlansString) : [];
+        let loadedPlans: WorkoutPlan[] = savedPlansString ? JSON.parse(savedPlansString) : [];
         let plansWereSeeded = false;
         let newPlansCount = 0;
 
@@ -180,7 +180,7 @@ export default function PlansPage() {
             ).filter(ex => ex !== null) as PlannedExercise[];
 
             if (exercisesForSession.length !== planDef.session.exercises.length) {
-              console.warn(`Some exercises for plan ${planDef.name} could not be found and were skipped.`);
+              console.warn(`Alguns exercícios para o plano ${planDef.name} não foram encontrados e foram pulados.`);
             }
 
             const newPlan: WorkoutPlan = {
@@ -211,10 +211,10 @@ export default function PlansPage() {
         setPlans(loadedPlans);
 
       } catch (error) {
-        console.error("Failed to load or seed plans from localStorage", error);
+        console.error("Falha ao carregar ou semear planos do localStorage", error);
         toast({
-          title: "Error Loading Plans",
-          description: "Could not retrieve or seed your plans. Previous data might be affected.",
+          title: "Erro ao Carregar Planos",
+          description: "Não foi possível recuperar ou semear seus planos. Dados anteriores podem ser afetados.",
           variant: "destructive",
         });
       }
@@ -228,10 +228,10 @@ export default function PlansPage() {
          try {
           localStorage.setItem(LOCAL_STORAGE_PLANS_KEY, JSON.stringify(plans));
         } catch (error) {
-          console.error("Failed to save plans to localStorage", error);
+          console.error("Falha ao salvar planos no localStorage", error);
           toast({
-            title: "Error Saving Plans",
-            description: "Your plans could not be saved automatically. Changes might be lost.",
+            title: "Erro ao Salvar Planos",
+            description: "Seus planos não puderam ser salvos automaticamente. Alterações podem ser perdidas.",
             variant: "destructive",
           });
         }
@@ -249,7 +249,7 @@ export default function PlansPage() {
     };
     setPlans(prev => [newPlan, ...prev]);
     setIsPlanFormOpen(false);
-    toast({ title: "Plan Created!", description: `"${data.name}" has been added.`, duration: 3000 });
+    toast({ title: "Plano Criado!", description: `"${data.name}" foi adicionado.`, duration: 3000 });
   };
 
   const handleManagePlan = (plan: WorkoutPlan) => {
@@ -264,7 +264,7 @@ export default function PlansPage() {
     setPlans(prevPlans => 
       prevPlans.map(p => p.id === updatedPlan.id ? updatedPlan : p)
     );
-    toast({ title: "Plan Updated!", description: `Changes to "${updatedPlan.name}" have been saved.`, duration: 3000});
+    toast({ title: "Plano Atualizado!", description: `Alterações em "${updatedPlan.name}" foram salvas.`, duration: 3000});
   };
 
   const handleDeletePlan = (planId: string) => {
@@ -274,7 +274,7 @@ export default function PlansPage() {
       setSelectedPlanForEditing(null);
     }
     if (planToDelete) {
-      toast({ title: "Plan Deleted", description: `"${planToDelete.name}" has been removed.`, variant: "destructive" });
+      toast({ title: "Plano Excluído", description: `"${planToDelete.name}" foi removido.`, variant: "destructive" });
     }
   };
 
@@ -293,20 +293,20 @@ export default function PlansPage() {
   return (
     <div className="space-y-8">
       <PageTitle
-        title="Workout Plans"
-        subtitle="Design your weekly workout routines and stay organized."
+        title="Planos de Treino"
+        subtitle="Crie suas rotinas de treino semanais e mantenha-se organizado."
       >
         <Dialog open={isPlanFormOpen} onOpenChange={setIsPlanFormOpen}>
           <DialogTrigger asChild>
             <Button className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-md">
-              <PlusCircle className="mr-2 h-5 w-5" /> Create New Plan
+              <PlusCircle className="mr-2 h-5 w-5" /> Criar Novo Plano
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle className="text-2xl text-primary">Create New Workout Plan</DialogTitle>
+              <DialogTitle className="text-2xl text-primary">Criar Novo Plano de Treino</DialogTitle>
               <DialogDescription>
-                Give your plan a name and an optional description to get started. You can add sessions and exercises later.
+                Dê um nome ao seu plano e uma descrição opcional para começar. Você pode adicionar sessões e exercícios depois.
               </DialogDescription>
             </DialogHeader>
             <PlanForm
@@ -323,17 +323,17 @@ export default function PlansPage() {
             <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-4">
               <LayoutGrid className="h-16 w-16 text-primary" />
             </div>
-            <CardTitle className="text-2xl">No Workout Plans Yet</CardTitle>
+            <CardTitle className="text-2xl">Nenhum Plano de Treino Ainda</CardTitle>
             <CardDescription className="text-lg text-muted-foreground mt-1">
-              It looks a bit empty here. Let&apos;s fix that!
+              Parece um pouco vazio por aqui. Vamos consertar isso!
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0 mt-6">
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              Click the &quot;Create New Plan&quot; button to design your fitness roadmap, organize your workouts, and start achieving your goals.
+              Clique no botão &quot;Criar Novo Plano&quot; para desenhar seu mapa de fitness, organizar seus treinos e começar a alcançar seus objetivos.
             </p>
             <Button onClick={() => setIsPlanFormOpen(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-md">
-                <PlusCircle className="mr-2 h-5 w-5" /> Create Your First Plan
+                <PlusCircle className="mr-2 h-5 w-5" /> Crie Seu Primeiro Plano
             </Button>
           </CardContent>
         </Card>
@@ -352,5 +352,3 @@ export default function PlansPage() {
     </div>
   );
 }
-
-    
