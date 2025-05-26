@@ -47,6 +47,62 @@ const sampleApiNinjaData: ApiNinjaExercise[] = [
     "equipment": "body_only",
     "difficulty": "beginner",
     "instructions": "Lie on the floor face down and place your hands about 36 inches apart while holding your torso up at arms length. Next, lower yourself downward until your chest almost touches the floor as you inhale. Now breathe out and press your upper body back up to the starting position while squeezing your chest. After a brief pause at the top contracted position, you can begin to lower yourself downward again. Repeat for the recommended amount of repetitions."
+  },
+  {
+    "name": "Dumbbell Bench Press",
+    "type": "strength",
+    "muscle": "chest",
+    "equipment": "dumbbell",
+    "difficulty": "beginner",
+    "instructions": "Lie down on a flat bench with a dumbbell in each hand resting on top of your thighs. The palms of your hands will be facing each other. Then, using your thighs to help push the dumbbells up, lift the dumbbells one at a time so that you can hold them in front of you at shoulder width."
+  },
+  {
+    "name": "Lat Pulldown",
+    "type": "strength",
+    "muscle": "lats",
+    "equipment": "machine",
+    "difficulty": "beginner",
+    "instructions": "Sit down on a pull-down machine with a wide bar attached to the top pulley. Ensure that you adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar."
+  },
+  {
+    "name": "Leg Press",
+    "type": "strength",
+    "muscle": "quadriceps",
+    "equipment": "machine",
+    "difficulty": "beginner",
+    "instructions": "Using a leg press machine, sit down on the machine and place your legs on the platform directly in front of you at a medium (shoulder width) foot stance. Lower the safety bars holding the weighted platform in place and press the platform all the way up until your legs are fully extended in front of you."
+  },
+  {
+    "name": "Machine Bicep Curl",
+    "type": "strength",
+    "muscle": "biceps",
+    "equipment": "machine",
+    "difficulty": "beginner",
+    "instructions": "Sit on the bicep curl machine, adjust the seat height so your upper arms rest comfortably on the pad. Grab the handles with an underhand grip. Curl the handles up towards your shoulders, squeezing your biceps. Slowly lower back to the starting position."
+  },
+  {
+    "name": "Triceps Pushdown - Rope Attachment",
+    "type": "strength",
+    "muscle": "triceps",
+    "equipment": "cable",
+    "difficulty": "beginner",
+    "instructions": "Attach a rope attachment to a high pulley and grab with a neutral grip (palms facing each other). Standing upright with the torso straight and a very small inclination forward, bring the upper arms close to your body and perpendicular to the floor. The forearms should be pointing up towards the pulley as they hold the rope. This is your starting position. Using the triceps, bring the rope down as you bring each side of the rope to the side of your thighs. At the end of the movement the arms are fully extended and perpendicular to the floor. The upper arms should always remain stationary next to your torso and only the forearms should move. Exhale as you perform this movement. After holding for a second, bring the rope slowly up to the starting point. Breathe in as you perform this step. Repeat for the recommended amount of repetitions."
+  },
+  {
+    "name": "Romanian Deadlift",
+    "type": "strength",
+    "muscle": "hamstrings",
+    "equipment": "barbell",
+    "difficulty": "intermediate",
+    "instructions": "Hold a barbell with a pronated (palms facing down) grip. Stand with your feet hip-width apart. Keeping your back straight and knees slightly bent, hinge at your hips to lower the barbell. Keep the barbell close to your legs. Lower until you feel a stretch in your hamstrings, or the bar reaches mid-shin. Return to the starting position by extending your hips."
+  },
+  {
+    "name": "Calf Raises (Standing)",
+    "type": "strength",
+    "muscle": "calves",
+    "equipment": "body_only", // Can also be done with weights or machine
+    "difficulty": "beginner",
+    "instructions": "Stand tall with your feet flat on the floor. You can hold onto something for balance if needed. Slowly rise up onto the balls of your feet, lifting your heels as high as possible. Squeeze your calf muscles at the top. Slowly lower your heels back to the starting position. Repeat."
   }
 ];
 
@@ -57,17 +113,19 @@ const transformApiExercise = (apiEx: ApiNinjaExercise): Exercise => {
   
   // Simple emoji mapping - can be expanded
   let emoji = '💪';
-  if (apiEx.muscle.includes('biceps') || apiEx.muscle.includes('triceps')) emoji = '💪';
-  if (apiEx.muscle.includes('legs') || apiEx.muscle.includes('quadriceps') || apiEx.muscle.includes('hamstrings') || apiEx.muscle.includes('glutes') || apiEx.muscle.includes('calves')) emoji = '🦵';
-  if (apiEx.muscle.includes('chest')) emoji = '🏋️';
-  if (apiEx.muscle.includes('cardio')) emoji = '🏃';
-  if (apiEx.muscle.includes('abs') || apiEx.muscle.includes('abdominals')) emoji = '🧍';
+  const muscleLower = apiEx.muscle.toLowerCase();
+  if (muscleLower.includes('biceps') || muscleLower.includes('triceps')) emoji = '💪';
+  if (muscleLower.includes('legs') || muscleLower.includes('quadriceps') || muscleLower.includes('hamstrings') || muscleLower.includes('glutes') || muscleLower.includes('calves')) emoji = '🦵';
+  if (muscleLower.includes('chest')) emoji = '🏋️';
+  if (apiEx.type.toLowerCase().includes('cardio')) emoji = '🏃';
+  if (muscleLower.includes('abs') || muscleLower.includes('abdominals')) emoji = '🧍';
+  if (muscleLower.includes('back') || muscleLower.includes('lats')) emoji = '🤸';
 
 
   // Split instructions into steps if they are newline separated or sentence separated.
   // This is a basic attempt; more sophisticated parsing might be needed.
   const instructionSteps = apiEx.instructions
-    .split(/[.\n]/)
+    .split(/[.]\s*(?=[A-Z])|\n/) // Split by periods followed by a capital letter (new sentence) or newlines
     .map(step => step.trim())
     .filter(step => step.length > 5); // Filter out very short or empty strings
 
@@ -75,7 +133,7 @@ const transformApiExercise = (apiEx: ApiNinjaExercise): Exercise => {
     id,
     name: apiEx.name,
     emoji,
-    muscleGroup: apiEx.muscle as MuscleGroup,
+    muscleGroup: apiEx.muscle as MuscleGroup, // API muscle can be directly used or mapped
     workoutType: [apiEx.type as WorkoutType], // API provides one type, our model uses an array
     description: instructionSteps.length > 1 ? instructionSteps[0] : apiEx.instructions, // Use first step as desc if multiple, else full
     instructions: instructionSteps.length > 1 ? instructionSteps : [apiEx.instructions],
@@ -96,7 +154,7 @@ const transformApiExercise = (apiEx: ApiNinjaExercise): Exercise => {
 async function fetchExercisesFromAPIPlaceholder(): Promise<Exercise[]> {
   console.log("Simulating API call to fetch exercises...");
   // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
   // In a real scenario:
   // 1. Check if the API server (Free tier) is up. The documentation says it's "Down".
@@ -188,7 +246,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
 
   const handleOpenFormForEdit = (exercise: Exercise) => {
     // Do not allow editing of API-fetched exercises directly through this form
-    // They should be treated as read-only or copied to custom if modification is needed.
     if (exercise.isFetchedFromAPI) {
       toast({
         title: "Read-only Exercise",
@@ -202,12 +259,16 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     setIsFormOpen(true);
   };
 
-  const handleFormSubmit = (data: ExerciseFormValues) => {
+ const handleFormSubmit = (data: ExerciseFormValues) => {
     const actualMuscleGroup = data.muscleGroup === 'Other' && data.customMuscleGroup && data.customMuscleGroup.trim() !== ''
       ? data.customMuscleGroup.trim() as MuscleGroup
       : data.muscleGroup;
 
-    const finalWorkoutTypes = Array.from(new Set(data.workoutType.map(wt => wt.trim()).filter(wt => wt)));
+    let finalWorkoutTypes = data.workoutType.map(wt => wt.trim()).filter(wt => wt && wt !== 'Other');
+    if (data.workoutType.includes('Other') && data.customWorkoutType && data.customWorkoutType.trim() !== '') {
+      finalWorkoutTypes.push(data.customWorkoutType.trim());
+    }
+    finalWorkoutTypes = Array.from(new Set(finalWorkoutTypes)); // Ensure uniqueness
 
 
     const exerciseData = {
@@ -220,14 +281,14 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     };
     
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { customMuscleGroup, ...finalExerciseData } = exerciseData;
+    const { customMuscleGroup, customWorkoutType, ...finalExerciseData } = exerciseData;
 
 
     if (exerciseToEdit) { // Editing existing custom exercise
       const updatedExercise: Exercise = {
         ...exerciseToEdit,
         ...finalExerciseData,
-        isCustom: true, // Ensure it's marked as custom
+        isCustom: true, 
         isFetchedFromAPI: false,
       };
       setCustomExercises(prev => prev.map(ex => ex.id === updatedExercise.id ? updatedExercise : ex));
@@ -275,7 +336,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           {exercise.isFetchedFromAPI && <p className="italic text-accent">Fetched from external API.</p>}
         </div>
       ),
-      duration: 7000,
+      duration: 7000, 
     });
   };
 
