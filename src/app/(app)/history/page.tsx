@@ -18,13 +18,13 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+ AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend as RechartsLegend } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend as RechartsLegend } from 'recharts'; 
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegendContent } from '@/components/ui/chart';
 
 const LOCAL_STORAGE_HISTORY_KEY = 'workoutWizardHistory';
 
@@ -57,7 +57,7 @@ export default function WorkoutHistoryPage() {
         toast({
           title: "Erro ao Carregar Histórico",
           description: "Não foi possível recuperar seu histórico de treino.",
-          variant: "destructive",
+          variant: 'destructive',
         });
       }
       setIsLoading(false);
@@ -136,7 +136,7 @@ export default function WorkoutHistoryPage() {
         toast({
           title: "Histórico Apagado!",
           description: "Todo o seu histórico de treinos foi removido.",
-          variant: "destructive"
+          variant: 'destructive',
         });
       }
     } catch (error) {
@@ -144,7 +144,7 @@ export default function WorkoutHistoryPage() {
       toast({
         title: "Erro ao Apagar Histórico",
         description: "Não foi possível limpar o histórico. Tente novamente.",
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   };
@@ -165,7 +165,7 @@ export default function WorkoutHistoryPage() {
       toast({
         title: "Erro ao Apagar Treino",
         description: "Não foi possível remover o registro deste treino. Tente novamente.",
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   };
@@ -201,8 +201,8 @@ export default function WorkoutHistoryPage() {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-6 w-6 text-destructive" />
-                  Tem Certeza Absoluta?
+                  <AlertTriangle className="h-6 w-6 text-destructive" />{' '}
+ Tem Certeza Absoluta?
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   Esta ação não pode ser desfeita. Isso apagará permanentemente todo o seu histórico de treinos.
@@ -230,16 +230,13 @@ export default function WorkoutHistoryPage() {
               <CalendarClock className="h-16 w-16 text-primary" />
             </div>
             <CardTitle className="text-2xl">No Workout History Yet</CardTitle>
-            <CardDescription className="text-lg text-muted-foreground mt-1">
-              Looks like your fitness journal is waiting for its first entry!
-            </CardDescription>
+            <CardDescription className="text-lg text-muted-foreground mt-1">Looks like your fitness journal is waiting for its first entry!&quot;</CardDescription>
           </CardHeader>
           <CardContent className="p-0 mt-6">
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              Head over to the "Log Workout" page to record your sessions and build your history.
-            </p>
             <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-md">
-              <Link href="/log">
+              <Link
+                href="/log"
+              >
                 <Activity className="mr-2 h-5 w-5" /> Log Your First Workout
               </Link>
             </Button>
@@ -304,9 +301,9 @@ export default function WorkoutHistoryPage() {
                 {isLoading ? (
                    <p className="text-muted-foreground text-center py-4">Carregando recordes...</p>
                 ) : personalRecordsData.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-4">
-                        Nenhum recorde pessoal encontrado ainda. Registre alguns treinos com peso para ver seus PRs!
-                    </p>
+ <p className="text-muted-foreground text-center py-4">{' '}{`
+ Nenhuma recorde pessoal encontrado ainda. Registre alguns treinos com peso para ver seus PRs!
+ `}</p>
                 ) : (
                     <ul className="space-y-3">
                     {personalRecordsData.map(pr => (
@@ -316,7 +313,7 @@ export default function WorkoutHistoryPage() {
                             <span className="font-medium text-foreground">{pr.exerciseName}</span>
                         </div>
                         <div className="text-sm text-muted-foreground text-right">
-                            <span className="font-semibold text-primary">✨ {pr.maxWeight}kg x {pr.reps} reps</span>
+                            <span className="font-semibold text-primary">✨ {pr.maxWeight}kg x {pr.reps} reps</span>{' '}
                             <span className="ml-2 text-xs">({pr.formattedDate})</span>
                         </div>
                         </li>

@@ -55,7 +55,7 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
           
           {log.exercises.map((exercise, index) => (
             <div key={exercise.id} className="py-2 border-t border-muted/30 first:border-t-0">
-              <p className="font-semibold text-base text-primary flex items-center">
+              <p className="font-semibold text-base text-primary flex items-center" key={index}>
                 <span className="text-xl mr-2">{exercise.emoji}</span> 
                 {exercise.name}
               </p>
@@ -70,10 +70,10 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
                     <li key={set.id} className="flex items-center justify-between p-1.5 bg-background/50 rounded-md">
                       <span className="flex-1">
                         Set {setIndex + 1}: {set.weight || 'N/A'} x {set.reps || 'N/A'} reps
-                        {set.rpe && <span className="text-muted-foreground text-xs italic"> (RPE: {set.rpe})</span>}
-                        {set.notes && <span className="block text-muted-foreground text-xs italic mt-0.5">Notes: {set.notes}</span>}
+                        {set.rpe && <span className="text-muted-foreground text-xs italic\"> (RPE: {set.rpe})</span>}
+                        {set.notes && <span className="block text-muted-foreground text-xs italic mt-0.5">Notes: {set.notes}&quot;</span>}
                       </span>
-                       {set.isCompleted ? 
+                       {set.isCompleted ?
                         <CheckCircle2 className="h-4 w-4 text-green-500 ml-2 shrink-0" /> : 
                         <XCircle className="h-4 w-4 text-red-500 ml-2 shrink-0" />}
                     </li>
@@ -134,7 +134,7 @@ export function WorkoutHistoryCard({ log, onDeleteLog }: WorkoutHistoryCardProps
                   Apagar este Treino?
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  Tem certeza que deseja apagar o registro do treino "{log.planName || log.workoutName}" de {formattedDate}? Esta ação não pode ser desfeita.
+                  Tem certeza que deseja apagar o registro do treino &quot;{log.planName || log.workoutName}&quot; de {formattedDate}? Esta ação não pode ser desfeita.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

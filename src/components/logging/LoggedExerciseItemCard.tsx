@@ -2,9 +2,9 @@
 'use client';
 
 import type { LoggedExerciseEntry, LoggedSetData, Exercise } from '@/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Trash2, PlusSquare, BookOpen, Lightbulb, CheckCircle2 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button'; // CardDescription removed
+import { Trash2, PlusSquare, BookOpen, Lightbulb } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/accordion";
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
 
 
 interface LoggedExerciseItemCardProps {
@@ -33,7 +32,6 @@ interface LoggedExerciseItemCardProps {
 export function LoggedExerciseItemCard({
   loggedExercise,
   masterExercise,
-  onRemove,
   onAddSet,
   onUpdateSetData,
   onRemoveSet,

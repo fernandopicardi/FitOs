@@ -229,8 +229,8 @@ export default function LogWorkoutPage() {
         toast({ 
           title: "Workout Saved! 🎉", 
           description: `${logToSave.workoutName} has been logged successfully.`,
-          // className: "border-accent animate-subtle-pulse-bg-accent", // Removed animation class
           duration: 3000, 
+
         });
       }
     } catch (error) {
@@ -255,16 +255,16 @@ export default function LogWorkoutPage() {
         <>
           <PageTitle 
             title="Log Your Workout"
-            subtitle="Record your sets, reps, and how you felt during your session."
+            subtitle="Record your sets, reps, and how you felt during your session.&quot;"
           />
-          <Card className="shadow-lg">
+          <Card className="shadow-lg">\
             <CardHeader>
-              <CardTitle className="text-2xl">Start a New Logging Session</CardTitle>
-              <CardDescription>Choose how you want to begin your workout log.</CardDescription>
+              <CardTitle className="text-2xl">Start a New Logging Session&quot;</CardTitle>
+              <CardDescription>Choose how you want to begin your workout log.&quot;</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <Button 
-                size="lg" 
+ size="lg" 
                 className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" 
                 onClick={handleStartEmptyWorkout}
               >
@@ -277,6 +277,7 @@ export default function LogWorkoutPage() {
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={availablePlans.length > 0 ? "Select a workout plan..." : "No plans available"} />
                   </SelectTrigger>
+
                   <SelectContent>
                     {availablePlans.length > 0 ? (
                       availablePlans.map(plan => (
@@ -302,7 +303,7 @@ export default function LogWorkoutPage() {
         </>
       ) : (
         <>
-          <PageTitle title={activeWorkoutLog.workoutName} subtitle="Log your performance for each exercise." />
+          <PageTitle title={activeWorkoutLog.workoutName} subtitle="Log your performance for each exercise.&quot;" />
           <div className="space-y-6">
             <Card>
               <CardHeader className="flex flex-row justify-between items-center">

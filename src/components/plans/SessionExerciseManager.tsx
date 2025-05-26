@@ -3,10 +3,10 @@
 
 import type { WorkoutSession, Exercise, PlannedExercise } from '@/types';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { PlusCircle, ArrowLeft, Edit3, Trash2 } from 'lucide-react';
+import { PlusCircle, ArrowLeft } from 'lucide-react';
 import { ExercisePickerDialog } from './ExercisePickerDialog';
 import { PlannedExerciseFormDialog } from './PlannedExerciseFormDialog';
 import type { PlannedExerciseFormValues } from '@/types';

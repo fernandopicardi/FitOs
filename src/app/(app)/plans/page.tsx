@@ -163,7 +163,7 @@ export default function PlansPage() {
     if (typeof window !== 'undefined') {
       try {
         const savedPlansString = localStorage.getItem(LOCAL_STORAGE_PLANS_KEY);
-        let loadedPlans: WorkoutPlan[] = savedPlansString ? JSON.parse(savedPlansString) : [];
+        const loadedPlans: WorkoutPlan[] = savedPlansString ? JSON.parse(savedPlansString) : [];
         let plansWereSeeded = false;
         let newPlansCount = 0;
 

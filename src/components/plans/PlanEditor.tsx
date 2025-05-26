@@ -1,14 +1,14 @@
 
 'use client';
 
-import type { WorkoutPlan, WorkoutSession, DayOfWeek, Exercise } from '@/types';
+import type { WorkoutPlan, WorkoutSession, Exercise } from '@/types';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { PlusCircle, Save, XCircle, ArrowLeft, Trash2 } from 'lucide-react';
+import { Label } from '@/components/ui/label'; // Keep Label import
+import { PlusCircle, Save, ArrowLeft, Trash2 } from 'lucide-react';
 import { SessionCard } from './SessionCard';
 import { SessionForm, type SessionFormValues } from './SessionForm';
 import { SessionExerciseManager } from './SessionExerciseManager'; // New import

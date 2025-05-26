@@ -4,7 +4,7 @@
 import type { Exercise, MuscleGroup, ApiNinjaExercise, ExerciseDifficulty, WorkoutType } from '@/types';
 import { ExerciseCard } from './ExerciseCard';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Search, Zap } from 'lucide-react'; // Added Zap for API button
+import { PlusCircle, Search, Zap, Cloud, UserCog, Star } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
@@ -19,10 +19,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-const LOCAL_STORAGE_EXERCISES_KEY = 'workoutWizardExercises';
+const LOCAL_STORAGE_EXERCISES_KEY = 'workoutWizardCustomExercises';
 
-// --- START OF API INTEGRATION PLACEHOLDER ---
-// This is a sample of how data might look from the API Ninjas /v1/exercises endpoint
+// --- START OF API INTEGRATION ---
 const sampleApiNinjaData: ApiNinjaExercise[] = [
   {
     "name": "Incline Hammer Curls",
@@ -100,82 +99,55 @@ const sampleApiNinjaData: ApiNinjaExercise[] = [
     "name": "Calf Raises (Standing)",
     "type": "strength",
     "muscle": "calves",
-    "equipment": "body_only", // Can also be done with weights or machine
+    "equipment": "body_only",
     "difficulty": "beginner",
     "instructions": "Stand tall with your feet flat on the floor. You can hold onto something for balance if needed. Slowly rise up onto the balls of your feet, lifting your heels as high as possible. Squeeze your calf muscles at the top. Slowly lower your heels back to the starting position. Repeat."
   }
 ];
 
-// Function to transform API data to our Exercise type
 const transformApiExercise = (apiEx: ApiNinjaExercise): Exercise => {
-  // Basic slug for ID, replace with more robust generation if needed
-  const id = `api-${apiEx.name.toLowerCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substring(2, 7)}`;
+  const id = `api-${apiEx.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Math.random().toString(36).substring(2, 7)}`;
   
-  // Simple emoji mapping - can be expanded
-  let emoji = '💪';
-  const muscleLower = apiEx.muscle.toLowerCase();
-  if (muscleLower.includes('biceps') || muscleLower.includes('triceps')) emoji = '💪';
-  if (muscleLower.includes('legs') || muscleLower.includes('quadriceps') || muscleLower.includes('hamstrings') || muscleLower.includes('glutes') || muscleLower.includes('calves')) emoji = '🦵';
-  if (muscleLower.includes('chest')) emoji = '🏋️';
-  if (apiEx.type.toLowerCase().includes('cardio')) emoji = '🏃';
-  if (muscleLower.includes('abs') || muscleLower.includes('abdominals')) emoji = '🧍';
-  if (muscleLower.includes('back') || muscleLower.includes('lats')) emoji = '🤸';
+  let emoji = '💪'; // Default emoji
+  if (apiEx.muscle) {
+    const muscleLower = apiEx.muscle.toLowerCase();
+    if (['biceps', 'triceps', 'forearms'].includes(muscleLower)) emoji = '💪';
+    else if (['quadriceps', 'hamstrings', 'glutes', 'calves', 'legs', 'adductors', 'abductors'].includes(muscleLower)) emoji = '🦵';
+    else if (['chest'].includes(muscleLower)) emoji = '🏋️';
+    else if (['lats', 'traps', 'middle_back', 'lower_back', 'back'].includes(muscleLower)) emoji = '🤸';
+    else if (['abdominals', 'abs'].includes(muscleLower)) emoji = '🧍';
+    else if (['shoulders', 'neck'].includes(muscleLower)) emoji = '⬆️';
+    else if (apiEx.type?.toLowerCase().includes('cardio') || apiEx.type?.toLowerCase().includes('plyometrics')) emoji = '🏃';
+    else if (apiEx.type?.toLowerCase().includes('stretching')) emoji = '🧘';
+  }
 
 
-  // Split instructions into steps if they are newline separated or sentence separated.
-  // This is a basic attempt; more sophisticated parsing might be needed.
   const instructionSteps = apiEx.instructions
-    .split(/[.]\s*(?=[A-Z])|\n/) // Split by periods followed by a capital letter (new sentence) or newlines
-    .map(step => step.trim())
-    .filter(step => step.length > 5); // Filter out very short or empty strings
+    ?.split(/[.]\s*(?=[A-Z0-9])|\n/) 
+    .map(step => step.trim().replace(/\.$/, '')) // Remove trailing period
+    .filter(step => step.length > 5);
 
   return {
     id,
-    name: apiEx.name,
+    name: apiEx.name || 'Unnamed Exercise',
     emoji,
-    muscleGroup: apiEx.muscle as MuscleGroup, // API muscle can be directly used or mapped
-    workoutType: [apiEx.type as WorkoutType], // API provides one type, our model uses an array
-    description: instructionSteps.length > 1 ? instructionSteps[0] : apiEx.instructions, // Use first step as desc if multiple, else full
-    instructions: instructionSteps.length > 1 ? instructionSteps : [apiEx.instructions],
+    muscleGroup: apiEx.muscle as MuscleGroup || 'Other',
+    workoutType: apiEx.type ? [apiEx.type as WorkoutType] : ['Other' as WorkoutType],
+    description: instructionSteps && instructionSteps.length > 0 ? instructionSteps[0] : apiEx.instructions || 'No description available.',
+    instructions: instructionSteps && instructionSteps.length > 1 ? instructionSteps : (apiEx.instructions ? [apiEx.instructions] : undefined),
     equipment: apiEx.equipment,
     difficulty: apiEx.difficulty as ExerciseDifficulty,
     isFetchedFromAPI: true,
-    isCustom: false, // API exercises are not user-custom
-    imageUrl: 'https://placehold.co/600x400.png', // Placeholder
-    dataAiHint: `${apiEx.muscle} ${apiEx.type}`,
+    isCustom: false,
+    imageUrl: 'https://placehold.co/600x400.png', // Placeholder for API exercises
+    dataAiHint: `${apiEx.muscle || 'exercise'} ${apiEx.type || 'general'}`,
   };
 };
-
-
-// IMPORTANT: Placeholder for actual API fetching logic
-// In a real application, this function would make a call to your backend (Next.js API Route)
-// which would then securely call the API Ninjas API.
-// DO NOT put your API key directly in frontend code.
-async function fetchExercisesFromAPIPlaceholder(): Promise<Exercise[]> {
-  console.log("Simulating API call to fetch exercises...");
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  // In a real scenario:
-  // 1. Check if the API server (Free tier) is up. The documentation says it's "Down".
-  // 2. Make a GET request to 'https://api.api-ninjas.com/v1/exercises' with appropriate parameters
-  //    and your API key in the 'X-Api-Key' header. This call should be made from a backend proxy.
-  // const response = await fetch('/api/fetch-exercises-from-ninjas?muscle=biceps'); // Example of calling your own backend
-  // if (!response.ok) {
-  //   throw new Error('Failed to fetch exercises from API');
-  // }
-  // const data: ApiNinjaExercise[] = await response.json();
-  // return data.map(transformApiExercise);
-
-  // For now, we use the sample hardcoded data:
-  console.log("Using sample API data for demonstration.");
-  return sampleApiNinjaData.map(transformApiExercise);
-}
-// --- END OF API INTEGRATION PLACEHOLDER ---
+// --- END OF API INTEGRATION ---
 
 
 export function ExerciseListClient({ initialExercises }: { initialExercises: Exercise[] }) {
-  const [allExercises, setAllExercises] = useState<Exercise[]>(initialExercises);
+  const [customExercises, setCustomExercises] = useState<Exercise[]>([]);
   const [apiFetchedExercises, setApiFetchedExercises] = useState<Exercise[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
@@ -185,82 +157,63 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
   const [isLoadingApiExercises, setIsLoadingApiExercises] = useState(false);
 
 
-  // Load exercises from localStorage on initial mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
         const savedExercisesString = localStorage.getItem(LOCAL_STORAGE_EXERCISES_KEY);
         if (savedExercisesString) {
           const loadedExercises = JSON.parse(savedExercisesString) as Exercise[];
-          // Ensure loaded exercises have isCustom and isFetchedFromAPI flags correctly set
-          const exercisesFromStorage = loadedExercises.map(ex => ({
-            ...ex,
-            isCustom: ex.isCustom === undefined ? true : ex.isCustom, // Assume if not set, it's custom from old schema
-            isFetchedFromAPI: ex.isFetchedFromAPI || false, // Assume false if not set
-          }));
-          setAllExercises(exercisesFromStorage); // Use setAllExercises
-        } else {
-          // If nothing in localStorage, use initial exercises and mark them
- setAllExercises(initialExercises.map(ex => ({
-            ...ex,
- isCustom: false,
- isFetchedFromAPI: false,
-          })));
- }
- } catch (error) {
- console.error("Failed to load exercises from localStorage", error);
+          setCustomExercises(loadedExercises.map(ex => ({...ex, isCustom: true, isFetchedFromAPI: false })));
+        }
+      } catch (error) {
+        console.error("Failed to load custom exercises from localStorage", error);
         toast({
-          title: "Error Loading Exercises",
+          title: "Error Loading Custom Exercises",
           description: "Could not retrieve your saved exercises.",
           variant: "destructive",
         });
-        // Fallback to initial exercises if loading fails
-        setAllExercises(initialExercises.map(ex => ({
-          ...ex,
-          isCustom: false,
-          isFetchedFromAPI: false,
-        })));
       }
     }
-  }, [initialExercises, toast]); // Added initialExercises to dependencies
+  }, [toast]);
 
-  // Combine all exercise sources for display: localStorage exercises and API-fetched exercises
-  const displayedExercises = useMemo<Exercise[]>(() => {
-    const uniqueExercisesMap = new Map<string, Exercise>();
-
-    // Add exercises from localStorage/initial (these can be edited/custom)
-    allExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
-
-    // Add API fetched exercises (these are read-only)
-    // They will overwrite exercises with the same ID if any exist (unlikely with current ID strategy)
-    // But more importantly, they are included in the list for display/filtering.
-    apiFetchedExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
-
-    return Array.from(uniqueExercisesMap.values()).sort((a,b) => a.name.localeCompare(b.name));
-  }, [allExercises, apiFetchedExercises]);
-
-
-  // Save all non-API exercises to localStorage when allExercises change
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Filter out API-fetched exercises before saving
-      const exercisesToSave = allExercises.filter(ex => !ex.isFetchedFromAPI); // Use allExercises
-
-      // Only save if there are non-API exercises or if the key already exists (to allow clearing)
-      if (exercisesToSave.length > 0 || localStorage.getItem(LOCAL_STORAGE_EXERCISES_KEY)) {
-        try {
-          localStorage.setItem(LOCAL_STORAGE_EXERCISES_KEY, JSON.stringify(exercisesToSave));
-        } catch (error) {
-          console.error("Failed to save exercises to localStorage", error);
- toast({
-            title: "Error Saving Custom Exercises",
-            description: "Your custom exercises could not be saved automatically.",
-            variant: "destructive",
-          });
-        }
+    if (typeof window !== 'undefined' && customExercises.length > 0) {
+      // Only save if there's something to save, or if localStorage already had the key (to allow clearing)
+      // For now, we'll just save if customExercises has content.
+      try {
+        localStorage.setItem(LOCAL_STORAGE_EXERCISES_KEY, JSON.stringify(customExercises));
+      } catch (error) {
+        console.error("Failed to save custom exercises to localStorage", error);
+        toast({
+          title: "Error Saving Custom Exercises",
+          description: "Your custom exercises could not be saved automatically.",
+          variant: "destructive",
+        });
       }
+    } else if (typeof window !== 'undefined' && customExercises.length === 0 && localStorage.getItem(LOCAL_STORAGE_EXERCISES_KEY)) {
+      // If customExercises is empty AND there was something in localStorage, remove it.
+      // This handles the case where all custom exercises are deleted by the user (if such a feature existed)
+      // For now, this part might not be strictly necessary as we don't have a "delete all custom" feature.
+      // localStorage.removeItem(LOCAL_STORAGE_EXERCISES_KEY); 
     }
-  }, [allExercises, toast]);
+  }, [customExercises, toast]);
+
+  const allDisplayableExercises = useMemo<Exercise[]>(() => {
+    const uniqueExercisesMap = new Map<string, Exercise>();
+    
+    initialExercises.forEach(ex => uniqueExercisesMap.set(ex.id, {...ex, isCustom: false, isFetchedFromAPI: false}));
+    
+    customExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex)); // Custom exercises overwrite core if IDs collide (though unlikely)
+    
+    apiFetchedExercises.forEach(ex => {
+      if (!uniqueExercisesMap.has(ex.id)) { // Add API exercises only if they don't collide with existing core/custom
+        uniqueExercisesMap.set(ex.id, ex);
+      }
+    });
+    
+    return Array.from(uniqueExercisesMap.values()).sort((a,b) => a.name.localeCompare(b.name));
+  }, [initialExercises, customExercises, apiFetchedExercises]);
+
 
   const handleOpenFormForCreate = () => {
     setExerciseToEdit(null);
@@ -268,7 +221,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
   };
 
   const handleOpenFormForEdit = (exercise: Exercise) => {
-    // Do not allow editing of API-fetched exercises directly through this form
     if (exercise.isFetchedFromAPI) {
       toast({
         title: "Read-only Exercise",
@@ -282,40 +234,55 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     setIsFormOpen(true);
   };
 
- const handleFormSubmit = (data: ExerciseFormValues) => {
+  const handleFormSubmit = (data: ExerciseFormValues) => {
     const actualMuscleGroup = data.muscleGroup === 'Other' && data.customMuscleGroup && data.customMuscleGroup.trim() !== ''
       ? data.customMuscleGroup.trim() as MuscleGroup
       : data.muscleGroup;
 
-    let finalWorkoutTypes = data.workoutType.map((wt: string) => wt.trim()).filter(wt => wt && wt !== 'Other'); // Added type annotation
-    if (data.workoutType.includes('Other') && data.customWorkoutType && data.customWorkoutType.trim() !== '') {
-      finalWorkoutTypes.push(data.customWorkoutType.trim());
+    let finalWorkoutTypes = [...(data.workoutType || [])];
+    // Custom types are now handled by the dynamic list in ExerciseForm, so data.workoutType should contain everything.
+    
+    finalWorkoutTypes = Array.from(new Set(finalWorkoutTypes.filter(wt => wt && wt.trim() !== ''))).map(wt => wt as WorkoutType);
+    if (finalWorkoutTypes.length === 0) {
+      finalWorkoutTypes.push('Other' as WorkoutType);
     }
- finalWorkoutTypes = Array.from(new Set(finalWorkoutTypes)) as WorkoutType[]; // Ensure uniqueness
 
 
-    const exerciseData = {
+    const exerciseDataPayload = {
       ...data,
       muscleGroup: actualMuscleGroup,
-      workoutType: finalWorkoutTypes as WorkoutType[], // Cast to WorkoutType[]
+      workoutType: finalWorkoutTypes,
       instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
- tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
+      tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
       imageUrl: data.imageUrl || undefined,
     };
     
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { customMuscleGroup, customWorkoutType, ...finalExerciseData } = exerciseData;
+    const { customMuscleGroup, ...finalExerciseData } = exerciseDataPayload;
 
-
-    if (exerciseToEdit) { // Editing existing exercise (could be initial or custom)
+    if (exerciseToEdit && !exerciseToEdit.isFetchedFromAPI) { // Ensure we don't edit API exercises
       const updatedExercise: Exercise = {
-        ...exerciseToEdit,
-        ...finalExerciseData, // This spread should now be correctly typed
-        // Preserve original flags if editing a non-custom initial exercise
-        isCustom: exerciseToEdit.isCustom === undefined ? false : exerciseToEdit.isCustom, // Keep its original custom status
-        isFetchedFromAPI: false,
+        ...exerciseToEdit, 
+        ...finalExerciseData,
+        isCustom: true, 
+        isFetchedFromAPI: false, 
       };
- setAllExercises(prev => prev.map(ex => ex.id === updatedExercise.id ? updatedExercise : ex));
+      setCustomExercises(prev => {
+        const existingIndex = prev.findIndex(ex => ex.id === updatedExercise.id);
+        if (existingIndex > -1) {
+          const newCustom = [...prev];
+          newCustom[existingIndex] = updatedExercise;
+          return newCustom;
+        }
+        // This case handles editing a "core" exercise for the first time, making it custom
+        return prev.map(ex => ex.id === updatedExercise.id ? updatedExercise : ex);
+      });
+      // If editing a core exercise, add it to customExercises if not already there
+      if (!customExercises.find(ex => ex.id === updatedExercise.id)) {
+        setCustomExercises(prev => [...prev, updatedExercise]);
+      }
+
+
       toast({
         title: "Exercise Updated!",
         description: `"${updatedExercise.name}" has been updated.`,
@@ -325,12 +292,11 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     } else { // Creating new custom exercise
       const newExercise: Exercise = {
         id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-        ...finalExerciseData, // This spread should now be correctly typed
+        ...finalExerciseData,
         isCustom: true,
         isFetchedFromAPI: false,
       };
-      // Add the new custom exercise to the main list
-      setAllExercises(prev => [newExercise, ...prev]);
+      setCustomExercises(prev => [newExercise, ...prev]);
       toast({
         title: "Custom Exercise Added!",
         description: `"${newExercise.name}" has been added to your library.`,
@@ -341,9 +307,9 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     setExerciseToEdit(null);
   };
 
-  const handleViewDetails = (exercise: Exercise) => { // Added type annotation
+  const handleViewDetails = (exercise: Exercise) => {
      toast({
-      title: `${exercise.name} ${exercise.emoji}`, // Correct interpolation
+      title: `${exercise.name} ${exercise.emoji}`,
       description: (
         <div className="text-sm space-y-1 max-h-60 overflow-y-auto">
           <p><strong>Muscle Group:</strong> {exercise.muscleGroup}</p>
@@ -351,27 +317,23 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           {exercise.difficulty && <p><strong>Difficulty:</strong> {exercise.difficulty}</p>}
           <p><strong>Type:</strong> {exercise.workoutType.join(', ')}</p>
           <p><strong>Description:</strong> {exercise.description}</p>
-          {exercise.instructions && exercise.instructions.length > 0 && (\
-            <div><strong>Instructions:</strong><ul className="list-disc pl-5">{(exercise.instructions || []).map((inst, i) => <li key={i}>{inst}</li>)}</ul></div>
-          )}
-          {exercise.tips && exercise.tips.length > 0 && (\
-             <div><strong>Tips:</strong><ul className="list-disc pl-5">{(exercise.tips || []).map((tip, i) => <li key={i}>{tip}</li>)}</ul></div>
-          )}
-          {exercise.isCustom && <p className="italic text-muted-foreground">This is a custom exercise.</p>}
-          {exercise.isFetchedFromAPI && <p className="italic text-accent">Fetched from external API.</p>}
+          {exercise.instructions && exercise.instructions.length > 0 && (<div><strong>Instructions:</strong><ul className="list-disc pl-5">{(exercise.instructions).map((inst, i) => <li key={i}>{inst}</li>)}</ul></div>)}
+          {exercise.tips && exercise.tips.length > 0 && exercise.tips[0].length > 0 && (<div><strong>Tips:</strong><ul className="list-disc pl-5">{(exercise.tips).map((tip, i) => <li key={i}>{tip}</li>)}</ul></div>)}
+          {exercise.isCustom && !exercise.isFetchedFromAPI && <p className="italic text-amber-400">This is a custom exercise.</p>}
+          {exercise.isFetchedFromAPI && <p className="italic text-sky-400">Fetched from cloud API.</p>}
+          {!exercise.isCustom && !exercise.isFetchedFromAPI && <p className="italic text-gray-400">This is a core exercise.</p>}
         </div>
       ),
       duration: 7000, 
- });
+    });
   };
 
   const availableMuscleGroups = useMemo(() => {
-    // Use displayedExercises for filtering options
-    const groups = new Set<MuscleGroup>(displayedExercises.map((ex: Exercise) => ex.muscleGroup as MuscleGroup)); // Added type annotation
+    const groups = new Set<MuscleGroup>(allDisplayableExercises.map(ex => ex.muscleGroup as MuscleGroup));
     return ['All', ...Array.from(groups).sort((a,b) => (a||"").localeCompare(b||""))];
-  }, [displayedExercises]);
+  }, [allDisplayableExercises]);
 
-  const filteredExercises = displayedExercises.filter((exercise: Exercise) => { // Added type annotation
+  const filteredExercises = allDisplayableExercises.filter(exercise => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearchTerm = 
       exercise.name.toLowerCase().includes(searchTermLower) ||
@@ -386,18 +348,48 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
 
   const handleFetchApiExercises = async () => {
     setIsLoadingApiExercises(true);
-    toast({ title: "Fetching exercises from API...", description: "This is a simulation.", duration: 2000 });
+    let queryString = '';
+    if (searchTerm) {
+      queryString += `name=${encodeURIComponent(searchTerm)}`;
+    }
+    if (selectedMuscleGroup && selectedMuscleGroup !== 'All') {
+      queryString += `${searchTerm ? '&' : ''}muscle=${encodeURIComponent(selectedMuscleGroup.toLowerCase())}`;
+    }
+
+    toast({ title: "Fetching exercises from cloud...", description: "This may take a moment.", duration: 2000 });
     try {
-      const fetched = await fetchExercisesFromAPIPlaceholder();
-      setApiFetchedExercises(prevApiExercises => {
-        const newApiExercisesMap = new Map(prevApiExercises.map(ex => [ex.id, ex]));
-        fetched.forEach(ex => newApiExercisesMap.set(ex.id, ex));
-        return Array.from(newApiExercisesMap.values());
-      });
-      toast({ title: "API Exercises Loaded (Simulated)", description: `${fetched.length} exercises were processed.`, duration: 3000 });
+      const response = await fetch(`/api/exercises?${queryString}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `API request failed with status ${response.status}`);
+      }
+      const fetchedApiExercisesData: ApiNinjaExercise[] = await response.json();
+      
+      if (fetchedApiExercisesData.length === 0) {
+        toast({ title: "No New Exercises Found", description: "No new exercises matched your criteria from the cloud API.", duration: 3000 });
+      } else {
+        const transformedNewExercises = fetchedApiExercisesData.map(transformApiExercise);
+        setApiFetchedExercises(prevApiExercises => {
+          const existingApiIds = new Set(prevApiExercises.map(ex => ex.id));
+          const uniqueExercisesMap = new Map<string, Exercise>();
+          initialExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
+          customExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
+
+          const trulyNewExercises = transformedNewExercises.filter(newEx => 
+            !existingApiIds.has(newEx.id) && !uniqueExercisesMap.has(newEx.id) // Check against all existing local exercises too
+          );
+          
+          if (trulyNewExercises.length === 0 && transformedNewExercises.length > 0) {
+             toast({ title: "Exercises Already Loaded", description: "The fetched exercises are already in your library or conflict with existing IDs.", duration: 3000 });
+          } else if (trulyNewExercises.length > 0) {
+             toast({ title: "Cloud Exercises Loaded!", description: `${trulyNewExercises.length} new exercise(s) added.`, duration: 3000 });
+          }
+          return [...prevApiExercises, ...trulyNewExercises];
+        });
+      }
     } catch (error) {
-      console.error("Failed to fetch exercises from API (Placeholder):", error);
-      toast({ title: "API Fetch Error (Simulated)", description: "Could not load exercises.", variant: "destructive" });
+      console.error("Failed to fetch exercises from API:", error);
+      toast({ title: "API Fetch Error", description: (error as Error).message || "Could not load exercises from the cloud.", variant: "destructive" });
     } finally {
       setIsLoadingApiExercises(false);
     }
@@ -439,7 +431,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
             disabled={isLoadingApiExercises}
         >
             <Zap className="mr-2 h-5 w-5" /> 
-            {isLoadingApiExercises ? "Loading API..." : "Load from API (Demo)"}
+            {isLoadingApiExercises ? "Fetching..." : "Fetch from Cloud"}
         </Button>
       </div>
 
@@ -456,7 +448,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
                 {exerciseToEdit ? "Modify the details of this exercise." : "Add your own exercise to the library. Fill in the details below."}
             </DialogDescription>
             </DialogHeader>
-            <div className="p-6 pt-4 max-h-[calc(90vh-100px)] overflow-y-auto">
+            <div className="p-6 pt-4 max-h-[calc(90vh-100px)] overflow-y-auto"> {/* Adjusted padding and max-height */}
             <ExerciseForm 
                 exercise={exerciseToEdit || undefined} 
                 onSubmit={handleFormSubmit} 
@@ -476,7 +468,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
                 key={exercise.id} 
                 exercise={exercise} 
                 onViewDetails={handleViewDetails}
-                onEditExercise={exercise.isFetchedFromAPI ? undefined : handleOpenFormForEdit} // Disable edit for API exercises
+                onEditExercise={exercise.isFetchedFromAPI ? undefined : handleOpenFormForEdit}
             />
           ))}
         </div>
