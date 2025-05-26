@@ -55,8 +55,8 @@ export default function WorkoutHistoryPage() {
       } catch (error) {
         console.error("Failed to load workout history from localStorage", error);
         toast({
-          title: "Error Loading History",
-          description: "Could not retrieve your workout history.",
+          title: "Erro ao Carregar Histórico",
+          description: "Não foi possível recuperar seu histórico de treino.",
           variant: "destructive",
         });
       }
@@ -93,7 +93,7 @@ export default function WorkoutHistoryPage() {
 
   const chartConfig = {
     workouts: {
-      label: "Treinos",
+      label: "Treinos Registrados",
       color: "hsl(var(--chart-1))",
     },
   };
@@ -174,8 +174,8 @@ export default function WorkoutHistoryPage() {
     return (
       <div className="space-y-8">
         <PageTitle
-          title="Workout History"
-          subtitle="Review your past workouts and track your fitness journey over time."
+          title="Histórico de Treino"
+          subtitle="Revise seus treinos passados e acompanhe sua jornada fitness ao longo do tempo."
         />
         <div className="text-center py-10">
           <ListChecks className="mx-auto h-12 w-12 text-primary animate-pulse" />
@@ -188,8 +188,8 @@ export default function WorkoutHistoryPage() {
   return (
     <div className="space-y-8">
       <PageTitle
-        title="Workout History"
-        subtitle="Review your past workouts and track your fitness journey over time."
+        title="Histórico de Treino"
+        subtitle="Revise seus treinos passados e acompanhe sua jornada fitness ao longo do tempo."
       >
         {workoutHistory.length > 0 && (
            <AlertDialog>

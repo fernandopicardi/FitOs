@@ -11,7 +11,7 @@ import Image from "next/image";
 import { useToast } from '@/hooks/use-toast';
 
 const DASHBOARD_HERO_IMAGE_KEY = 'fitosDashboardHeroImage';
-const DEFAULT_HERO_IMAGE_URL = "https://placehold.co/800x600.png";
+const DEFAULT_HERO_IMAGE_URL = "https://img.freepik.com/free-photo/3d-character-emerging-from-smartphone_23-2151336558.jpg";
 
 export default function DashboardPage() {
   const [heroImageUrl, setHeroImageUrl] = useState<string>(DEFAULT_HERO_IMAGE_URL);
@@ -35,14 +35,14 @@ export default function DashboardPage() {
     if (newImageUrl.trim() === '') {
       toast({
         title: "Invalid URL",
-        description: "Image URL cannot be empty.",
+        description: "A URL da imagem não pode estar vazia.",
         variant: "destructive",
       });
       return;
     }
     setHeroImageUrl(newImageUrl);
     localStorage.setItem(DASHBOARD_HERO_IMAGE_KEY, newImageUrl);
-    setIsEditingImage(false);
+ setIsEditingImage(false);
     toast({
       title: "Hero Image Updated!",
       description: "The new dashboard hero image has been saved.",
@@ -97,8 +97,8 @@ export default function DashboardPage() {
               data-ai-hint="fitness abstract"
               className="opacity-80 group-hover:opacity-100 transition-opacity duration-300"
               onError={() => { // Fallback if user provides a bad URL
-                toast({ title: 'Image Load Error', description: 'Could not load the image. Reverting to default.', variant: 'destructive' });
-                setHeroImageUrl(DEFAULT_HERO_IMAGE_URL);
+ toast({ title: 'Erro ao Carregar Imagem', description: 'Não foi possível carregar a imagem. Revertendo para o padrão.', variant: 'destructive' });
+ setHeroImageUrl(DEFAULT_HERO_IMAGE_URL);
                 localStorage.removeItem(DASHBOARD_HERO_IMAGE_KEY);
               }}
             />
@@ -110,7 +110,7 @@ export default function DashboardPage() {
               onClick={handleEditImage}
             >
               <Edit3 className="h-5 w-5" />
-              <span className="sr-only">Edit Hero Image</span>
+              <span className="sr-only">Editar Imagem de Destaque</span>
             </Button>
             {isEditingImage && (
               <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md p-4 m-3 rounded-lg shadow-xl space-y-3 z-20 border border-border">
@@ -118,12 +118,12 @@ export default function DashboardPage() {
                   type="url"
                   value={newImageUrl}
                   onChange={(e) => setNewImageUrl(e.target.value)}
-                  placeholder="Enter new image URL (e.g., https://...)"
+                  placeholder="Digite a nova URL da imagem (ex: https://...)"
                   className="bg-background/70 border-border"
                 />
                 <div className="flex justify-end space-x-2">
                   <Button variant="ghost" size="sm" onClick={handleCancelEdit} className="text-muted-foreground hover:text-foreground">
-                    <X className="mr-1 h-4 w-4" /> Cancel
+                    <X className="mr-1 h-4 w-4" /> Cancelar
                   </Button>
                   <Button size="sm" onClick={handleSaveImage} className="bg-primary hover:bg-primary/90">
                     <Check className="mr-1 h-4 w-4" /> Save

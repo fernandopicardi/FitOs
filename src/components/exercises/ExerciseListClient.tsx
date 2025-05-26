@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Exercise, MuscleGroup, ApiNinjaExercise, ExerciseDifficulty } from '@/types';
+import type { Exercise, MuscleGroup, ApiNinjaExercise, ExerciseDifficulty, WorkoutType } from '@/types';
 import { ExerciseCard } from './ExerciseCard';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Search, Zap } from 'lucide-react'; // Added Zap for API button
@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-const LOCAL_STORAGE_CUSTOM_EXERCISES_KEY = 'workoutWizardCustomExercises';
+const LOCAL_STORAGE_EXERCISES_KEY = 'workoutWizardExercises';
 
 // --- START OF API INTEGRATION PLACEHOLDER ---
 // This is a sample of how data might look from the API Ninjas /v1/exercises endpoint
@@ -175,10 +175,8 @@ async function fetchExercisesFromAPIPlaceholder(): Promise<Exercise[]> {
 
 
 export function ExerciseListClient({ initialExercises }: { initialExercises: Exercise[] }) {
-  const [customExercises, setCustomExercises] = useState<Exercise[]>([]);
-  const [apiFetchedExercises, setApiFetchedExercises] = useState<Exercise[]>([]);
   const [allExercises, setAllExercises] = useState<Exercise[]>(initialExercises);
-  
+  const [apiFetchedExercises, setApiFetchedExercises] = useState<Exercise[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -187,49 +185,74 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
   const [isLoadingApiExercises, setIsLoadingApiExercises] = useState(false);
 
 
-  // Load custom exercises from localStorage
+  // Load exercises from localStorage on initial mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        const savedCustomExercisesString = localStorage.getItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY);
-        if (savedCustomExercisesString) {
-          const loadedCustomExercises = JSON.parse(savedCustomExercisesString) as Exercise[];
-          setCustomExercises(loadedCustomExercises);
-        }
-      } catch (error) {
-        console.error("Failed to load custom exercises from localStorage", error);
+        const savedExercisesString = localStorage.getItem(LOCAL_STORAGE_EXERCISES_KEY);
+        if (savedExercisesString) {
+          const loadedExercises = JSON.parse(savedExercisesString) as Exercise[];
+          // Ensure loaded exercises have isCustom and isFetchedFromAPI flags correctly set
+          const exercisesFromStorage = loadedExercises.map(ex => ({
+            ...ex,
+            isCustom: ex.isCustom === undefined ? true : ex.isCustom, // Assume if not set, it's custom from old schema
+            isFetchedFromAPI: ex.isFetchedFromAPI || false, // Assume false if not set
+          }));
+          setAllExercises(exercisesFromStorage); // Use setAllExercises
+        } else {
+          // If nothing in localStorage, use initial exercises and mark them
+ setAllExercises(initialExercises.map(ex => ({
+            ...ex,
+ isCustom: false,
+ isFetchedFromAPI: false,
+          })));
+ }
+ } catch (error) {
+ console.error("Failed to load exercises from localStorage", error);
         toast({
-          title: "Error Loading Custom Exercises",
-          description: "Could not retrieve your saved custom exercises.",
+          title: "Error Loading Exercises",
+          description: "Could not retrieve your saved exercises.",
           variant: "destructive",
         });
+        // Fallback to initial exercises if loading fails
+        setAllExercises(initialExercises.map(ex => ({
+          ...ex,
+          isCustom: false,
+          isFetchedFromAPI: false,
+        })));
       }
     }
-  }, [toast]);
+  }, [initialExercises, toast]); // Added initialExercises to dependencies
 
-  // Combine all exercise sources: initial (preloaded), custom (localStorage), and API-fetched
-  useEffect(() => {
-    const correctlyMarkedInitial = initialExercises.map(ex => ({ ...ex, isCustom: false, isFetchedFromAPI: false }));
-    
+  // Combine all exercise sources for display: localStorage exercises and API-fetched exercises
+  const displayedExercises = useMemo<Exercise[]>(() => {
     const uniqueExercisesMap = new Map<string, Exercise>();
-    
-    correctlyMarkedInitial.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
-    customExercises.forEach(ex => uniqueExercisesMap.set(ex.id, { ...ex, isCustom: true, isFetchedFromAPI: false }));
-    apiFetchedExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex)); // API exercises are already flagged
-    
-    setAllExercises(Array.from(uniqueExercisesMap.values()).sort((a,b) => a.name.localeCompare(b.name)));
-  }, [initialExercises, customExercises, apiFetchedExercises]);
 
-  // Save custom exercises to localStorage when they change
+    // Add exercises from localStorage/initial (these can be edited/custom)
+    allExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
+
+    // Add API fetched exercises (these are read-only)
+    // They will overwrite exercises with the same ID if any exist (unlikely with current ID strategy)
+    // But more importantly, they are included in the list for display/filtering.
+    apiFetchedExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
+
+    return Array.from(uniqueExercisesMap.values()).sort((a,b) => a.name.localeCompare(b.name));
+  }, [allExercises, apiFetchedExercises]);
+
+
+  // Save all non-API exercises to localStorage when allExercises change
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Only save if customExercises has items or if the key already exists (to allow clearing)
-      if (customExercises.length > 0 || localStorage.getItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY)) {
+      // Filter out API-fetched exercises before saving
+      const exercisesToSave = allExercises.filter(ex => !ex.isFetchedFromAPI); // Use allExercises
+
+      // Only save if there are non-API exercises or if the key already exists (to allow clearing)
+      if (exercisesToSave.length > 0 || localStorage.getItem(LOCAL_STORAGE_EXERCISES_KEY)) {
         try {
-          localStorage.setItem(LOCAL_STORAGE_CUSTOM_EXERCISES_KEY, JSON.stringify(customExercises));
+          localStorage.setItem(LOCAL_STORAGE_EXERCISES_KEY, JSON.stringify(exercisesToSave));
         } catch (error) {
-          console.error("Failed to save custom exercises to localStorage", error);
-          toast({
+          console.error("Failed to save exercises to localStorage", error);
+ toast({
             title: "Error Saving Custom Exercises",
             description: "Your custom exercises could not be saved automatically.",
             variant: "destructive",
@@ -237,7 +260,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
         }
       }
     }
-  }, [customExercises, toast]);
+  }, [allExercises, toast]);
 
   const handleOpenFormForCreate = () => {
     setExerciseToEdit(null);
@@ -264,19 +287,19 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
       ? data.customMuscleGroup.trim() as MuscleGroup
       : data.muscleGroup;
 
-    let finalWorkoutTypes = data.workoutType.map(wt => wt.trim()).filter(wt => wt && wt !== 'Other');
+    let finalWorkoutTypes = data.workoutType.map((wt: string) => wt.trim()).filter(wt => wt && wt !== 'Other'); // Added type annotation
     if (data.workoutType.includes('Other') && data.customWorkoutType && data.customWorkoutType.trim() !== '') {
       finalWorkoutTypes.push(data.customWorkoutType.trim());
     }
-    finalWorkoutTypes = Array.from(new Set(finalWorkoutTypes)); // Ensure uniqueness
+ finalWorkoutTypes = Array.from(new Set(finalWorkoutTypes)) as WorkoutType[]; // Ensure uniqueness
 
 
     const exerciseData = {
       ...data,
       muscleGroup: actualMuscleGroup,
-      workoutType: finalWorkoutTypes,
+      workoutType: finalWorkoutTypes as WorkoutType[], // Cast to WorkoutType[]
       instructions: data.instructions?.split('\\n').filter(line => line.trim() !== ''),
-      tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
+ tips: data.tips?.split('\\n').filter(line => line.trim() !== ''),
       imageUrl: data.imageUrl || undefined,
     };
     
@@ -284,14 +307,15 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     const { customMuscleGroup, customWorkoutType, ...finalExerciseData } = exerciseData;
 
 
-    if (exerciseToEdit) { // Editing existing custom exercise
+    if (exerciseToEdit) { // Editing existing exercise (could be initial or custom)
       const updatedExercise: Exercise = {
         ...exerciseToEdit,
-        ...finalExerciseData,
-        isCustom: true, 
+        ...finalExerciseData, // This spread should now be correctly typed
+        // Preserve original flags if editing a non-custom initial exercise
+        isCustom: exerciseToEdit.isCustom === undefined ? false : exerciseToEdit.isCustom, // Keep its original custom status
         isFetchedFromAPI: false,
       };
-      setCustomExercises(prev => prev.map(ex => ex.id === updatedExercise.id ? updatedExercise : ex));
+ setAllExercises(prev => prev.map(ex => ex.id === updatedExercise.id ? updatedExercise : ex));
       toast({
         title: "Exercise Updated!",
         description: `"${updatedExercise.name}" has been updated.`,
@@ -301,11 +325,12 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     } else { // Creating new custom exercise
       const newExercise: Exercise = {
         id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-        ...finalExerciseData,
+        ...finalExerciseData, // This spread should now be correctly typed
         isCustom: true,
         isFetchedFromAPI: false,
       };
-      setCustomExercises(prev => [newExercise, ...prev]);
+      // Add the new custom exercise to the main list
+      setAllExercises(prev => [newExercise, ...prev]);
       toast({
         title: "Custom Exercise Added!",
         description: `"${newExercise.name}" has been added to your library.`,
@@ -316,9 +341,9 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     setExerciseToEdit(null);
   };
 
-  const handleViewDetails = (exercise: Exercise) => {
+  const handleViewDetails = (exercise: Exercise) => { // Added type annotation
      toast({
-      title: `${exercise.name} ${exercise.emoji}`,
+      title: `${exercise.name} ${exercise.emoji}`, // Correct interpolation
       description: (
         <div className="text-sm space-y-1 max-h-60 overflow-y-auto">
           <p><strong>Muscle Group:</strong> {exercise.muscleGroup}</p>
@@ -326,10 +351,10 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           {exercise.difficulty && <p><strong>Difficulty:</strong> {exercise.difficulty}</p>}
           <p><strong>Type:</strong> {exercise.workoutType.join(', ')}</p>
           <p><strong>Description:</strong> {exercise.description}</p>
-          {exercise.instructions && exercise.instructions.length > 0 && (
+          {exercise.instructions && exercise.instructions.length > 0 && (\
             <div><strong>Instructions:</strong><ul className="list-disc pl-5">{(exercise.instructions || []).map((inst, i) => <li key={i}>{inst}</li>)}</ul></div>
           )}
-          {exercise.tips && exercise.tips.length > 0 && (
+          {exercise.tips && exercise.tips.length > 0 && (\
              <div><strong>Tips:</strong><ul className="list-disc pl-5">{(exercise.tips || []).map((tip, i) => <li key={i}>{tip}</li>)}</ul></div>
           )}
           {exercise.isCustom && <p className="italic text-muted-foreground">This is a custom exercise.</p>}
@@ -337,23 +362,24 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
         </div>
       ),
       duration: 7000, 
-    });
+ });
   };
 
   const availableMuscleGroups = useMemo(() => {
-    const groups = new Set<MuscleGroup>(allExercises.map(ex => ex.muscleGroup as MuscleGroup));
+    // Use displayedExercises for filtering options
+    const groups = new Set<MuscleGroup>(displayedExercises.map((ex: Exercise) => ex.muscleGroup as MuscleGroup)); // Added type annotation
     return ['All', ...Array.from(groups).sort((a,b) => (a||"").localeCompare(b||""))];
-  }, [allExercises]);
+  }, [displayedExercises]);
 
-  const filteredExercises = allExercises.filter(exercise => {
+  const filteredExercises = displayedExercises.filter((exercise: Exercise) => { // Added type annotation
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearchTerm = 
       exercise.name.toLowerCase().includes(searchTermLower) ||
       exercise.description.toLowerCase().includes(searchTermLower) ||
-      (exercise.muscleGroup as string).toLowerCase().includes(searchTermLower) || 
+      (exercise.muscleGroup as string).toLowerCase().includes(searchTermLower) ||
       exercise.workoutType.some(wt => wt.toLowerCase().includes(searchTermLower)) ||
       (exercise.equipment && exercise.equipment.toLowerCase().includes(searchTermLower));
-      
+
     const matchesMuscleGroup = selectedMuscleGroup === 'All' || exercise.muscleGroup === selectedMuscleGroup;
     return matchesSearchTerm && matchesMuscleGroup;
   });
@@ -446,7 +472,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
       {filteredExercises.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredExercises.map((exercise) => (
-            <ExerciseCard 
+            <ExerciseCard
                 key={exercise.id} 
                 exercise={exercise} 
                 onViewDetails={handleViewDetails}
