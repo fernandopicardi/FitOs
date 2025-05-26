@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 const LOCAL_STORAGE_EXERCISES_KEY = 'workoutWizardCustomExercises';
 
 // --- START OF API INTEGRATION ---
+// This sample data is kept for context but not directly used if API calls are live
 const sampleApiNinjaData: ApiNinjaExercise[] = [
   {
     "name": "Incline Hammer Curls",
@@ -124,7 +125,7 @@ const transformApiExercise = (apiEx: ApiNinjaExercise): Exercise => {
 
   const instructionSteps = apiEx.instructions
     ?.split(/[.]\s*(?=[A-Z0-9])|\n/) 
-    .map(step => step.trim().replace(/\.$/, '')) // Remove trailing period
+    .map(step => step.trim().replace(/\.$/, '')) 
     .filter(step => step.length > 5);
 
   return {
@@ -138,8 +139,8 @@ const transformApiExercise = (apiEx: ApiNinjaExercise): Exercise => {
     equipment: apiEx.equipment,
     difficulty: apiEx.difficulty as ExerciseDifficulty,
     isFetchedFromAPI: true,
-    isCustom: false,
-    imageUrl: 'https://placehold.co/600x400.png', // Placeholder for API exercises
+    isCustom: false, 
+    imageUrl: 'https://placehold.co/600x400.png', 
     dataAiHint: `${apiEx.muscle || 'exercise'} ${apiEx.type || 'general'}`,
   };
 };
@@ -178,8 +179,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
 
   useEffect(() => {
     if (typeof window !== 'undefined' && customExercises.length > 0) {
-      // Only save if there's something to save, or if localStorage already had the key (to allow clearing)
-      // For now, we'll just save if customExercises has content.
       try {
         localStorage.setItem(LOCAL_STORAGE_EXERCISES_KEY, JSON.stringify(customExercises));
       } catch (error) {
@@ -190,11 +189,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           variant: "destructive",
         });
       }
-    } else if (typeof window !== 'undefined' && customExercises.length === 0 && localStorage.getItem(LOCAL_STORAGE_EXERCISES_KEY)) {
-      // If customExercises is empty AND there was something in localStorage, remove it.
-      // This handles the case where all custom exercises are deleted by the user (if such a feature existed)
-      // For now, this part might not be strictly necessary as we don't have a "delete all custom" feature.
-      // localStorage.removeItem(LOCAL_STORAGE_EXERCISES_KEY); 
     }
   }, [customExercises, toast]);
 
@@ -203,10 +197,10 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     
     initialExercises.forEach(ex => uniqueExercisesMap.set(ex.id, {...ex, isCustom: false, isFetchedFromAPI: false}));
     
-    customExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex)); // Custom exercises overwrite core if IDs collide (though unlikely)
+    customExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex)); 
     
     apiFetchedExercises.forEach(ex => {
-      if (!uniqueExercisesMap.has(ex.id)) { // Add API exercises only if they don't collide with existing core/custom
+      if (!uniqueExercisesMap.has(ex.id)) { 
         uniqueExercisesMap.set(ex.id, ex);
       }
     });
@@ -234,19 +228,16 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     setIsFormOpen(true);
   };
 
-  const handleFormSubmit = (data: ExerciseFormValues) => {
+ const handleFormSubmit = (data: ExerciseFormValues) => {
     const actualMuscleGroup = data.muscleGroup === 'Other' && data.customMuscleGroup && data.customMuscleGroup.trim() !== ''
       ? data.customMuscleGroup.trim() as MuscleGroup
       : data.muscleGroup;
 
     let finalWorkoutTypes = [...(data.workoutType || [])];
-    // Custom types are now handled by the dynamic list in ExerciseForm, so data.workoutType should contain everything.
-    
     finalWorkoutTypes = Array.from(new Set(finalWorkoutTypes.filter(wt => wt && wt.trim() !== ''))).map(wt => wt as WorkoutType);
     if (finalWorkoutTypes.length === 0) {
       finalWorkoutTypes.push('Other' as WorkoutType);
     }
-
 
     const exerciseDataPayload = {
       ...data,
@@ -260,7 +251,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { customMuscleGroup, ...finalExerciseData } = exerciseDataPayload;
 
-    if (exerciseToEdit && !exerciseToEdit.isFetchedFromAPI) { // Ensure we don't edit API exercises
+    if (exerciseToEdit && !exerciseToEdit.isFetchedFromAPI) {
       const updatedExercise: Exercise = {
         ...exerciseToEdit, 
         ...finalExerciseData,
@@ -277,7 +268,6 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
         // This case handles editing a "core" exercise for the first time, making it custom
         return prev.map(ex => ex.id === updatedExercise.id ? updatedExercise : ex);
       });
-      // If editing a core exercise, add it to customExercises if not already there
       if (!customExercises.find(ex => ex.id === updatedExercise.id)) {
         setCustomExercises(prev => [...prev, updatedExercise]);
       }
@@ -289,7 +279,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
         duration: 3000,
       });
 
-    } else { // Creating new custom exercise
+    } else { 
       const newExercise: Exercise = {
         id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         ...finalExerciseData,
@@ -317,8 +307,22 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           {exercise.difficulty && <p><strong>Difficulty:</strong> {exercise.difficulty}</p>}
           <p><strong>Type:</strong> {exercise.workoutType.join(', ')}</p>
           <p><strong>Description:</strong> {exercise.description}</p>
-          {exercise.instructions && exercise.instructions.length > 0 && (<div><strong>Instructions:</strong><ul className="list-disc pl-5">{(exercise.instructions).map((inst, i) => <li key={i}>{inst}</li>)}</ul></div>)}
-          {exercise.tips && exercise.tips.length > 0 && exercise.tips[0].length > 0 && (<div><strong>Tips:</strong><ul className="list-disc pl-5">{(exercise.tips).map((tip, i) => <li key={i}>{tip}</li>)}</ul></div>)}
+          {exercise.instructions && exercise.instructions.length > 0 && (
+            <div>
+              <strong>Instructions:</strong>
+              <ul className="list-disc pl-5">
+                {exercise.instructions.map((inst, i) => <li key={i}>{inst}</li>)}
+              </ul>
+            </div>
+          )}
+          {exercise.tips && exercise.tips.length > 0 && exercise.tips[0].length > 0 && (
+            <div>
+              <strong>Tips:</strong>
+              <ul className="list-disc pl-5">
+                {exercise.tips.map((tip, i) => <li key={i}>{tip}</li>)}
+              </ul>
+            </div>
+          )}
           {exercise.isCustom && !exercise.isFetchedFromAPI && <p className="italic text-amber-400">This is a custom exercise.</p>}
           {exercise.isFetchedFromAPI && <p className="italic text-sky-400">Fetched from cloud API.</p>}
           {!exercise.isCustom && !exercise.isFetchedFromAPI && <p className="italic text-gray-400">This is a core exercise.</p>}
@@ -359,10 +363,36 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     toast({ title: "Fetching exercises from cloud...", description: "This may take a moment.", duration: 2000 });
     try {
       const response = await fetch(`/api/exercises?${queryString}`);
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `API request failed with status ${response.status}`);
+        let errorText = `API request failed with status ${response.status}`;
+        try {
+            // Attempt to get more specific error message if backend provides one
+            const errorData = await response.json(); // Assuming error is JSON
+            errorText = errorData.error || errorText;
+        } catch (e) {
+            // If parsing errorData fails, try to get HTML error text
+            try {
+                const htmlError = await response.text();
+                // Extract title or h1 from HTML if possible, or just show a snippet
+                const titleMatch = htmlError.match(/<title>(.*?)<\/title>/i);
+                const h1Match = htmlError.match(/<h1>(.*?)<\/h1>/i);
+                if (titleMatch && titleMatch[1]) {
+                    errorText = `${response.status}: ${titleMatch[1]}`;
+                } else if (h1Match && h1Match[1]) {
+                    errorText = `${response.status}: ${h1Match[1]}`;
+                } else {
+                     // Fallback to a generic message if specific error text can't be extracted
+                    errorText = `API request failed with status ${response.status}. Response was not valid JSON.`;
+                }
+
+            } catch (textError) {
+                // If response.text() also fails, stick with the status code.
+            }
+        }
+        throw new Error(errorText);
       }
+
       const fetchedApiExercisesData: ApiNinjaExercise[] = await response.json();
       
       if (fetchedApiExercisesData.length === 0) {
@@ -376,7 +406,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
           customExercises.forEach(ex => uniqueExercisesMap.set(ex.id, ex));
 
           const trulyNewExercises = transformedNewExercises.filter(newEx => 
-            !existingApiIds.has(newEx.id) && !uniqueExercisesMap.has(newEx.id) // Check against all existing local exercises too
+            !existingApiIds.has(newEx.id) && !uniqueExercisesMap.has(newEx.id) 
           );
           
           if (trulyNewExercises.length === 0 && transformedNewExercises.length > 0) {
@@ -448,7 +478,7 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
                 {exerciseToEdit ? "Modify the details of this exercise." : "Add your own exercise to the library. Fill in the details below."}
             </DialogDescription>
             </DialogHeader>
-            <div className="p-6 pt-4 max-h-[calc(90vh-100px)] overflow-y-auto"> {/* Adjusted padding and max-height */}
+            <div className="p-6 pt-4 max-h-[calc(90vh-100px)] overflow-y-auto">
             <ExerciseForm 
                 exercise={exerciseToEdit || undefined} 
                 onSubmit={handleFormSubmit} 
@@ -481,3 +511,4 @@ export function ExerciseListClient({ initialExercises }: { initialExercises: Exe
     </div>
   );
 }
+
